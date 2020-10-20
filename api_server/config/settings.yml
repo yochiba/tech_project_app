@@ -1,0 +1,44 @@
+# COMMON
+price_unit_id:
+  man_yen_per_month: 0
+operation_unit_id:
+  hour: 0
+skill_type:
+  language: 0
+  framework: 1
+  db: 2
+  tool: 3
+  os: 4
+  package: 5
+  others: 6
+# MIDWORKS
+midworks:
+  company_name: 'MIDWORKS'
+  url:
+    host: 'https://mid-works.com'
+    new_projects: 'https://mid-works.com/projects'
+  company_id: 0
+  title:
+    description: '業務内容'
+    skill: 'スキルについて'
+    required_skills: '必須スキル'
+    other_skills: '歓迎スキル'
+    detail: '案件詳細'
+    skill_tags: '開発環境'
+    price: '単価/月'
+    weekly_attendance: '週出勤回数'
+    location: '勤務地'
+    position: '職種'
+    contract: '契約形態'
+  operation_unit:
+    hour: '時間'
+  price_unit:
+    man_yen_per_month: '万円/月'
+  skill_type:
+    language: 'プログラミング言語'
+    framework: 'フレームワーク'
+    db: 'データベース'
+    tool: 'ツール'
+    os: 'OS'
+    package: 'サーバ基盤・パッケージ'
+
