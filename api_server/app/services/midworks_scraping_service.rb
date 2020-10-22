@@ -4,7 +4,9 @@ require 'nokogiri'
 require 'open-uri'
 require 'csv'
 
-# Service for scraping
+# class_type: Service
+# class_name: MidworkScrapingService
+# description: scraping class for Midworks
 class MidworksScrapingService
   # FIXME 取得する最大ページ数
   MAX_PAGE_COUNT = 1
@@ -18,7 +20,7 @@ class MidworksScrapingService
       url = "#{Settings.midworks.url.new_projects}"
       new_projects_page_html = Nokogiri::HTML.parse(open(url))
       # 案件情報格納配列
-      projects_array = []
+      projects_json_array = []
       # 総案件数
       total_projects = new_projects_page_html.css('.text-primary.lead.font-weight-bold').text.to_i
       ## 指定ページ数のみ取得
@@ -33,7 +35,7 @@ class MidworksScrapingService
           project_id_array.map do |project_id|
             project_url = "#{Settings.midworks.url.host}#{project_id[:href]}"
             project_hash = compose_project(project_url)
-            projects_array.push(project_hash)
+            projects_json_array.push(project_hash)
             sleep 0.8
           end
           sleep 5
@@ -41,7 +43,7 @@ class MidworksScrapingService
           puts exception
         end
       end
-      projects_array
+      projects_json_array
     end
 
     private
@@ -204,12 +206,12 @@ class MidworksScrapingService
         skill_tag_name = skill_tag_name_html.text
         next if skill_tag_name.blank?
         # スキルタイプ判別
-        skill_type = descriminate_skill_type skill_type_title
-        ## FIXME
-        # skill_id = descripminate_skill_id
+        skill_type_id = descriminate_skill_type skill_type_title
+        ## FIXME スキルタグの判別処理
+        # skill_tag_id = descripminate_skill_id
         skill_hash = {
           skill_type_title: skill_type_title,
-          skill_type: skill_type,
+          skill_type_id: skill_type_id,
           skill_tag_name: skill_tag_name,
         }
         skill_tags_array.push skill_hash
@@ -242,6 +244,7 @@ class MidworksScrapingService
     # スキルID判別メソッド(仮) 仕様検討中
     def descripminate_skill_id(skill_name)
       # DB(skill_tags)に検索をかけに行って、該当しなければ新しく追加
+      skill_tag = SkillTag.find_by()
       # 該当する場合は既存の物を仕様
       # 検索条件：全て半角+大文字にして検索&保存を行えばOK?
     end

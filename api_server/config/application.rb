@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'boot'
 
 require "rails"
@@ -33,5 +35,16 @@ module ApiServer
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+    # CORS
+    cors_allowed_origins = ENV['CORS_ALLOWED_ORIGINS_HOST'].present? ? ENV['CORS_ALLOWED_ORIGINS_HOST'] : 'http://localhost:3001'
+    config.x.cors_allowed_origins = ENV.fetch('CORS_ALLOWED_ORIGINS', cors_allowed_origins)
+    # Rspec
+    config.generators do |g|
+      g.test_framework :rspec, 
+            view_specs: false, 
+            helper_specs: false, 
+            controller_specs: false, 
+            routing_specs: false
+    end
   end
 end
