@@ -20,30 +20,30 @@ class MidworksScrapingService
       url = "#{Settings.midworks.url.new_projects}"
       new_projects_page_html = Nokogiri::HTML.parse(open(url))
       # 案件情報格納配列
-      projects_json_array = []
+      project_json_array = []
       # 総案件数
       total_projects = new_projects_page_html.css('.text-primary.lead.font-weight-bold').text.to_i
-      ## 指定ページ数のみ取得
+      # 指定ページ数のみ取得
       page_count = total_projects / PROJECT_COUNT_ONE_PAGE
       page_count_array = page_count >= MAX_PAGE_COUNT ? [*1..MAX_PAGE_COUNT] : [*1..page_count]
       page_count_array.map do |page|
         url = "#{Settings.midworks.url.new_projects}?page=#{page}"
         begin
           project_list_html = Nokogiri::HTML.parse(open(url))
-          # 案件ID配列
-          project_id_array = project_list_html.css('.col-12 a')
-          project_id_array.map do |project_id|
-            project_url = "#{Settings.midworks.url.host}#{project_id[:href]}"
-            project_hash = compose_project(project_url)
-            projects_json_array.push(project_hash)
-            sleep 0.8
-          end
-          sleep 5
         rescue => exception
           puts exception
         end
+        # 案件ID配列
+        project_id_array = project_list_html.css('.col-12 a')
+        project_id_array.map do |project_id|
+          project_url = "#{Settings.midworks.url.host}#{project_id[:href]}"
+          project_hash = compose_project(project_url)
+          project_json_array.push(project_hash)
+          sleep 0.8
+        end
+        sleep 5
       end
-      projects_json_array
+      project_json_array
     end
 
     private
@@ -52,18 +52,18 @@ class MidworksScrapingService
     def compose_project(url)
       begin
         project_html = Nokogiri::HTML.parse(open(url))
-        # 案件データ格納ハッシュ
-        project_hash = {company_name: Settings.midworks.company_name, company_id: Settings.midworks.company_id, url: url}
-        # 案件名称
-        project_title = project_html.css('.project-name.p-4 h1').text      
-        project_hash[:title] = project_title if project_title.present?
-        # 案件の詳細情報
-        detail_html_array = project_html.css('.col-lg-9.mt-4.mb-2 .mb-5')
-        descriminate_detail_html detail_html_array, project_hash
-        project_hash
       rescue => exception
         puts exception
       end
+      # 案件データ格納ハッシュ
+      project_hash = {create_json: {company: Settings.midworks.company_name, company_id: Settings.midworks.company_id, url: url}}
+      # 案件名称
+      project_title = project_html.css('.project-name.p-4 h1').text      
+      project_hash[:create_json][:title] = project_title if project_title.present?
+      # 案件の詳細情報
+      detail_html_array = project_html.css('.col-lg-9.mt-4.mb-2 .mb-5')
+      descriminate_detail_html detail_html_array, project_hash
+      project_hash
     end
 
     # 案件詳細判別メソッド
@@ -90,21 +90,21 @@ class MidworksScrapingService
     # 業務内容の取得
     def compose_descripton(detail_html, project_hash)
       description = detail_html.css('.smaller-text.px-sm-4 p').text
-      project_hash[:description] = description if description.present?
+      project_hash[:create_json][:description] = description if description.present?
     end
 
     # スキルについて取得
     def compose_skills(detail_html, project_hash)
-      skill_html_array = detail_html.css('row')
+      skill_html_array = detail_html.css('.row')
       skill_html_array.map do |skill_html|
-        skill_subtitle = skill_html.css('.smaller-text.px-sm-4 .col-12.col-md-2 .font-weight-bold.mb-2').text
+        skill_subtitle = skill_html.css('.col-12.col-md-2 .font-weight-bold.mb-2').text
         case skill_subtitle
         when Settings.midworks.title.required_skills then
-          required_skills = skill_html.css('.smaller-text.px-sm-4 .col-12.col-md-10 p').text
-          project_hash[:required_skills] = required_skills if required_skills.present?
+          required_skills = skill_html.css('.col-12.col-md-10 p').text
+          project_hash[:create_json][:required_skills] = required_skills if required_skills.present?
         when Settings.midworks.title.other_skills then
-          other_skills = skill_html.css('.smaller-text.px-sm-4 .col-12.col-md-10 p').text
-          project_hash[:other_skills] = other_skills if other_skills.present?
+          other_skills = skill_html.css('.col-12.col-md-10 p').text
+          project_hash[:create_json][:other_skills] = other_skills if other_skills.present?
         else
           next
         end
@@ -123,16 +123,25 @@ class MidworksScrapingService
           compose_operation price_with_operation, project_hash
         when Settings.midworks.title.weekly_attendance then
           weekly_attendance = detail.css('td').text.tr('０-９', '0-9').gsub(/[^\d]/, '').to_i
-          project_hash[:weekly_attendance] = weekly_attendance if weekly_attendance.present?
+          project_hash[:create_json][:weekly_attendance] = weekly_attendance if weekly_attendance.present?
         when Settings.midworks.title.location then
           location = detail.css('td').text
-          project_hash[:location] = location if location.present?
+          project_hash[:create_json].merge!({
+            location_id: location.present? ? ProjectService.compose_location_id(location) : 0,
+            location: location.present? ? location : '',
+          })
         when Settings.midworks.title.position then
           position = detail.css('td').text
-          project_hash[:position] = position if position.present?
+          project_hash[:create_json].merge!({
+            position_id: position.present? ? ProjectService.compose_position_id(position) : 0,
+            position: position.present? ? position : '',
+          })
         when Settings.midworks.title.contract then
           contract = detail.css('td').text
-          project_hash[:contract] = contract if contract.present?
+          project_hash[:create_json].merge!({
+            contract_id: contract.present? ? ProjectService.compose_contract_id(contract) : 0,
+            contract: contract.present? ? contract : '',
+          })
         else
           next
         end
@@ -143,10 +152,12 @@ class MidworksScrapingService
     def compose_price(price_with_operation, project_hash)
       # 最大単価と最小単価
       price_array = price_with_operation.gsub(/（(.*?)）/, '').split('~')
-      project_hash[:min_price] = price_array[0].gsub(/[^\d]/, '').to_i
-      project_hash[:max_price] = price_array[1].gsub(/[^\d]/, '').to_i
+      project_hash[:create_json].merge!({
+        min_price: price_array[0].gsub(/[^\d]/, '').to_i,
+        max_price: price_array[1].gsub(/[^\d]/, '').to_i,
+      })
       price_unit_name = price_array[1].gsub(/（(.*?)）/, '').delete('0-9')
-      project_hash[:price_unit] = descriminate_price_unit_id price_unit_name
+      project_hash[:create_json].merge!(descriminate_price_unit_id price_unit_name)
     end
 
     # 単価単位ID判別メソッド
@@ -160,7 +171,7 @@ class MidworksScrapingService
       end
       {
         price_unit_id: price_unit_id,
-        price_unit_name: price_unit_name,
+        price_unit: price_unit_name,
       }
     end
 
@@ -168,11 +179,13 @@ class MidworksScrapingService
     def compose_operation(price_with_operation, project_hash)
       # 最小稼働単位と最大稼働単位の配列
       operation_unit_array = price_with_operation[/（(.*?)）/, 1].split(' ~ ')
-      project_hash[:min_operation_unit] = operation_unit_array[0].gsub(/[^\d]/, '').to_i
-      project_hash[:max_operation_unit] = operation_unit_array[1].gsub(/[^\d]/, '').to_i
+      project_hash[:create_json].merge!({
+        min_operation_unit: operation_unit_array[0].gsub(/[^\d]/, '').to_i,
+        max_operation_unit: operation_unit_array[1].gsub(/[^\d]/, '').to_i,
+      })
       operation_unit_name = operation_unit_array[0].delete('0-9')
       # 稼働単位
-      project_hash[:operation_unit] = descripinate_operation_unit_id operation_unit_name
+      project_hash[:create_json].merge!(descripinate_operation_unit_id operation_unit_name)
     end
 
     # 稼働単位ID判別メソッド
@@ -186,7 +199,7 @@ class MidworksScrapingService
       end
       {
         operation_unit_id: operation_unit_id,
-        operation_unit_name: operation_unit_name,
+        operation_unit: operation_unit_name,
       }
     end
 
@@ -195,7 +208,7 @@ class MidworksScrapingService
       skill_tags_html_array = detail_html.css('.smaller-text.px-sm-4 .row')
       skill_tags_array = []
       skill_tags_html_array.map { |skill_tag_html| discriminate_skills(skill_tag_html, skill_tags_array) }
-      project_hash[:skill_tags] = skill_tags_array
+      project_hash[:skill_tag_array] = skill_tags_array
     end
 
     # スキル判別メソッド
@@ -203,18 +216,23 @@ class MidworksScrapingService
       skill_type_title = skill_tag_html.css('.col-5.col-sm-3 .title-plain').text
       skill_tag_name_html_array = skill_tag_html.css('.col-7.col-sm-9 .row a .tag.mr-2.mb-1')
       skill_tag_name_html_array.map do |skill_tag_name_html|
+        # スキル名称
         skill_tag_name = skill_tag_name_html.text
+        # スキル名称検索用(全角,大文字,空白なし)
+        skill_tag_name_search = skill_tag_name.upcase.tr('０-９ａ-ｚＡ-Ｚ', '0-9a-zA-Z').gsub('　', '').gsub(' ', '')
         next if skill_tag_name.blank?
         # スキルタイプ判別
         skill_type_id = descriminate_skill_type skill_type_title
-        ## FIXME スキルタグの判別処理
-        # skill_tag_id = descripminate_skill_id
-        skill_hash = {
+        # skillハッシュ
+        skill_tag_hash = {
           skill_type_title: skill_type_title,
           skill_type_id: skill_type_id,
           skill_tag_name: skill_tag_name,
+          skill_tag_name_search: skill_tag_name_search,
         }
-        skill_tags_array.push skill_hash
+        # 既存スキルタグの判別と新規作成
+        skill_tag_hash[:skill_tag_id] = ProjectService.descriminate_skill_id skill_tag_hash
+        skill_tags_array.push skill_tag_hash
       end
       skill_tags_array
     end
@@ -239,14 +257,6 @@ class MidworksScrapingService
         skill_type = Settings.skill_type.others
       end
       skill_type
-    end
-
-    # スキルID判別メソッド(仮) 仕様検討中
-    def descripminate_skill_id(skill_name)
-      # DB(skill_tags)に検索をかけに行って、該当しなければ新しく追加
-      skill_tag = SkillTag.find_by()
-      # 該当する場合は既存の物を仕様
-      # 検索条件：全て半角+大文字にして検索&保存を行えばOK?
     end
   end
 end
