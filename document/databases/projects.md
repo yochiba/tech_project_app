@@ -59,8 +59,8 @@ end
 |9|weekly_attendance|integer|出勤回数(日/週)|YES|||
 |10|min_operation_unit|integer|最低稼働|YES|||
 |11|max_operation_unit|integer|最大稼働|YES|||
-|12|operation_unit_id|integer|稼働単位ID|NO|||
-|13|operation_unit|string|稼働単位|NO|||
+|12|operation_unit_id|integer|稼働単位ID|YES|||
+|13|operation_unit|string|稼働単位|YES|||
 |14|min_price|integer|最小単価|YES||単位は円|
 |15|max_price|integer|最大単価|YES||単位は円|
 |16|price_unit_id|integer|単価単位ID|YES|||

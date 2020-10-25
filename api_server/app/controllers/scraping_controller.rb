@@ -4,17 +4,12 @@
 class ScrapingController < ApplicationController
   def scrape_midworks
     project_json_array = MidworksScrapingService.compose_projects_json
-
-    response_json = ProjectService.compose_project_json project_json_array
-
-    # 下記のJsonは仮置き
-    response_json = {
+    result_flg = ProjectService.compose_project_json project_json_array
+    render json: {
       project_count: project_json_array.size,
       projects_list: project_json_array,
-      status: 200,
-      result: 'OK',
+      status: result_flg ? 200 : 500,
+      result: result_flg ? 'OK' : 'ERROR',
     }
-    # TODO ここにDB登録する用のメソッド追加(共通メソッドにする)
-    render json: response_json
   end
 end

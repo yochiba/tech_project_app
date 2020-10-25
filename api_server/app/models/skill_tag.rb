@@ -3,6 +3,8 @@
 # class_type: Model
 # class_name: SkillTag
 class SkillTag < ApplicationRecord
+  validates :skill_tag_name, :skill_tag_name_search, :skill_type_id, :deleted_flg, presence: true
+  validates :skill_type_id, :deleted_flg, numericality: { greater_than_or_equal_to: 0 }
 
   # find existing skill_tag
   scope :search_existing_skill_tag, ->(skill_tag_name_search) {
