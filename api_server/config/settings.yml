@@ -14,10 +14,10 @@ skill_type:
 # MIDWORKS
 midworks:
   company_name: 'MIDWORKS'
+  company_id: 0
   url:
     host: 'https://mid-works.com'
     new_projects: 'https://mid-works.com/projects'
-  company_id: 0
   title:
     description: '業務内容'
     skill: 'スキルについて'
@@ -30,10 +30,10 @@ midworks:
     location: '勤務地'
     position: '職種'
     contract: '契約形態'
-  operation_unit:
-    hour: '時間'
   price_unit:
     man_yen_per_month: '万円/月'
+  operation_unit:
+    hour: '時間'
   skill_type:
     language: 'プログラミング言語'
     framework: 'フレームワーク'
