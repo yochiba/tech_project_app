@@ -2,53 +2,62 @@
 
 require 'nokogiri'
 require 'open-uri'
-require 'csv'
 
 # class_type: Service
 # class_name: MidworkScrapingService
 # description: scraping class for Midworks
 class MidworksScrapingService
   # FIXME 取得する最大ページ数
-  MAX_PAGE_COUNT = 10
+  MAX_PAGE_COUNT = 1
   # 1ページの表示件数
   PROJECT_COUNT_ONE_PAGE = 25
 
   class << self
     # scraping service for midworks
-    def compose_projects_json
+    def scraping_root
       Rails.logger.info "[SCRAPING START]:: MidworksScrapingService"
       # 総案件数を取得するためのリクエスト
-      url = "#{Settings.midworks.url.new_projects}"
+      # FIXME クエリストリングが反応反応しない
+      url = "#{Settings.midworks.url.new_projects}?#{{area_keys: ['shinjuku_ku','toshima_ku', 'suginami_ku', 'meguro_ku', 'katsushika_ku', 'tokyo_others']}.to_query}"
+      Rails.logger.info "[PROJECT LIST URL]:: #{url}"
       new_projects_page_html = Nokogiri::HTML.parse(open(url))
-      # 案件情報格納配列
-      project_json_array = []
-      # 総案件数
+      # 総案件数からページ数取得
       total_projects = new_projects_page_html.css('.text-primary.lead.font-weight-bold').text.to_i
-      # 指定ページ数のみ取得
       page_count = total_projects / PROJECT_COUNT_ONE_PAGE
       page_count_array = page_count >= MAX_PAGE_COUNT ? [*1..MAX_PAGE_COUNT] : [*1..page_count]
-      page_count_array.map do |page|
-        url = "#{Settings.midworks.url.new_projects}?page=#{page}"
-        begin
-          project_list_html = Nokogiri::HTML.parse(open(url))
-        rescue => exception
-          Rails.logger.info exception
-        end
-        # 案件ID配列
-        project_id_array = project_list_html.css('.col-12 a')
-        project_id_array.map do |project_id|
-          project_url = "#{Settings.midworks.url.host}#{project_id[:href]}"
-          project_hash = compose_project(project_url)
-          project_json_array.push(project_hash)
-          sleep 0.8
-        end
-        sleep 5
-      end
+      # 案件情報json作成
+      project_json_array = request_project_list page_count_array
       Rails.logger.info "[SCRAPING END]:: MidworksScrapingService"
       project_json_array
     end
 
     private
+
+    # 案件情報一覧リクエストメソッド
+    def request_project_list(page_count_array)
+      project_json_array = []
+      page_count_array.map do |page|
+        begin
+          project_list_html = Nokogiri::HTML.parse(open("#{Settings.midworks.url.new_projects}?page=#{page}"))
+        rescue => exception
+          Rails.logger.info exception
+        end
+        project_json_array = compose_project_json_array project_json_array, project_list_html
+        sleep 5
+      end
+      project_json_array
+    end
+
+    # 案件情報json配列構成メソッド
+    def compose_project_json_array(project_json_array, project_list_html)
+      project_id_array = project_list_html.css('.col-12 a')
+      project_id_array.map do |project_id|
+        project_url = "#{Settings.midworks.url.host}#{project_id[:href]}"
+        project_json_array.push compose_project(project_url)
+        sleep 1
+      end
+      project_json_array
+    end
 
     # 各案件の情報を構成
     def compose_project(url)
