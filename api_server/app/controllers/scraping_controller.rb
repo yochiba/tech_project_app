@@ -8,8 +8,8 @@ class ScrapingController < ApplicationController
     render json: {
       project_count: project_json_array.size,
       projects_list: project_json_array,
-      status: result_flg ? 200 : 500,
-      result: result_flg ? 'OK' : 'ERROR',
+      status: result_flg ? Settings.response.ok.status : Settings.response.error.status,
+      result: result_flg ? Settings.response.ok.result : Settings.response.error.result,
     }
   end
 end

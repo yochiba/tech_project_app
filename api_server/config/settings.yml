@@ -1,3 +1,12 @@
+# RESPONSE
+response:
+  ok:
+    status: 200
+    result: 'OK'
+  error:
+    status: 500
+    result: 'ERROR'
+
 # COMMON
 price_unit_id:
   man_yen_per_month: 0
@@ -30,6 +39,7 @@ midworks:
     location: '勤務地'
     position: '職種'
     contract: '契約形態'
+    industry: '業界'
   price_unit:
     man_yen_per_month: '万円/月'
   operation_unit:

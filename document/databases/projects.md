@@ -71,11 +71,13 @@ end
 |21|contract|string|契約形態|YES|||
 |22|position_id|integer|ポジションID|YES|||
 |23|position|string|ポジション|YES|||
-|24|display_flg|integer|表示フラグ|NO|0|0:表示, 1:非表示|
-|25|deleted_flg|integer|削除フラグ|NO|0|0:未削除, 1:削除<br>論理削除で30日が経過したら削除|
-|26|deleted_at|date|削除日時|YES|||
-|27|created_at|date|作成日時|NO|||
-|28|updated_at|date|更新日時|NO|||
+|24|industry_id|integer|業界ID|YES|||
+|25|industry|string|業界|YES|||
+|26|display_flg|integer|表示フラグ|NO|0|0:表示, 1:非表示|
+|27|deleted_flg|integer|削除フラグ|NO|0|0:未削除, 1:削除<br>論理削除で30日が経過したら削除|
+|28|deleted_at|date|削除日時|YES|||
+|29|created_at|date|作成日時|NO|||
+|30|updated_at|date|更新日時|NO|||
 
 ***
 

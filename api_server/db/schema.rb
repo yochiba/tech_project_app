@@ -49,6 +49,8 @@ ActiveRecord::Schema.define(version: 2020_10_22_154608) do
     t.string "contract"
     t.integer "position_id"
     t.string "position"
+    t.integer "industry_id"
+    t.string "industry"
     t.integer "display_flg", default: 0, null: false
     t.integer "deleted_flg", default: 0, null: false
     t.datetime "deleted_at"

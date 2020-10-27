@@ -9,13 +9,14 @@ require 'csv'
 # description: scraping class for Midworks
 class MidworksScrapingService
   # FIXME 取得する最大ページ数
-  MAX_PAGE_COUNT = 1
+  MAX_PAGE_COUNT = 10
   # 1ページの表示件数
   PROJECT_COUNT_ONE_PAGE = 25
 
   class << self
     # scraping service for midworks
     def compose_projects_json
+      Rails.logger.info "[SCRAPING START]:: MidworksScrapingService"
       # 総案件数を取得するためのリクエスト
       url = "#{Settings.midworks.url.new_projects}"
       new_projects_page_html = Nokogiri::HTML.parse(open(url))
@@ -31,7 +32,7 @@ class MidworksScrapingService
         begin
           project_list_html = Nokogiri::HTML.parse(open(url))
         rescue => exception
-          puts exception
+          Rails.logger.info exception
         end
         # 案件ID配列
         project_id_array = project_list_html.css('.col-12 a')
@@ -43,6 +44,7 @@ class MidworksScrapingService
         end
         sleep 5
       end
+      Rails.logger.info "[SCRAPING END]:: MidworksScrapingService"
       project_json_array
     end
 
@@ -51,9 +53,10 @@ class MidworksScrapingService
     # 各案件の情報を構成
     def compose_project(url)
       begin
+        Rails.logger.info "[SCRAPING TARGET URL]:: #{url}"
         project_html = Nokogiri::HTML.parse(open(url))
       rescue => exception
-        puts exception
+        Rails.logger.info exception
       end
       # 案件データ格納ハッシュ
       project_hash = {create_json: {company: Settings.midworks.company_name, company_id: Settings.midworks.company_id, url: url}}
@@ -131,6 +134,12 @@ class MidworksScrapingService
             location: location.present? ? location : '',
           })
         when Settings.midworks.title.position then
+          industry = detail.css('td').text
+          project_hash[:create_json].merge!({
+            industry_id: industry.present? ? ProjectService.compose_industry_id(industry) : 0,
+            industry: industry.present? ? industry : '',
+          })
+        when Settings.midworks.title.industry then
           position = detail.css('td').text
           project_hash[:create_json].merge!({
             position_id: position.present? ? ProjectService.compose_position_id(position) : 0,
@@ -177,15 +186,19 @@ class MidworksScrapingService
 
     # 稼働構成メソッド
     def compose_operation(price_with_operation, project_hash)
-      # 最小稼働単位と最大稼働単位の配列
-      operation_unit_array = price_with_operation[/（(.*?)）/, 1].split(' ~ ')
-      project_hash[:create_json].merge!({
-        min_operation_unit: operation_unit_array[0].gsub(/[^\d]/, '').to_i,
-        max_operation_unit: operation_unit_array[1].gsub(/[^\d]/, '').to_i,
-      })
-      operation_unit_name = operation_unit_array[0].delete('0-9')
-      # 稼働単位
-      project_hash[:create_json].merge!(descripinate_operation_unit_id operation_unit_name)
+      # ~◯◯万円/月と~◯◯万円/月（◯◯◯時間 ~ ◯◯◯時間）の判別
+      operation = price_with_operation[/（(.*?)）/, 1]
+      if operation.present?
+        # 最小稼働単位と最大稼働単位の配列
+        operation_unit_array = operation.split(' ~ ')
+        project_hash[:create_json].merge!({
+          min_operation_unit: operation_unit_array[0].gsub(/[^\d]/, '').to_i,
+          max_operation_unit: operation_unit_array[1].gsub(/[^\d]/, '').to_i,
+        })
+        operation_unit_name = operation_unit_array[0].delete('0-9')
+        # 稼働単位
+        project_hash[:create_json].merge!(descripinate_operation_unit_id operation_unit_name)
+      end
     end
 
     # 稼働単位ID判別メソッド
