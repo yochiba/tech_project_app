@@ -3,7 +3,7 @@
 # controller for scraping
 class ScrapingController < ApplicationController
   def scrape_midworks
-    project_json_array = MidworksScrapingService.compose_projects_json
+    project_json_array = MidworksScrapingService.scraping_root
     result_flg = ProjectService.compose_project_json project_json_array
     render json: {
       project_count: project_json_array.size,
