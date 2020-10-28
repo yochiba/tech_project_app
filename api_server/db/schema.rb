@@ -10,10 +10,34 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_22_154608) do
+ActiveRecord::Schema.define(version: 2020_10_28_161920) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "contracts", force: :cascade do |t|
+    t.string "contract_name", null: false
+    t.integer "deleted_flg", default: 0, null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "industries", force: :cascade do |t|
+    t.string "industry_name", null: false
+    t.integer "deleted_flg", default: 0, null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "locations", force: :cascade do |t|
+    t.string "location_name", null: false
+    t.integer "deleted_flg", default: 0, null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "mid_skill_tags", force: :cascade do |t|
     t.bigint "project_id", null: false
@@ -24,6 +48,14 @@ ActiveRecord::Schema.define(version: 2020_10_22_154608) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["project_id"], name: "index_mid_skill_tags_on_project_id"
     t.index ["skill_tag_id"], name: "index_mid_skill_tags_on_skill_tag_id"
+  end
+
+  create_table "positions", force: :cascade do |t|
+    t.string "position_name", null: false
+    t.integer "deleted_flg", default: 0, null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "projects", force: :cascade do |t|
@@ -43,19 +75,23 @@ ActiveRecord::Schema.define(version: 2020_10_22_154608) do
     t.integer "max_price"
     t.integer "price_unit_id"
     t.string "price_unit"
-    t.integer "location_id"
+    t.bigint "location_id"
     t.string "location"
-    t.integer "contract_id"
+    t.bigint "contract_id"
     t.string "contract"
-    t.integer "position_id"
+    t.bigint "position_id"
     t.string "position"
-    t.integer "industry_id"
+    t.bigint "industry_id"
     t.string "industry"
     t.integer "display_flg", default: 0, null: false
     t.integer "deleted_flg", default: 0, null: false
     t.datetime "deleted_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["contract_id"], name: "index_projects_on_contract_id"
+    t.index ["industry_id"], name: "index_projects_on_industry_id"
+    t.index ["location_id"], name: "index_projects_on_location_id"
+    t.index ["position_id"], name: "index_projects_on_position_id"
   end
 
   create_table "skill_tags", force: :cascade do |t|

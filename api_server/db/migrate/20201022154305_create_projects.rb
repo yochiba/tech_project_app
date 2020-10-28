@@ -19,13 +19,13 @@ class CreateProjects < ActiveRecord::Migration[6.0]
       t.integer :max_price
       t.integer :price_unit_id
       t.string :price_unit
-      t.integer :location_id
+      t.references :location
       t.string :location
-      t.integer :contract_id
+      t.references :contract
       t.string :contract
-      t.integer :position_id
+      t.references :position
       t.string :position
-      t.integer :industry_id
+      t.references :industry
       t.string :industry
       t.integer :display_flg, default: 0, null: false
       t.integer :deleted_flg, default: 0, null: false
