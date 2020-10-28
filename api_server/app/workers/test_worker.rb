@@ -5,5 +5,4 @@ class TestWorker < ApplicationController
   def perform(title)
     p 'work: title=' + title
   end
-
 end
