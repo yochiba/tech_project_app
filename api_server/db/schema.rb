@@ -76,13 +76,9 @@ ActiveRecord::Schema.define(version: 2020_10_28_161920) do
     t.integer "price_unit_id"
     t.string "price_unit"
     t.bigint "location_id"
-    t.string "location"
     t.bigint "contract_id"
-    t.string "contract"
     t.bigint "position_id"
-    t.string "position"
     t.bigint "industry_id"
-    t.string "industry"
     t.integer "display_flg", default: 0, null: false
     t.integer "deleted_flg", default: 0, null: false
     t.datetime "deleted_at"

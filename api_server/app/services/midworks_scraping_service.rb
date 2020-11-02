@@ -11,6 +11,20 @@ class MidworksScrapingService
   MAX_PAGE_COUNT = 1
   # 1ページの表示件数
   PROJECT_COUNT_ONE_PAGE = 25
+  # 空文字
+  NO_SPACE = ''
+  # 全角英数字
+  UPPER_CASE = '０-９ａ-ｚＡ-Ｚ'
+  # 半角英数字
+  LOWER_CASE = '0-9a-zA-Z'
+  # 全角スペース
+  UPPER_SPACE = ' '
+  # 半角スペース
+  LOWER_SPACE = '　'
+  # 全角数字
+  UPPER_NUMS = '０-９'
+  # 半角数字
+  LOWER_NUMS = '0-9'
 
   class << self
     # scraping service for midworks
@@ -51,7 +65,7 @@ class MidworksScrapingService
           Rails.logger.info exception
         end
         project_json_array = compose_project_json_array project_json_array, project_list_html
-        sleep 5
+        sleep 10
       end
       project_json_array
     end
@@ -61,8 +75,11 @@ class MidworksScrapingService
       project_id_array = project_list_html.css('.col-12 a')
       project_id_array.map do |project_id|
         project_url = "#{Settings.midworks.url.host}#{project_id[:href]}"
-        project_json_array.push compose_project(project_url)
-        sleep 1
+        project_hash = compose_project(project_url)
+        # エラー案件の場合はスキップ
+        next if project_hash[:error_project]
+        project_json_array.push project_hash
+        sleep 2
       end
       project_json_array
     end
@@ -82,10 +99,24 @@ class MidworksScrapingService
           company_id: Settings.midworks.company_id,
           url: url,
         },
+        error_project: false,
       }
       # 案件名称
       project_title = project_html.css('.project-name.p-4 h1').text
-      project_hash[:create_json][:title] = project_title if project_title.present?
+      # 案件名称が存在しない場合
+      if project_title.blank?
+        project_hash[:error_project] = true
+        return project_hash
+      end
+      project_hash[:create_json][:title] = project_title
+      # FIXME 本番稼働時には下記を起動
+      # # 案件検索
+      # existing_project = Project.find_by(title: project_title)
+      # # 案件検索の結果、すでに存在する場合
+      # if existing_project.present?
+      #   project_hash[:error_project] = true
+      #   return project_hash
+      # end
       # 案件の詳細情報
       detail_html_array = project_html.css('.col-lg-9.mt-4.mb-2 .mb-5')
       descriminate_detail_html detail_html_array, project_hash
@@ -148,32 +179,28 @@ class MidworksScrapingService
           compose_price price_with_operation, project_hash
           compose_operation price_with_operation, project_hash
         when Settings.midworks.title.weekly_attendance
-          attendance = detail.css('td').text.tr('０-９', '0-9').gsub(/[^\d]/, '').to_i
+          attendance = detail.css('td').text.tr(UPPER_NUMS, LOWER_NUMS).gsub(/[^\d]/, NO_SPACE).to_i
           project_hash[:create_json][:weekly_attendance] = attendance if attendance.present?
         when Settings.midworks.title.location
           location = detail.css('td').text
-          project_hash[:create_json].merge!({
-            location_id: location.present? ? ProjectService.compose_location_id(location) : 0,
-            location: location.present? ? location : '',
-          })
+          break if location.blank?
+          project_hash[:location_name] = location
+          project_hash[:create_json][:location_id] = ProjectService.compose_location_id(location)
         when Settings.midworks.title.position
           industry = detail.css('td').text
-          project_hash[:create_json].merge!({
-            industry_id: industry.present? ? ProjectService.compose_industry_id(industry) : 0,
-            industry: industry.present? ? industry : '',
-          })
+          break if industry.blank?
+          project_hash[:industry_name] = industry
+          project_hash[:create_json][:industry_id] = ProjectService.compose_industry_id(industry)
         when Settings.midworks.title.industry
           position = detail.css('td').text
-          project_hash[:create_json].merge!({
-            position_id: position.present? ? ProjectService.compose_position_id(position) : 0,
-            position: position.present? ? position : '',
-          })
+          break if position.blank?
+          project_hash[:position_name] = position
+          project_hash[:create_json][:position_id] = ProjectService.compose_position_id(position)
         when Settings.midworks.title.contract
           contract = detail.css('td').text
-          project_hash[:create_json].merge!({
-            contract_id: contract.present? ? ProjectService.compose_contract_id(contract) : 0,
-            contract: contract.present? ? contract : '',
-          })
+          break if contract.blank?
+          project_hash[:contract_name] = contract
+          project_hash[:create_json][:contract_id] = ProjectService.compose_contract_id(contract)
         else
           next
         end
@@ -183,12 +210,12 @@ class MidworksScrapingService
     # 単価構成メソッド
     def compose_price(price_with_operation, project_hash)
       # 最大単価と最小単価
-      price_array = price_with_operation.gsub(/（(.*?)）/, '').split('~')
+      price_array = price_with_operation.gsub(/（(.*?)）/, NO_SPACE).split('~')
       project_hash[:create_json].merge!({
-        min_price: price_array[0].gsub(/[^\d]/, '').to_i,
-        max_price: price_array[1].gsub(/[^\d]/, '').to_i,
+        min_price: price_array[0].gsub(/[^\d]/, NO_SPACE).to_i,
+        max_price: price_array[1].gsub(/[^\d]/, NO_SPACE).to_i,
       })
-      price_unit_name = price_array[1].gsub(/（(.*?)）/, '').delete('0-9')
+      price_unit_name = price_array[1].gsub(/（(.*?)）/, NO_SPACE).delete('0-9')
       project_hash[:create_json].merge! descriminate_price_unit_id price_unit_name
     end
 
@@ -209,16 +236,16 @@ class MidworksScrapingService
 
     # 稼働構成メソッド
     def compose_operation(price_with_operation, project_hash)
-      # ~◯◯万円/月と~◯◯万円/月（◯◯◯時間 ~ ◯◯◯時間）の判別
+      # ~◯◯万円/月と~◯◯万円/月（◯◯時間 ~ ◯◯時間）の判別
       operation = price_with_operation[/（(.*?)）/, 1]
       if operation.present?
         # 最小稼働単位と最大稼働単位の配列
         operation_unit_array = operation.split(' ~ ')
         project_hash[:create_json].merge!({
-          min_operation_unit: operation_unit_array[0].gsub(/[^\d]/, '').to_i,
-          max_operation_unit: operation_unit_array[1].gsub(/[^\d]/, '').to_i,
+          min_operation_unit: operation_unit_array[0].gsub(/[^\d]/, NO_SPACE).to_i,
+          max_operation_unit: operation_unit_array[1].gsub(/[^\d]/, NO_SPACE).to_i,
         })
-        operation_unit_name = operation_unit_array[0].delete('0-9')
+        operation_unit_name = operation_unit_array[0].delete(LOWER_NUMS)
         # 稼働単位
         project_hash[:create_json].merge! descripinate_operation_unit_id operation_unit_name
       end
@@ -256,10 +283,12 @@ class MidworksScrapingService
       skill_tag_name_html_array.map do |skill_tag_name_html|
         # スキル名称
         skill_tag_name = skill_tag_name_html.text
-        # スキル名称検索用(全角,大文字,空白なし)
-        skill_tag_name_search = skill_tag_name.upcase.tr('０-９ａ-ｚＡ-Ｚ', '0-9a-zA-Z')
-        skill_tag_name_search.gsub!('　', '').gsub!(' ', '')
         next if skill_tag_name.blank?
+        # スキル名称検索用(全角,大文字,空白なし)
+        search_name = skill_tag_name.upcase.tr(UPPER_CASE, LOWER_CASE)
+        # 空白が存在する場合
+        search_name.gsub!(UPPER_SPACE, NO_SPACE) if search_name.include?(UPPER_SPACE)
+        search_name.gsub!(LOWER_SPACE, NO_SPACE) if search_name.include?(LOWER_SPACE)
         # スキルタイプ判別
         skill_type_id = descriminate_skill_type skill_type_title
         # skillハッシュ
@@ -267,7 +296,7 @@ class MidworksScrapingService
           skill_type_title: skill_type_title,
           skill_type_id: skill_type_id,
           skill_tag_name: skill_tag_name,
-          skill_tag_name_search: skill_tag_name_search,
+          skill_tag_name_search: search_name,
         }
         # 既存スキルタグの判別と新規作成
         skill_tag_hash[:skill_tag_id] = ProjectService.descriminate_skill_id skill_tag_hash

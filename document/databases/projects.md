@@ -64,20 +64,15 @@ end
 |14|min_price|integer|最小単価|YES||単位は円|
 |15|max_price|integer|最大単価|YES||単位は円|
 |16|price_unit_id|integer|単価単位ID|YES|||
-|17|price_unit|string|単価単位|YES|||
-|18|location_id|integer|ロケーションID|YES|||
-|19|location|string|ロケーション|YES|||
-|20|contract_id|integer|契約形態ID|YES|||
-|21|contract|string|契約形態|YES|||
-|22|position_id|integer|ポジションID|YES|||
-|23|position|string|ポジション|YES|||
-|24|industry_id|integer|業界ID|YES|||
-|25|industry|string|業界|YES|||
-|26|display_flg|integer|表示フラグ|NO|0|0:表示, 1:非表示|
-|27|deleted_flg|integer|削除フラグ|NO|0|0:未削除, 1:削除<br>論理削除で30日が経過したら削除|
-|28|deleted_at|date|削除日時|YES|||
-|29|created_at|date|作成日時|NO|||
-|30|updated_at|date|更新日時|NO|||
+|17|location_id|integer|ロケーションID|YES|||
+|18|contract_id|integer|契約形態ID|YES|||
+|19|position_id|integer|ポジションID|YES|||
+|20|industry_id|integer|業界ID|YES|||
+|21|display_flg|integer|表示フラグ|NO|0|0:表示, 1:非表示|
+|22|deleted_flg|integer|削除フラグ|NO|0|0:未削除, 1:削除<br>論理削除で30日が経過したら削除|
+|23|deleted_at|date|削除日時|YES|||
+|24|created_at|date|作成日時|NO|||
+|25|updated_at|date|更新日時|NO|||
 
 ***
 
