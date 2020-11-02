@@ -3,7 +3,7 @@
 # class_type: Model
 # class_name: Industry
 class Industry < ApplicationRecord
-  belongs_to :project
+  has_many :projects
 
   validates :industry_name, :deleted_flg, presence: true
   validates :deleted_flg, numericality: { greater_than_or_equal_to: 0 }
