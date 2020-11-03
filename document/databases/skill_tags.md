@@ -31,11 +31,12 @@ end
 |1|id|integer|ID|NO||auto increment|
 |2|skill_tag_name|string|スキル名称|NO|||
 |3|skill_tag_name_search|string|スキル名称検索用|NO||全角大文字で登録|
-|4|skill_type_id|integer|スキルタイプ|NO|0|スキルのタイプを格納<br>0:言語, 1:フレームワーク, 2:DB, 3:ツール|
-|5|deleted_flg|integer|削除フラグ|NO|0|0:未削除, 1:削除<br>論理削除で30日が経過したら削除|
-|6|deleted_at|date|削除日時|YES|||
-|7|created_at|date|作成日時|NO|||
-|8|updated_at|date|更新日時|NO|||
+|4|skill_type_name|string|スキルタイプ名称|NO|||
+|5|skill_type_id|integer|スキルタイプ|NO|0|スキルのタイプを格納<br>0:言語, 1:フレームワーク, 2:DB, 3:ツール|
+|6|deleted_flg|integer|削除フラグ|NO|0|0:未削除, 1:削除<br>論理削除で30日が経過したら削除|
+|7|deleted_at|date|削除日時|YES|||
+|8|created_at|date|作成日時|NO|||
+|9|updated_at|date|更新日時|NO|||
 
 ***
 

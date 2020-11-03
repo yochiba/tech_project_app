@@ -93,7 +93,8 @@ ActiveRecord::Schema.define(version: 2020_10_28_161920) do
   create_table "skill_tags", force: :cascade do |t|
     t.string "skill_tag_name", null: false
     t.string "skill_tag_name_search", null: false
-    t.integer "skill_type_id", null: false
+    t.string "skill_type_name", null: false
+    t.integer "skill_type_id", default: 0, null: false
     t.integer "deleted_flg", default: 0, null: false
     t.datetime "deleted_at"
     t.datetime "created_at", precision: 6, null: false
