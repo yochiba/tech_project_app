@@ -75,18 +75,12 @@ class ProjectService
       skill_tag = SkillTag.where(skill_tag_name_search: skill_tag_hash[:skill_tag_name_search])
       # 完全一致しなかった場合にLIKE検索
       if skill_tag.blank?
-        # 既存のskill_tagを検索(複数件数取得されるためfirst使用)
         skill_tag = SkillTag.search_existing_skill_tag(skill_tag_hash[:skill_tag_name_search])
       end
-      # 完全一致を含めたせいでハッシュ配列とハッシュ単体の二通りができてしまっている
+      # 複数件数取得(where)されるためfirst使用
       skill_tag_id = skill_tag.present? ? skill_tag.first.id : 0
       if skill_tag.blank?
-        # 該当しない場合: 新規追加
-        new_skill_tag = SkillTag.create!(
-          skill_tag_name: skill_tag_hash[:skill_tag_name],
-          skill_tag_name_search: skill_tag_hash[:skill_tag_name_search],
-          skill_type_id: skill_tag_hash[:skill_type_id],
-        )
+        new_skill_tag = SkillTag.create!(skill_tag_hash)
         skill_tag_id = new_skill_tag.id
       end
       skill_tag_id

@@ -1,3 +1,12 @@
+# COMMON
+no_space: ''
+uppercase: '０-９ａ-ｚＡ-Ｚ'
+lowercase: '0-9a-zA-Z'
+upper_space: '　'
+lower_space: ' '
+upper_numbers: '０-９'
+lower_numbers: '0-9'
+
 # RESPONSE
 response:
   ok:
@@ -7,7 +16,7 @@ response:
     status: 500
     result: 'ERROR'
 
-# COMMON
+# PROJECT COMMON
 price_unit_id:
   man_yen_per_month: 0
 operation_unit_id:

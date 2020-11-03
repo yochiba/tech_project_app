@@ -7,24 +7,37 @@ require 'open-uri'
 # class_name: MidworkScrapingService
 # description: scraping class for Midworks
 class MidworksScrapingService
+  # ホストURL
+  HOST_URL = Settings.midworks.url.host
+  # 新着案件URL
+  NEW_PROJECTS_URL = Settings.midworks.url.new_projects
+  # クエリストリング: area_keys
+  AREA_KEYS = [
+    'shinjuku_ku',
+    'toshima_ku',
+    'suginami_ku',
+    'meguro_ku',
+    'katsushika_ku',
+    'tokyo_others',
+  ].freeze
   # FIXME 取得する最大ページ数
-  MAX_PAGE_COUNT = 1
+  MAX_PAGE_COUNT = 10
   # 1ページの表示件数
-  PROJECT_COUNT_ONE_PAGE = 25
+  PROJECTS_PER_PAGE = 25
   # 空文字
-  NO_SPACE = ''
+  NO_SPACE = Settings.no_space
   # 全角英数字
-  UPPER_CASE = '０-９ａ-ｚＡ-Ｚ'
+  UPPER_CASE = Settings.uppercase
   # 半角英数字
-  LOWER_CASE = '0-9a-zA-Z'
+  LOWER_CASE = Settings.lowercase
   # 全角スペース
-  UPPER_SPACE = ' '
+  UPPER_SPACE = Settings.upper_space
   # 半角スペース
-  LOWER_SPACE = '　'
+  LOWER_SPACE = Settings.lower_space
   # 全角数字
-  UPPER_NUMS = '０-９'
+  UPPER_NUMS = Settings.upper_numbers
   # 半角数字
-  LOWER_NUMS = '0-9'
+  LOWER_NUMS = Settings.lower_numbers
 
   class << self
     # scraping service for midworks
@@ -32,19 +45,12 @@ class MidworksScrapingService
       Rails.logger.info "[SCRAPING START]:: MidworksScrapingService"
       # 総案件数を取得するためのリクエスト
       # FIXME クエリストリングが反応反応しない
-      url = "#{Settings.midworks.url.new_projects}?#{{ area_keys: [
-        'shinjuku_ku',
-        'toshima_ku',
-        'suginami_ku',
-        'meguro_ku',
-        'katsushika_ku',
-        'tokyo_others',
-      ] }.to_query}"
+      url = "#{NEW_PROJECTS_URL}?#{{ area_keys: AREA_KEYS }.to_query}"
       Rails.logger.info "[PROJECT LIST URL]:: #{url}"
       new_projects_page_html = Nokogiri::HTML.parse(open(url))
       # 総案件数からページ数取得
       total_projects = new_projects_page_html.css('.text-primary.lead.font-weight-bold').text.to_i
-      page_count = total_projects / PROJECT_COUNT_ONE_PAGE
+      page_count = total_projects / PROJECTS_PER_PAGE
       page_count_array = page_count >= MAX_PAGE_COUNT ? [*1..MAX_PAGE_COUNT] : [*1..page_count]
       # 案件情報json作成
       project_json_array = request_project_list page_count_array
@@ -59,7 +65,7 @@ class MidworksScrapingService
       project_json_array = []
       page_count_array.map do |page|
         begin
-          url = "#{Settings.midworks.url.new_projects}?page=#{page}"
+          url = "#{NEW_PROJECTS_URL}?#{{ area_keys: AREA_KEYS, page: page }.to_query}"
           project_list_html = Nokogiri::HTML.parse(open(url))
         rescue => exception
           Rails.logger.info exception
@@ -74,7 +80,7 @@ class MidworksScrapingService
     def compose_project_json_array(project_json_array, project_list_html)
       project_id_array = project_list_html.css('.col-12 a')
       project_id_array.map do |project_id|
-        project_url = "#{Settings.midworks.url.host}#{project_id[:href]}"
+        project_url = "#{HOST_URL}#{project_id[:href]}"
         project_hash = compose_project(project_url)
         # エラー案件の場合はスキップ
         next if project_hash[:error_project]
@@ -109,14 +115,14 @@ class MidworksScrapingService
         return project_hash
       end
       project_hash[:create_json][:title] = project_title
-      # FIXME 本番稼働時には下記を起動
-      # # 案件検索
-      # existing_project = Project.find_by(title: project_title)
-      # # 案件検索の結果、すでに存在する場合
-      # if existing_project.present?
-      #   project_hash[:error_project] = true
-      #   return project_hash
-      # end
+      # TODO 本番稼働時には下記を起動
+      # 案件検索
+      existing_project = Project.find_by(title: project_title)
+      # 案件検索の結果、すでに存在する場合
+      if existing_project.present?
+        project_hash[:error_project] = true
+        return project_hash
+      end
       # 案件の詳細情報
       detail_html_array = project_html.css('.col-lg-9.mt-4.mb-2 .mb-5')
       descriminate_detail_html detail_html_array, project_hash
@@ -225,8 +231,6 @@ class MidworksScrapingService
       case price_unit_name
       when Settings.midworks.price_unit.man_yen_per_month
         price_unit_id = Settings.price_unit_id.man_yen_per_month
-      else
-        price_unit_id = 1
       end
       {
         price_unit_id: price_unit_id,
@@ -278,7 +282,7 @@ class MidworksScrapingService
 
     # スキル判別メソッド
     def discriminate_skills(skill_tag_html, skill_tags_array)
-      skill_type_title = skill_tag_html.css('.col-5.col-sm-3 .title-plain').text
+      skill_type_name = skill_tag_html.css('.col-5.col-sm-3 .title-plain').text
       skill_tag_name_html_array = skill_tag_html.css('.col-7.col-sm-9 .row a .tag.mr-2.mb-1')
       skill_tag_name_html_array.map do |skill_tag_name_html|
         # スキル名称
@@ -290,10 +294,10 @@ class MidworksScrapingService
         search_name.gsub!(UPPER_SPACE, NO_SPACE) if search_name.include?(UPPER_SPACE)
         search_name.gsub!(LOWER_SPACE, NO_SPACE) if search_name.include?(LOWER_SPACE)
         # スキルタイプ判別
-        skill_type_id = descriminate_skill_type skill_type_title
+        skill_type_id = descriminate_skill_type skill_type_name
         # skillハッシュ
         skill_tag_hash = {
-          skill_type_title: skill_type_title,
+          skill_type_name: skill_type_name,
           skill_type_id: skill_type_id,
           skill_tag_name: skill_tag_name,
           skill_tag_name_search: search_name,
@@ -306,25 +310,25 @@ class MidworksScrapingService
     end
 
     # スキルタイプ判別メソッド
-    def descriminate_skill_type(skill_type_title)
-      skill_type = 0
-      case skill_type_title
+    def descriminate_skill_type(skill_type_name)
+      skill_type_id = 0
+      case skill_type_name
       when Settings.midworks.skill_type.language
-        skill_type = Settings.skill_type.language
+        skill_type_id = Settings.skill_type.language
       when Settings.midworks.skill_type.framework
-        skill_type = Settings.skill_type.framework
+        skill_type_id = Settings.skill_type.framework
       when Settings.midworks.skill_type.db
-        skill_type = Settings.skill_type.db
+        skill_type_id = Settings.skill_type.db
       when Settings.midworks.skill_type.tool
-        skill_type = Settings.skill_type.tool
+        skill_type_id = Settings.skill_type.tool
       when Settings.midworks.skill_type.os
-        skill_type = Settings.skill_type.os
+        skill_type_id = Settings.skill_type.os
       when Settings.midworks.skill_type.package
-        skill_type = Settings.skill_type.package
+        skill_type_id = Settings.skill_type.package
       else
-        skill_type = Settings.skill_type.others
+        skill_type_id = Settings.skill_type.others
       end
-      skill_type
+      skill_type_id
     end
   end
 end
