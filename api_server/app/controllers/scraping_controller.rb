@@ -9,6 +9,13 @@ class ScrapingController < ApplicationController
     render json: response_json(project_json_array, result_flg)
   end
 
+  # scrape_levtech action
+  def scrape_levtech
+    project_json_array = LevtechScrapingService.scraping_root
+    result_flg = true
+    render json: response_json(project_json_array, result_flg)
+  end
+
   private
 
   # response_json format for scraping
