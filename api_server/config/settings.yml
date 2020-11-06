@@ -18,7 +18,7 @@ response:
 
 # PROJECT COMMON
 price_unit_id:
-  man_yen_per_month: 0
+  yen_per_month: 0
 operation_unit_id:
   hour: 0
 skill_type:
@@ -49,15 +49,10 @@ midworks:
     position: '職種'
     contract: '契約形態'
     industry: '業界'
-  price_unit:
-    man_yen_per_month: '万円/月'
-  operation_unit:
-    hour: '時間'
-  skill_type:
-    language: 'プログラミング言語'
-    framework: 'フレームワーク'
-    db: 'データベース'
-    tool: 'ツール'
-    os: 'OS'
-    package: 'サーバ基盤・パッケージ'
-
+# LEVTECH
+levtech:
+  company_name: 'LEVTECH'
+  company_id: 1
+  url:
+    host: 'https://freelance.levtech.jp'
+    new_projects: 'https://freelance.levtech.jp/project'

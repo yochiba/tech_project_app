@@ -4,6 +4,41 @@
 # class_name: ProjectService
 # description: common class for DB operation for projects
 class ProjectService
+  # プログラミング言語
+  LANGUAGE_TITLE_ARRAY = [
+    'プログラミング言語',
+  ].freeze
+  # フレームワーク
+  FRAMEWORK_TITLE_ARRAY = [
+    'フレームワーク',
+  ].freeze
+  # データベース
+  DATABASE_TITLE_ARRAY = [
+    'データベース',
+  ].freeze
+  # ツール
+  TOOL_TITLE_ARRAY = [
+    'ツール',
+  ].freeze
+  # OS
+  OS_TITLE_ARRAY = [
+    'OS',
+  ].freeze
+  # パッケージ類
+  PACKAGE_TITLE_ARRAY = [
+    'サーバ基盤・パッケージ',
+  ].freeze
+
+  # 円/月に変換する単位
+  YEN_PER_MONTH_ARRAY = [
+    '万円/月',
+  ].freeze
+
+  # 稼働時間 時間
+  HOUR_ARRAY = [
+    '時間',
+  ].freeze
+
   class << self
     # 案件登録メソッド
     def compose_project_json(project_json_array)
@@ -67,6 +102,60 @@ class ProjectService
       contract = Contract.find_by(contract_name: contract_name)
       contract = Contract.create!(contract_name: contract_name) if contract.blank?
       contract.id
+    end
+
+    # 単価単位ID判別メソッド
+    def descriminate_price_unit_id(price_unit_name)
+      price_unit_id = 0
+      case price_unit_name
+      when *YEN_PER_MONTH_ARRAY
+        price_unit_id = Settings.price_unit_id.yen_per_month
+      else
+        # FIXME 仕様が決まってきてから番号を決める
+        price_unit_id = 100
+      end
+      {
+        price_unit_id: price_unit_id,
+        price_unit: price_unit_name,
+      }
+    end
+
+    # 稼働単位ID判別メソッド
+    def descriminate_ope_unit_id(ope_unit_name)
+      ope_unit_id = 0
+      case ope_unit_name
+      when *HOUR_ARRAY
+        ope_unit_id = Settings.operation_unit_id.hour
+      else
+        ope_unit_id = 100
+      end
+      {
+        operation_unit_id: ope_unit_id,
+        operation_unit: ope_unit_name,
+      }
+    end
+
+    # スキルタイプ判別メソッド
+    def descriminate_skill_type(skill_type_name)
+      skill_type_id = 0
+      case skill_type_name
+      when *LANGUAGE_TITLE_ARRAY
+        skill_type_id = Settings.skill_type.language
+      when *FRAMEWORK_TITLE_ARRAY
+        skill_type_id = Settings.skill_type.framework
+      when *DATABASE_TITLE_ARRAY
+        skill_type_id = Settings.skill_type.db
+      when *TOOL_TITLE_ARRAY
+        skill_type_id = Settings.skill_type.tool
+      when *OS_TITLE_ARRAY
+        skill_type_id = Settings.skill_type.os
+      when *PACKAGE_TITLE_ARRAY
+        skill_type_id = Settings.skill_type.package
+      else
+        # FIXME 仕様が決まってきてから番号を決める
+        skill_type_id = 1000
+      end
+      skill_type_id
     end
 
     # スキルID判別メソッド
