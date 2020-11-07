@@ -87,7 +87,7 @@ class LevtechScrapingService
         error_project: false,
       }
       project_html = project_html.css('.pjt')
-      puts "[PROJECT DETAIL]:: #{project_html}"
+      # puts "[PROJECT DETAIL]:: #{project_html}"
       # 案件名称
       project_title = compose_project_title project_html, project_hash
       # TODO 本番稼働時には下記を起動
@@ -98,10 +98,12 @@ class LevtechScrapingService
       #   project_hash[:error_project] = true
       #   return project_hash
       # end
-      # 案件の単価、契約形態、ポジション、最寄り駅
-      detail_html = project_html.css('.pjtSummary')
-      compose_price detail_html, project_hash
-      # descriminate_detail_html detail_html, project_hash
+      # 案件の概要：単価、契約形態、ポジション、最寄り駅
+      summary_html = project_html.css('.pjtSummary')
+      compose_summary summary_html, project_hash
+      # detail
+      detail_html_array = project_html.css('pjtDetail__row')
+      descriminate_detail detail_html_array, project_hash
       project_hash
     end
 
@@ -120,14 +122,79 @@ class LevtechScrapingService
       project_title
     end
 
-    # 案件単価構成メソッド
-    def compose_price(detail_html, project_hash)
-      price_class = '.pjtSummary__row.pjtSummary__row--btn .pjtSummary__row__desc'
-      price = detail_html.css(price_class).text
-      project_hash[:create_json][:max_price] = price
+    # 概要構成メソッド
+    def compose_summary(summary_html, project_hash)
+      summary_row_array = summary_html.css('.pjtSummary__row')
+      summary_row_array.map do |summary_row|
+        title = summary_row.css('.pjtSummary__row__ttl').text
+        if title.include?(Settings.levtech.title.price)
+          title = title.slice!(Settings.levtech.title.price)
+        end
+
+        case title
+        when Settings.levtech.title.price
+          compose_price summary_row, project_hash
+        when Settings.levtech.title.position
+          compose_position summary_row, project_hash
+        when Settings.levtech.title.contract_location
+          compose_contract_location summary_row, project_hash
+        end
+      end
     end
 
-    # 業務内容の取得
+    # 案件単価構成メソッド
+    def compose_price(summary_row, project_hash)
+      price_class = '.pjtSummary__row__desc'
+      # 最大単価
+      price = summary_row.css("#{price_class} .js-yen").text.gsub!(',', Settings.no_space).to_i
+      project_hash[:create_json][:max_price] = price
+      # 単価単位
+      price_unit_name = summary_row.css(price_class).text.gsub!(/[\r\n]|,|〜|[\d]|収益シミュレーションを見る/, '')
+      # '円円／◯◯'で取得されてしまう場合
+      price_unit_name.gsub!('円円', '円') if price_unit_name.include?('円円')
+      project_hash[:create_json].merge! ProjectService.descriminate_price_unit_id price_unit_name
+    end
+
+    # 職種・ポジション構成メソッド
+    def compose_position(summary_row, project_hash)
+      position_class = '.pjtSummary__row__desc.pjtSummary__row__desc--tag a'
+      position_html_array = summary_row.css(position_class)
+      project_hash[:position_array] = ProjectService.compose_position_array position_html_array
+    end
+
+    # 契約情報構成メソッド
+    def compose_contract_location(summary_row, project_hash)
+      row_array = summary_row.css('.pjtSummary__row__desc')
+      row_array.map.with_index do |row, index|
+        row_name = row.text
+        if index.zero?
+          project_hash[:contract_name] = row_name.gsub!(/[\r\n]/, Settings.no_space)
+          project_hash[:create_json][:contract_id] = ProjectService.compose_contract_id(row_name)
+        else
+          project_hash[:location_name] = row_name
+          project_hash[:create_json][:location_id] = ProjectService.compose_location_id(row_name)
+        end
+      end
+    end
+
+    # 案件詳細判別メソッド
+    def descriminate_detail(detail_html_array, project_hash)
+      detail_html_array.map do |detail_html|
+        title = project_detail.css('.pjtDetail__row__ttl').text
+        case
+        when Settings.levtech.title.description
+          # FIXME ここから
+        when Settings.levtech.title.skill
+
+        when Settings.levtech.title.skill_tags
+
+        else
+          break
+        end
+      end
+    end
+
+    # 業務内容の取得
     def compose_descripton(detail_html, project_hash)
       description = detail_html.css('.smaller-text.px-sm-4 p').text
       project_hash[:create_json][:description] = description if description.present?

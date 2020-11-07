@@ -47,6 +47,11 @@ class ProjectService
   # 円/月に変換する単位
   YEN_PER_MONTH_ARRAY = [
     '万円/月',
+    '円／月',
+  ].freeze
+
+  YEN_PER_HOUR_ARRAY = [
+    '円／時',
   ].freeze
 
   # 稼働時間 時間
@@ -121,7 +126,7 @@ class ProjectService
     end
 
     # ポジション構成メソッド
-    def compose_position(position_html_array)
+    def compose_position_array(position_html_array)
       position_array = []
       position_html_array.map do |position_html|
         position = position_html.text
@@ -170,6 +175,10 @@ class ProjectService
       case price_unit_name
       when *YEN_PER_MONTH_ARRAY
         price_unit_id = Settings.price_unit_id.yen_per_month
+        price_unit_name = Settings.price_unit_name.yen_per_month
+      when *YEN_PER_HOUR_ARRAY
+        price_unit_id = Settings.price_unit_id.yen_per_hour
+        price_unit_name = Settings.price_unit_name.yen_per_hour
       else
         # FIXME 仕様が決まってきてから番号を決める
         price_unit_id = 100
