@@ -66,13 +66,12 @@ end
 |16|price_unit_id|integer|単価単位ID|YES|||
 |17|location_id|integer|ロケーションID|YES|||
 |18|contract_id|integer|契約形態ID|YES|||
-|19|position_id|integer|ポジションID|YES|||
-|20|industry_id|integer|業界ID|YES|||
-|21|display_flg|integer|表示フラグ|NO|0|0:表示, 1:非表示|
-|22|deleted_flg|integer|削除フラグ|NO|0|0:未削除, 1:削除<br>論理削除で30日が経過したら削除|
-|23|deleted_at|date|削除日時|YES|||
-|24|created_at|date|作成日時|NO|||
-|25|updated_at|date|更新日時|NO|||
+|19|industry_id|integer|業界ID|YES|||
+|20|display_flg|integer|表示フラグ|NO|0|0:表示, 1:非表示|
+|21|deleted_flg|integer|削除フラグ|NO|0|0:未削除, 1:削除<br>論理削除で30日が経過したら削除|
+|22|deleted_at|date|削除日時|YES|||
+|23|created_at|date|作成日時|NO|||
+|24|updated_at|date|更新日時|NO|||
 
 ***
 

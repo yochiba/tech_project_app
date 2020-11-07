@@ -8,13 +8,12 @@ require 'open_uri_redirections'
 # class_name: LevtechScrapingService
 # description: scraping class for Midworks
 class LevtechScrapingService
-  # https://freelance.levtech.jp/project/pref-13/
   # ホストURL
   HOST_URL = Settings.levtech.url.host
   # 新着案件URL
   NEW_PROJECTS_URL = Settings.levtech.url.new_projects
   # 東京都の案件
-  AREA_TOKYO = 'pref-13'
+  AREA_TOKYO = '/pref-13'
   # FIXME 取得する最大ページ数
   MAX_PAGE_COUNT = 1
   # 1ページの表示件数
@@ -25,7 +24,7 @@ class LevtechScrapingService
     def scraping_root
       Rails.logger.info "[SCRAPING START]:: LevtechScrapingService"
       # 総案件数を取得するためのリクエスト
-      url = "#{NEW_PROJECTS_URL}/#{AREA_TOKYO}"
+      url = "#{NEW_PROJECTS_URL}#{AREA_TOKYO}"
       new_projects_page_html = Nokogiri::HTML.parse(open(url, allow_redirections: :all))
       # 総案件数からページ数取得
       total_projects = new_projects_page_html.css('.search__result__summary span').text.to_i
@@ -44,8 +43,8 @@ class LevtechScrapingService
       project_json_array = []
       page_count_array.map do |page|
         begin
-          url = "#{NEW_PROJECTS_URL}/#{AREA_TOKYO}/p#{page}"
-          url = "#{NEW_PROJECTS_URL}/#{AREA_TOKYO}" if page == 1
+          page_param = page == 1 ? "#{AREA_TOKYO}" : "#{AREA_TOKYO}/p#{page}"
+          url = "#{NEW_PROJECTS_URL}#{page_param}"
           project_list_html = Nokogiri::HTML.parse(open(url, allow_redirections: :all))
         rescue => exception
           Rails.logger.info exception
@@ -99,7 +98,7 @@ class LevtechScrapingService
       #   project_hash[:error_project] = true
       #   return project_hash
       # end
-      # 案件の詳細情報
+      # 案件の単価、契約形態、ポジション、最寄り駅
       detail_html = project_html.css('.pjtSummary')
       compose_price detail_html, project_hash
       # descriminate_detail_html detail_html, project_hash
@@ -115,15 +114,14 @@ class LevtechScrapingService
         project_hash[:error_project] = true
         return project_hash
       end
-      project_title.gsub!(/[\r\n]/, '')
-      project_title.gsub!('New', '') if project_title.include?('New')
+      project_title.gsub!(/[\r\n]/, Settings.no_space)
+      project_title.gsub!('New', Settings.no_space) if project_title.include?('New')
       project_hash[:create_json][:title] = project_title
       project_title
     end
 
     # 案件単価構成メソッド
     def compose_price(detail_html, project_hash)
-      # FIXME ここから
       price_class = '.pjtSummary__row.pjtSummary__row--btn .pjtSummary__row__desc'
       price = detail_html.css(price_class).text
       project_hash[:create_json][:max_price] = price
