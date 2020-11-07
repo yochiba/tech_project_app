@@ -22,7 +22,7 @@ class MidworksScrapingService
     'tokyo_others',
   ].freeze
   # 取得する最大ページ数
-  MAX_PAGE_COUNT = 1
+  MAX_PAGE_COUNT = 3
   # 1ページの表示件数
   PROJECTS_PER_PAGE = 25
   # 空文字
@@ -110,13 +110,13 @@ class MidworksScrapingService
       # 案件名称
       project_title = compose_project_title project_html, project_hash
       # TODO 本番稼働時には下記を起動
-      # 案件検索
-      existing_project = Project.find_by(title: project_title)
-      # 案件検索の結果、すでに存在する場合
-      if existing_project.present?
-        project_hash[:error_project] = true
-        return project_hash
-      end
+      # # 案件検索
+      # existing_project = Project.find_by(title: project_title)
+      # # 案件検索の結果、すでに存在する場合
+      # if existing_project.present?
+      #   project_hash[:error_project] = true
+      #   return project_hash
+      # end
       # 案件の詳細情報
       detail_html_array = project_html.css('.col-lg-9.mt-4.mb-2 .mb-5')
       descriminate_detail_html detail_html_array, project_hash
@@ -206,10 +206,9 @@ class MidworksScrapingService
           project_hash[:industry_name] = industry
           project_hash[:create_json][:industry_id] = ProjectService.compose_industry_id(industry)
         when Settings.midworks.title.position
-          position = detail.css('td').text
-          break if position.blank?
-          project_hash[:position_name] = position
-          project_hash[:create_json][:position_id] = ProjectService.compose_position_id(position)
+          position_html_array = detail.css('td')
+          break if position_html_array.blank?
+          project_hash[:position_array] = ProjectService.compose_position position_html_array
         when Settings.midworks.title.contract
           contract = detail.css('td').text
           break if contract.blank?
