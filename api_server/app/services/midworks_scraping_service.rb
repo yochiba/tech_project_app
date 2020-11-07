@@ -208,7 +208,7 @@ class MidworksScrapingService
         when Settings.midworks.title.position
           position_html_array = detail.css('td')
           break if position_html_array.blank?
-          project_hash[:position_array] = ProjectService.compose_position position_html_array
+          project_hash[:position_array] = ProjectService.compose_position_array position_html_array
         when Settings.midworks.title.contract
           contract = detail.css('td').text
           break if contract.blank?
