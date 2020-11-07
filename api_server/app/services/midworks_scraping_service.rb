@@ -22,7 +22,7 @@ class MidworksScrapingService
     'tokyo_others',
   ].freeze
   # 取得する最大ページ数
-  MAX_PAGE_COUNT = 3
+  MAX_PAGE_COUNT = 1
   # 1ページの表示件数
   PROJECTS_PER_PAGE = 25
   # 空文字
