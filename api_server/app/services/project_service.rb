@@ -22,6 +22,7 @@ class ProjectService
   # プログラミング言語
   LANGUAGE_TITLE_ARRAY = [
     'プログラミング言語',
+    '言語',
   ].freeze
   # フレームワーク
   FRAMEWORK_TITLE_ARRAY = [
@@ -30,6 +31,7 @@ class ProjectService
   # データベース
   DATABASE_TITLE_ARRAY = [
     'データベース',
+    'DB'
   ].freeze
   # ツール
   TOOL_TITLE_ARRAY = [
@@ -196,6 +198,7 @@ class ProjectService
       when *HOUR_ARRAY
         ope_unit_id = Settings.operation_unit_id.hour
       else
+        # FIXME 仕様が決まってきてから番号を決める
         ope_unit_id = 100
       end
       {
