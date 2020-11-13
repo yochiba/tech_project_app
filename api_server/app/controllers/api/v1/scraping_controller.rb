@@ -12,7 +12,7 @@ class Api::V1::ScrapingController < ApplicationController
   # scrape_levtech action
   def scrape_levtech
     project_json_array = LevtechScrapingService.scraping_root
-    result_flg = true
+    result_flg = ProjectService.compose_project_json project_json_array
     render json: response_json(project_json_array, result_flg)
   end
 
