@@ -35,6 +35,7 @@ class LevtechScrapingService
       Rails.logger.info "[SCRAPING START]:: LevtechScrapingService"
       # 総案件数を取得するためのリクエスト
       url = "#{NEW_PROJECTS_URL}#{AREA_TOKYO}"
+      Rails.logger.info "[PROJECT LIST URL]:: #{url}"
       new_projects_page_html = Nokogiri::HTML.parse(open(url, allow_redirections: :all))
       # 総案件数からページ数取得
       total_projects = new_projects_page_html.css('.search__result__summary span').text.to_i
@@ -60,7 +61,7 @@ class LevtechScrapingService
           Rails.logger.info exception
         end
         project_json_array = compose_project_json_array project_json_array, project_list_html
-        sleep 5
+        sleep 10
       end
       project_json_array
     end
@@ -70,7 +71,7 @@ class LevtechScrapingService
       project_id_array = project_list_html.css('.prjHead__ttl a')
       project_id_array.map do |project_id|
         project_url = "#{HOST_URL}#{project_id[:href]}"
-        project_hash = compose_project(project_url)
+        project_hash = compose_project project_url
         # エラー案件の場合はスキップ
         next if project_hash[:error_project]
         project_json_array.push project_hash
@@ -101,9 +102,9 @@ class LevtechScrapingService
       # 案件名称
       project_title = compose_project_title project_html, project_hash
       # TODO 本番稼働時には下記を起動
-      # # 案件検索
+      # 案件検索
       # existing_project = Project.find_by(title: project_title)
-      # # 案件検索の結果、すでに存在する場合
+      # 案件検索の結果、すでに存在する場合
       # if existing_project.present?
       #   project_hash[:error_project] = true
       #   return project_hash
@@ -126,8 +127,8 @@ class LevtechScrapingService
         project_hash[:error_project] = true
         return project_hash
       end
-      project_title.gsub!(/[\r\n]/, Settings.no_space)
-      project_title.gsub!('New', Settings.no_space) if project_title.include?('New')
+      project_title.gsub!(/[\r\n]/, NO_SPACE)
+      project_title.gsub!('New', NO_SPACE) if project_title.include?('New')
       project_hash[:create_json][:title] = project_title
       project_title
     end
@@ -156,10 +157,11 @@ class LevtechScrapingService
     def compose_price(summary_row, project_hash)
       price_class = '.pjtSummary__row__desc'
       # 最大単価
-      price = summary_row.css("#{price_class} .js-yen").text.gsub!(',', Settings.no_space).to_i
+      price = summary_row.css("#{price_class} .js-yen").text.gsub!(',', NO_SPACE).to_i
       project_hash[:create_json][:max_price] = price
       # 単価単位
-      price_unit_name = summary_row.css(price_class).text.gsub!(/[\r\n]|,|〜|[\d]|収益シミュレーションを見る|（収支シミュレーション）/, '')
+      price_unit_name = summary_row.css(price_class).text
+      price_unit_name.gsub!(/[\r\n]|,|〜|[\d]|収益シミュレーションを見る|（収支シミュレーション）/, NO_SPACE)
       # '円円／◯◯'で取得されてしまう場合
       price_unit_name.gsub!('円円', '円') if price_unit_name.include?('円円')
       project_hash[:create_json].merge! ProjectService.descriminate_price_unit_id price_unit_name
@@ -178,7 +180,7 @@ class LevtechScrapingService
       row_array.map.with_index do |row, index|
         row_name = row.text
         if index.zero?
-          project_hash[:contract_name] = row_name.gsub!(/[\r\n]/, Settings.no_space)
+          project_hash[:contract_name] = row_name.gsub!(/[\r\n]/, NO_SPACE)
           project_hash[:create_json][:contract_id] = ProjectService.compose_contract_id(row_name)
         else
           project_hash[:location_name] = row_name
@@ -207,7 +209,7 @@ class LevtechScrapingService
     # 業務内容構成メソッド
     def compose_descripton(detail_html, project_hash)
       description = detail_html.css('p')[1].text
-      project_hash[:create_json][:description] = description if description.present?      
+      project_hash[:create_json][:description] = description if description.present?
     end
 
     # スキル構成メソッド
@@ -232,7 +234,7 @@ class LevtechScrapingService
       skill_tags_html_array.map do |skill_tag_html|
         discriminate_skills skill_tag_html, skill_tags_array
       end
-      project_hash[:skill_tag_array] = skill_tags_array
+      project_hash[:skill_tag_array] = skill_tags_array if skill_tags_array.present?
     end
 
     # スキル判別メソッド
@@ -249,7 +251,7 @@ class LevtechScrapingService
         search_name.gsub!(UPPER_SPACE, NO_SPACE) if search_name.include?(UPPER_SPACE)
         search_name.gsub!(LOWER_SPACE, NO_SPACE) if search_name.include?(LOWER_SPACE)
         # スキルタイプ判別
-        skill_type_id = ProjectService.descriminate_skill_type skill_type_name
+        skill_type_id = ProjectService.descriminate_skill_type_by_name skill_type_name
         # skillハッシュ
         skill_tag_hash = {
           skill_type_name: skill_type_name,

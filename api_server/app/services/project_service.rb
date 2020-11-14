@@ -31,7 +31,7 @@ class ProjectService
   # データベース
   DATABASE_TITLE_ARRAY = [
     'データベース',
-    'DB'
+    'DB',
   ].freeze
   # ツール
   TOOL_TITLE_ARRAY = [
@@ -50,6 +50,7 @@ class ProjectService
   YEN_PER_MONTH_ARRAY = [
     '万円/月',
     '円／月',
+    '円/月',
   ].freeze
 
   YEN_PER_HOUR_ARRAY = [
@@ -87,8 +88,8 @@ class ProjectService
       result_flg
     end
 
-    # スキルタイプ判別メソッド
-    def descriminate_skill_type(skill_type_name)
+    # スキルタイプ判別メソッド by スキルタイプ名称
+    def descriminate_skill_type_by_name(skill_type_name)
       skill_type_id = 0
       case skill_type_name
       when *LANGUAGE_TITLE_ARRAY
@@ -108,6 +109,19 @@ class ProjectService
         skill_type_id = 1000
       end
       skill_type_id
+    end
+
+    # スキルタイプ判別メソッド DBから判別
+    def descriminate_skill_type_from_db(search_name)
+      skill_tag = SkillTag.find_by(skill_tag_name_search: search_name)
+      # FIXME 仕様が決まってきてからその他の番号を決める
+      skill_type_name = skill_tag.present? ? skill_tag.skill_type_name : 'その他'
+      skill_type_id = skill_tag.present? ? skill_tag.id : 1000
+      skill_type_hash = {
+        skill_type_name: skill_type_name,
+        skill_type_id: skill_type_id,
+      }
+      skill_type_hash
     end
 
     # スキルID判別メソッド
@@ -151,6 +165,7 @@ class ProjectService
     def compose_location_id(location_name)
       # 既存のデータに存在しないかを確認する
       location = Location.find_by(location_name: location_name)
+      location = Location.confirm_location(location_name).first if location.blank?
       location = Location.create!(location_name: location_name) if location.blank?
       location.id
     end
@@ -159,6 +174,7 @@ class ProjectService
     def compose_industry_id(industry_name)
       # 既存のデータに存在しないかを確認する
       industry = Industry.find_by(industry_name: industry_name)
+      industry = Industry.confirm_industry(industry_name).first if industry.blank?
       industry = Industry.create!(industry_name: industry_name) if industry.blank?
       industry.id
     end
@@ -167,6 +183,7 @@ class ProjectService
     def compose_contract_id(contract_name)
       # 既存のデータに存在しないかを確認する
       contract = Contract.find_by(contract_name: contract_name)
+      contract = Contract.confirm_contract(contract_name).first if contract.blank?
       contract = Contract.create!(contract_name: contract_name) if contract.blank?
       contract.id
     end

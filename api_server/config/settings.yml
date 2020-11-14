@@ -69,3 +69,16 @@ levtech:
     position: '職種・ポジション'
     contract: '契約形態'
     contract_location: '契約形態最寄り駅'
+# POTEPAN
+potepan:
+  company_name: 'POTEPAN'
+  company_id: 2
+  url:
+    host: 'https://freelance.potepan.com'
+    new_projects: 'https://freelance.potepan.com/project'
+  title:
+    description: '業務内容'
+    required_skills: '必須スキル'
+    other_skills: '尚可スキル'
+    skill_tags: '開発環境'
+    location: '勤務地'

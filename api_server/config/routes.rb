@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       # scraping controller
       get '/scrape-midworks', to: 'scraping#scrape_midworks'
       get '/scrape-levtech', to: 'scraping#scrape_levtech'
+      get '/scrape-potepan', to: 'scraping#scrape_potepan'
     end
   end
 end
