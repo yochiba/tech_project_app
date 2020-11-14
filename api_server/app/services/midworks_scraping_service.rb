@@ -81,7 +81,7 @@ class MidworksScrapingService
       project_id_array = project_list_html.css('.col-12 a')
       project_id_array.map do |project_id|
         project_url = "#{HOST_URL}#{project_id[:href]}"
-        project_hash = compose_project(project_url)
+        project_hash = compose_project project_url
         # エラー案件の場合はスキップ
         next if project_hash[:error_project]
         project_json_array.push project_hash
@@ -110,9 +110,9 @@ class MidworksScrapingService
       # 案件名称
       project_title = compose_project_title project_html, project_hash
       # TODO 本番稼働時には下記を起動
-      # # 案件検索
+      # 案件検索
       # existing_project = Project.find_by(title: project_title)
-      # # 案件検索の結果、すでに存在する場合
+      # 案件検索の結果、すでに存在する場合
       # if existing_project.present?
       #   project_hash[:error_project] = true
       #   return project_hash
@@ -274,7 +274,7 @@ class MidworksScrapingService
         search_name.gsub!(UPPER_SPACE, NO_SPACE) if search_name.include?(UPPER_SPACE)
         search_name.gsub!(LOWER_SPACE, NO_SPACE) if search_name.include?(LOWER_SPACE)
         # スキルタイプ判別
-        skill_type_id = ProjectService.descriminate_skill_type skill_type_name
+        skill_type_id = ProjectService.descriminate_skill_type_by_name skill_type_name
         # skillハッシュ
         skill_tag_hash = {
           skill_type_name: skill_type_name,
