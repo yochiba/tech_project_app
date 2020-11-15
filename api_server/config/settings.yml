@@ -20,11 +20,14 @@ response:
 price_unit_id:
   yen_per_month: 0
   yen_per_hour: 1
+  other: 1000
 price_unit_name:
   yen_per_month: '円/月'
   yen_per_hour: '円/時'
+  other: 'その他'
 operation_unit_id:
   hour: 0
+  other: 1000
 tag_type:
   language: 0
   framework: 1
@@ -32,7 +35,8 @@ tag_type:
   tool: 3
   os: 4
   package: 5
-  others: 6
+  rpa: 6
+  other: 1000
 # MIDWORKS
 midworks:
   company_name: 'MIDWORKS'

@@ -45,6 +45,10 @@ class ProjectService
   PACKAGE_TITLE_ARRAY = [
     'サーバ基盤・パッケージ',
   ].freeze
+  # RPA
+  RPA_TITLE_ARRAY = [
+    'RPA',
+  ]
 
   # 円/月に変換する単位
   YEN_PER_MONTH_ARRAY = [
@@ -104,9 +108,10 @@ class ProjectService
         tag_type_id = Settings.tag_type.os
       when *PACKAGE_TITLE_ARRAY
         tag_type_id = Settings.tag_type.package
+      when *RPA_TITLE_ARRAY
+        tag_type_id = Settings.tag_type.rpa
       else
-        # FIXME 仕様が決まってきてから番号を決める
-        tag_type_id = 1000
+        tag_type_id = Settings.tag_type.other
       end
       tag_type_id
     end
@@ -184,8 +189,8 @@ class ProjectService
         price_unit_id = Settings.price_unit_id.yen_per_hour
         price_unit_name = Settings.price_unit_name.yen_per_hour
       else
-        # FIXME 仕様が決まってきてから番号を決める
-        price_unit_id = 100
+        price_unit_id = Settings.price_unit_id.other
+        price_unit_name = Settings.price_unit_name.other
       end
       {
         price_unit_id: price_unit_id,
@@ -200,8 +205,7 @@ class ProjectService
       when *HOUR_ARRAY
         ope_unit_id = Settings.operation_unit_id.hour
       else
-        # FIXME 仕様が決まってきてから番号を決める
-        ope_unit_id = 100
+        ope_unit_id = Settings.operation_unit_id.other
       end
       {
         operation_unit_id: ope_unit_id,

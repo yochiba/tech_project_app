@@ -19,8 +19,7 @@ class Api::V1::ScrapingController < ApplicationController
   # scrape_potepan action
   def scrape_potepan
     project_json_array = PotepanScrapingService.scraping_root
-    # result_flg = ProjectService.compose_project_json project_json_array
-    result_flg = true
+    result_flg = ProjectService.compose_project_json project_json_array
     render json: response_json(project_json_array, result_flg)
   end
 

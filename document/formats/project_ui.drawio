@@ -1,0 +1,19 @@
+<mxfile host="65bd71144e" modified="2020-11-15T07:47:37.140Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.51.1 Chrome/83.0.4103.122 Electron/9.3.3 Safari/537.36" version="13.6.5" etag="htudbUjMmW9dPAdlBXjH">
+    <diagram id="g8VFyZwppRchk2EWWKmL" name="ページ1">
+        <mxGraphModel dx="678" dy="1760" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+                    <mxGeometry x="100" y="-550" width="520" height="520" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="タイトル" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="205" y="-530" width="310" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="150" y="-270" width="420" height="200" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

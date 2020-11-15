@@ -32,6 +32,8 @@ class PotepanScrapingService
   UPPER_NUMS = Settings.upper_numbers
   # 半角数字
   LOWER_NUMS = Settings.lower_numbers
+  # その他 文字列
+  OTHER_STR = 'その他'
 
   class << self
     # scraping service for potepan
@@ -131,7 +133,7 @@ class PotepanScrapingService
         project_hash[:error_project] = true
         return project_hash
       end
-      project_title.gsub!(/[\r\n]/, Settings.no_space).lstrip!.rstrip!
+      project_title.gsub!(/[\r\n]/, NO_SPACE).lstrip!.rstrip!
       project_hash[:create_json][:title] = project_title
       project_title
     end
@@ -139,11 +141,11 @@ class PotepanScrapingService
     # 案件単価構成メソッド
     def compose_price(project_html, project_hash)
       price_str = project_html.css('.single-project__price').text
-      price_str.gsub!(/[\r\n]|~|,/, Settings.no_space).lstrip!.rstrip!
+      price_str.gsub!(/[\r\n]|~|,/, NO_SPACE).lstrip!.rstrip!
       # 最大単価
-      max_price = price_str.gsub(/[^\d]/, Settings.no_space).to_i
+      max_price = price_str.gsub(/[^\d]/, NO_SPACE).to_i
       # 単価単位名称
-      price_unit_name = price_str.gsub(/[\d]/, Settings.no_space)
+      price_unit_name = price_str.gsub(/[\d]/, NO_SPACE)
       project_hash[:create_json][:max_price] = max_price
       project_hash[:create_json].merge! ProjectService.descriminate_price_unit_id price_unit_name
     end
@@ -209,7 +211,6 @@ class PotepanScrapingService
     # タグ構成メソッド
     def compose_tags(detail_html, project_hash)
       tags_html_array = detail_html.css('dd p a')
-      puts "[INFO]:: #{tags_html_array}"
       tags_array = []
       tags_html_array.map do |tag_html|
         discriminate_tags tag_html, tags_array
@@ -227,7 +228,7 @@ class PotepanScrapingService
       search_name.gsub!(LOWER_SPACE, NO_SPACE) if search_name.include?(LOWER_SPACE)
       # タグタイプ取得
       tag = Tag.search_existing_tag(tag_name)
-      tag_type_name = tag.present? ? tag.first.tag_type_name : 'その他'
+      tag_type_name = tag.present? ? tag.first.tag_type_name : OTHER_STR
       # タグタイプ判別
       tag_type_id = ProjectService.descriminate_tag_type tag_type_name
       # タグハッシュ
