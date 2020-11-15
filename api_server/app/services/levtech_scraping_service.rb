@@ -28,6 +28,8 @@ class LevtechScrapingService
   UPPER_SPACE = Settings.upper_space
   # 半角スペース
   LOWER_SPACE = Settings.lower_space
+  # 駅 文字列
+  STATION_STR = '駅'
 
   class << self
     # scraping service for levtech
@@ -179,11 +181,12 @@ class LevtechScrapingService
       row_array = summary_row.css('.pjtSummary__row__desc')
       row_array.map.with_index do |row, index|
         row_name = row.text
+        next if row_name.blank?
         if index.zero?
           project_hash[:contract_name] = row_name.gsub!(/[\r\n]/, NO_SPACE)
           project_hash[:create_json][:contract_id] = ProjectService.compose_contract_id(row_name)
         else
-          project_hash[:location_name] = row_name
+          project_hash[:location_name] = row_name.gsub!(/（(.*?)）/, STATION_STR)
           project_hash[:create_json][:location_id] = ProjectService.compose_location_id(row_name)
         end
       end

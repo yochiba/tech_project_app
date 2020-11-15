@@ -165,7 +165,6 @@ class ProjectService
     def compose_location_id(location_name)
       # 既存のデータに存在しないかを確認する
       location = Location.find_by(location_name: location_name)
-      location = Location.confirm_location(location_name).first if location.blank?
       location = Location.create!(location_name: location_name) if location.blank?
       location.id
     end
