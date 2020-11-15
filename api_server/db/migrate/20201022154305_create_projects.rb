@@ -10,6 +10,7 @@ class CreateProjects < ActiveRecord::Migration[6.0]
       t.string :url
       t.text :required_skills
       t.text :other_skills
+      t.text :environment
       t.integer :weekly_attendance
       t.integer :min_operation_unit
       t.integer :max_operation_unit

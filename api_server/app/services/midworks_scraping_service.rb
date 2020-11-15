@@ -149,8 +149,8 @@ class MidworksScrapingService
           compose_skills detail_html, project_hash
         when Settings.midworks.title.detail
           compose_detail detail_html, project_hash
-        when Settings.midworks.title.skill_tags
-          compose_skill_tags detail_html, project_hash
+        when Settings.midworks.title.tags
+          compose_tags detail_html, project_hash
         else
           next
         end
@@ -212,7 +212,7 @@ class MidworksScrapingService
         when Settings.midworks.title.contract
           contract = detail.css('td').text
           break if contract.blank?
-          project_hash[:contract_name] = contract
+          project_hash[:contract_name] = contract.gsub!(/（(.*?)）/, NO_SPACE)
           project_hash[:create_json][:contract_id] = ProjectService.compose_contract_id(contract)
         else
           next
@@ -250,43 +250,43 @@ class MidworksScrapingService
       end
     end
 
-    # スキルタグ構成メソッド
-    def compose_skill_tags(detail_html, project_hash)
-      skill_tags_html_array = detail_html.css('.smaller-text.px-sm-4 .row')
-      skill_tags_array = []
-      skill_tags_html_array.map do |skill_tag_html|
-        discriminate_skills skill_tag_html, skill_tags_array
+    # タグ構成メソッド
+    def compose_tags(detail_html, project_hash)
+      tags_html_array = detail_html.css('.smaller-text.px-sm-4 .row')
+      tags_array = []
+      tags_html_array.map do |tag_html|
+        discriminate_tags tag_html, tags_array
       end
-      project_hash[:skill_tag_array] = skill_tags_array
+      project_hash[:tag_array] = tags_array
     end
 
-    # スキル判別メソッド
-    def discriminate_skills(skill_tag_html, skill_tags_array)
-      skill_type_name = skill_tag_html.css('.col-5.col-sm-3 .title-plain').text
-      skill_tag_name_html_array = skill_tag_html.css('.col-7.col-sm-9 .row a .tag.mr-2.mb-1')
-      skill_tag_name_html_array.map do |skill_tag_name_html|
-        # スキル名称
-        skill_tag_name = skill_tag_name_html.text
-        next if skill_tag_name.blank?
-        # スキル名称検索用(全角,大文字,空白なし)
-        search_name = skill_tag_name.upcase.tr(UPPER_CASE, LOWER_CASE)
+    # タグ判別メソッド
+    def discriminate_tags(tag_html, tags_array)
+      tag_type_name = tag_html.css('.col-5.col-sm-3 .title-plain').text
+      tag_name_html_array = tag_html.css('.col-7.col-sm-9 .row a .tag.mr-2.mb-1')
+      tag_name_html_array.map do |tag_name_html|
+        # タグ名称
+        tag_name = tag_name_html.text
+        next if tag_name.blank?
+        # タグ名称検索用(全角,大文字,空白なし)
+        search_name = tag_name.upcase.tr(UPPER_CASE, LOWER_CASE)
         # 空白が存在する場合
         search_name.gsub!(UPPER_SPACE, NO_SPACE) if search_name.include?(UPPER_SPACE)
         search_name.gsub!(LOWER_SPACE, NO_SPACE) if search_name.include?(LOWER_SPACE)
-        # スキルタイプ判別
-        skill_type_id = ProjectService.descriminate_skill_type_by_name skill_type_name
-        # skillハッシュ
-        skill_tag_hash = {
-          skill_type_name: skill_type_name,
-          skill_type_id: skill_type_id,
-          skill_tag_name: skill_tag_name,
-          skill_tag_name_search: search_name,
+        # タグタイプ判別
+        tag_type_id = ProjectService.descriminate_tag_type tag_type_name
+        # タグハッシュ
+        tag_hash = {
+          tag_type_name: tag_type_name,
+          tag_type_id: tag_type_id,
+          tag_name: tag_name,
+          tag_name_search: search_name,
         }
         # 既存スキルタグの判別と新規作成
-        skill_tag_hash[:skill_tag_id] = ProjectService.descriminate_skill_id skill_tag_hash
-        skill_tags_array.push skill_tag_hash
+        tag_hash[:tag_id] = ProjectService.descriminate_tag_id tag_hash
+        tags_array.push tag_hash
       end
-      skill_tags_array
+      tags_array
     end
   end
 end

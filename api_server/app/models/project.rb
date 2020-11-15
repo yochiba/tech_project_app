@@ -7,7 +7,7 @@ class Project < ApplicationRecord
   belongs_to :industry, optional: true
   belongs_to :contract, optional: true
   has_many :mid_positions
-  has_many :mid_skill_tags
+  has_many :mid_tags
 
   validates :title, :company_id, :company, :url, :display_flg, :deleted_flg, presence: true
   validates :display_flg, :deleted_flg, numericality: { greater_than_or_equal_to: 0 }

@@ -74,11 +74,11 @@ class ProjectService
           result_flg = false
           return result_flg
         end
-        skill_tag_array = project_json[:skill_tag_array]
+        tag_array = project_json[:tag_array]
         position_array = project_json[:position_array]
-        # skill_tag & projectの紐付け
-        if skill_tag_array.present?
-          result_flg = compose_mid_skill_tag project, skill_tag_array
+        # tag & projectの紐付け
+        if tag_array.present?
+          result_flg = compose_mid_tag project, tag_array
         end
         # position & projectの紐付け
         if position_array.present?
@@ -88,57 +88,44 @@ class ProjectService
       result_flg
     end
 
-    # スキルタイプ判別メソッド by スキルタイプ名称
-    def descriminate_skill_type_by_name(skill_type_name)
-      skill_type_id = 0
-      case skill_type_name
+    # タグタイプ判別メソッド
+    def descriminate_tag_type(tag_type_name)
+      tag_type_id = 0
+      case tag_type_name
       when *LANGUAGE_TITLE_ARRAY
-        skill_type_id = Settings.skill_type.language
+        tag_type_id = Settings.tag_type.language
       when *FRAMEWORK_TITLE_ARRAY
-        skill_type_id = Settings.skill_type.framework
+        tag_type_id = Settings.tag_type.framework
       when *DATABASE_TITLE_ARRAY
-        skill_type_id = Settings.skill_type.db
+        tag_type_id = Settings.tag_type.db
       when *TOOL_TITLE_ARRAY
-        skill_type_id = Settings.skill_type.tool
+        tag_type_id = Settings.tag_type.tool
       when *OS_TITLE_ARRAY
-        skill_type_id = Settings.skill_type.os
+        tag_type_id = Settings.tag_type.os
       when *PACKAGE_TITLE_ARRAY
-        skill_type_id = Settings.skill_type.package
+        tag_type_id = Settings.tag_type.package
       else
         # FIXME 仕様が決まってきてから番号を決める
-        skill_type_id = 1000
+        tag_type_id = 1000
       end
-      skill_type_id
+      tag_type_id
     end
 
-    # スキルタイプ判別メソッド DBから判別
-    def descriminate_skill_type_from_db(search_name)
-      skill_tag = SkillTag.find_by(skill_tag_name_search: search_name)
-      # FIXME 仕様が決まってきてからその他の番号を決める
-      skill_type_name = skill_tag.present? ? skill_tag.skill_type_name : 'その他'
-      skill_type_id = skill_tag.present? ? skill_tag.id : 1000
-      skill_type_hash = {
-        skill_type_name: skill_type_name,
-        skill_type_id: skill_type_id,
-      }
-      skill_type_hash
-    end
-
-    # スキルID判別メソッド
-    def descriminate_skill_id(skill_tag_hash)
+    # タグID判別メソッド
+    def descriminate_tag_id(tag_hash)
       # 完全一致で検索
-      skill_tag = SkillTag.where(skill_tag_name_search: skill_tag_hash[:skill_tag_name_search])
+      tag = Tag.where(tag_name_search: tag_hash[:tag_name_search])
       # 完全一致しなかった場合にLIKE検索
-      if skill_tag.blank?
-        skill_tag = SkillTag.search_existing_skill_tag(skill_tag_hash[:skill_tag_name_search])
+      if tag.blank?
+        tag = Tag.search_existing_tag(tag_hash[:tag_name_search])
       end
       # 複数件数取得(where)されるためfirst使用
-      skill_tag_id = skill_tag.present? ? skill_tag.first.id : 0
-      if skill_tag.blank?
-        new_skill_tag = SkillTag.create!(skill_tag_hash)
-        skill_tag_id = new_skill_tag.id
+      tag_id = tag.present? ? tag.first.id : 0
+      if tag.blank?
+        new_tag = Tag.create!(tag_hash)
+        tag_id = new_tag.id
       end
-      skill_tag_id
+      tag_id
     end
 
     # ポジション構成メソッド
@@ -182,7 +169,6 @@ class ProjectService
     def compose_contract_id(contract_name)
       # 既存のデータに存在しないかを確認する
       contract = Contract.find_by(contract_name: contract_name)
-      contract = Contract.confirm_contract(contract_name).first if contract.blank?
       contract = Contract.create!(contract_name: contract_name) if contract.blank?
       contract.id
     end
@@ -240,14 +226,14 @@ class ProjectService
       position.id
     end
 
-    # mid_skill_tags構成メソッド
-    def compose_mid_skill_tag(project, skill_tag_array)
+    # mid_tags構成メソッド
+    def compose_mid_tag(project, tag_array)
       result_flg = true
-      skill_tag_array.map do |skill_tag|
-        mid_skill_tag = project.mid_skill_tags.create!(
-          skill_tag_id: skill_tag[:skill_tag_id],
+      tag_array.map do |tag|
+        mid_tag = project.mid_tags.create!(
+          tag_id: tag[:tag_id],
         )
-        result_flg = false if mid_skill_tag.blank?
+        result_flg = false if mid_tag.blank?
       end
       result_flg
     end

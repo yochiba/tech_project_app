@@ -25,7 +25,7 @@ price_unit_name:
   yen_per_hour: '円/時'
 operation_unit_id:
   hour: 0
-skill_type:
+tag_type:
   language: 0
   framework: 1
   db: 2
@@ -46,7 +46,7 @@ midworks:
     required_skills: '必須スキル'
     other_skills: '歓迎スキル'
     detail: '案件詳細'
-    skill_tags: '開発環境'
+    tags: '開発環境'
     price: '単価/月'
     weekly_attendance: '週出勤回数'
     location: '勤務地'
@@ -63,7 +63,7 @@ levtech:
   title:
     description: '職務内容'
     skill: '求めるスキル'
-    skill_tags: 'この会社が扱う技術'
+    tags: 'この会社が扱う技術'
     price: '単価'
     location: '最寄り駅'
     position: '職種・ポジション'
@@ -80,5 +80,6 @@ potepan:
     description: '業務内容'
     required_skills: '必須スキル'
     other_skills: '尚可スキル'
-    skill_tags: '開発環境'
+    environment: '開発環境'
     location: '勤務地'
+    tags: 'キーワード'
