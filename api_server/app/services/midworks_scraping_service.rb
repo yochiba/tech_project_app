@@ -198,7 +198,7 @@ class MidworksScrapingService
         when Settings.midworks.title.location
           location = detail.css('td').text
           break if location.blank?
-          project_hash[:location_name] = location
+          project_hash[:location_name] = location.gsub!(/( \/ .*)/, NO_SPACE)
           project_hash[:create_json][:location_id] = ProjectService.compose_location_id(location)
         when Settings.midworks.title.industry
           industry = detail.css('td').text
