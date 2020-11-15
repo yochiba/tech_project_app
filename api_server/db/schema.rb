@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_07_034331) do
+ActiveRecord::Schema.define(version: 2020_11_15_075448) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -50,15 +50,15 @@ ActiveRecord::Schema.define(version: 2020_11_07_034331) do
     t.index ["project_id"], name: "index_mid_positions_on_project_id"
   end
 
-  create_table "mid_skill_tags", force: :cascade do |t|
+  create_table "mid_tags", force: :cascade do |t|
     t.bigint "project_id", null: false
-    t.bigint "skill_tag_id", null: false
+    t.bigint "tag_id", null: false
     t.integer "deleted_flg", default: 0, null: false
     t.datetime "deleted_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["project_id"], name: "index_mid_skill_tags_on_project_id"
-    t.index ["skill_tag_id"], name: "index_mid_skill_tags_on_skill_tag_id"
+    t.index ["project_id"], name: "index_mid_tags_on_project_id"
+    t.index ["tag_id"], name: "index_mid_tags_on_tag_id"
   end
 
   create_table "positions", force: :cascade do |t|
@@ -78,6 +78,7 @@ ActiveRecord::Schema.define(version: 2020_11_07_034331) do
     t.string "url"
     t.text "required_skills"
     t.text "other_skills"
+    t.text "environment"
     t.integer "weekly_attendance"
     t.integer "min_operation_unit"
     t.integer "max_operation_unit"
@@ -100,11 +101,11 @@ ActiveRecord::Schema.define(version: 2020_11_07_034331) do
     t.index ["location_id"], name: "index_projects_on_location_id"
   end
 
-  create_table "skill_tags", force: :cascade do |t|
-    t.string "skill_tag_name", null: false
-    t.string "skill_tag_name_search", null: false
-    t.string "skill_type_name", null: false
-    t.integer "skill_type_id", default: 0, null: false
+  create_table "tags", force: :cascade do |t|
+    t.string "tag_name", null: false
+    t.string "tag_name_search", null: false
+    t.string "tag_type_name", default: "その他", null: false
+    t.integer "tag_type_id", null: false
     t.integer "deleted_flg", default: 0, null: false
     t.datetime "deleted_at"
     t.datetime "created_at", precision: 6, null: false

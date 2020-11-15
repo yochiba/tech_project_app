@@ -100,7 +100,6 @@ class LevtechScrapingService
         error_project: false,
       }
       project_html = project_html.css('.pjt')
-      # puts "[PROJECT DETAIL]:: #{project_html}"
       # 案件名称
       project_title = compose_project_title project_html, project_hash
       # TODO 本番稼働時には下記を起動
@@ -183,7 +182,7 @@ class LevtechScrapingService
         row_name = row.text
         next if row_name.blank?
         if index.zero?
-          project_hash[:contract_name] = row_name.gsub!(/[\r\n]/, NO_SPACE)
+          project_hash[:contract_name] = row_name.gsub!(/[\r\n]|（(.*?)）/, NO_SPACE)
           project_hash[:create_json][:contract_id] = ProjectService.compose_contract_id(row_name)
         else
           project_hash[:location_name] = row_name.gsub!(/（(.*?)）/, STATION_STR)
@@ -201,8 +200,8 @@ class LevtechScrapingService
           compose_descripton detail_html, project_hash
         when Settings.levtech.title.skill
           compose_skill detail_html, project_hash
-        when Settings.levtech.title.skill_tags
-          compose_skill_tags detail_html, project_hash
+        when Settings.levtech.title.tags
+          compose_tags detail_html, project_hash
         else
           break
         end
@@ -231,42 +230,42 @@ class LevtechScrapingService
     end
 
     # スキルタグ構成メソッド
-    def compose_skill_tags(detail_html, project_hash)
-      skill_tags_html_array = detail_html.css('.pjtDetail__row__desc .descDetail')
-      skill_tags_array = []
-      skill_tags_html_array.map do |skill_tag_html|
-        discriminate_skills skill_tag_html, skill_tags_array
+    def compose_tags(detail_html, project_hash)
+      tags_html_array = detail_html.css('.pjtDetail__row__desc .descDetail')
+      tags_array = []
+      tags_html_array.map do |tag_html|
+        discriminate_tags tag_html, tags_array
       end
-      project_hash[:skill_tag_array] = skill_tags_array if skill_tags_array.present?
+      project_hash[:tag_array] = tags_array if tags_array.present?
     end
 
-    # スキル判別メソッド
-    def discriminate_skills(skill_tag_html, skill_tags_array)
-      skill_type_name = skill_tag_html.css('.descDetail__ttl').text
-      # スキルタグ名称配列
-      skill_tag_name_html_array = skill_tag_html.css('.descDetail__txt .pjtTag')
-      skill_tag_name_html_array.map do |skill_tag_name_html|
-        skill_tag_name = skill_tag_name_html.text
-        next if skill_tag_name.blank?
-        # スキル名称検索用(全角,大文字,空白なし)
-        search_name = skill_tag_name.upcase.tr(UPPER_CASE, LOWER_CASE)
+    # タグ判別メソッド
+    def discriminate_tags(tag_html, tags_array)
+      tag_type_name = tag_html.css('.descDetail__ttl').text
+      # タグ名称配列
+      tag_name_html_array = tag_html.css('.descDetail__txt .pjtTag')
+      tag_name_html_array.map do |tag_name_html|
+        tag_name = tag_name_html.text
+        next if tag_name.blank?
+        # タグ名称検索用(全角,大文字,空白なし)
+        search_name = tag_name.upcase.tr(UPPER_CASE, LOWER_CASE)
         # 空白が存在する場合
         search_name.gsub!(UPPER_SPACE, NO_SPACE) if search_name.include?(UPPER_SPACE)
         search_name.gsub!(LOWER_SPACE, NO_SPACE) if search_name.include?(LOWER_SPACE)
         # スキルタイプ判別
-        skill_type_id = ProjectService.descriminate_skill_type_by_name skill_type_name
-        # skillハッシュ
-        skill_tag_hash = {
-          skill_type_name: skill_type_name,
-          skill_type_id: skill_type_id,
-          skill_tag_name: skill_tag_name,
-          skill_tag_name_search: search_name,
+        tag_type_id = ProjectService.descriminate_tag_type tag_type_name
+        # タグハッシュ
+        tag_hash = {
+          tag_type_name: tag_type_name,
+          tag_type_id: tag_type_id,
+          tag_name: tag_name,
+          tag_name_search: search_name,
         }
         # 既存スキルタグの判別と新規作成
-        skill_tag_hash[:skill_tag_id] = ProjectService.descriminate_skill_id skill_tag_hash
-        skill_tags_array.push skill_tag_hash
+        tag_hash[:tag_id] = ProjectService.descriminate_tag_id tag_hash
+        tags_array.push tag_hash
       end
-      skill_tags_array
+      tags_array
     end
   end
 end

@@ -1,4 +1,5 @@
 FactoryBot.define do
-  factory :skill_tag do
+  factory :tag do
+    
   end
 end

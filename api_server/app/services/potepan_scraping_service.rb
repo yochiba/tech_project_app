@@ -163,8 +163,10 @@ class PotepanScrapingService
           compose_required_skills detail_html, project_hash
         when Settings.potepan.title.other_skills
           compose_other_skills detail_html, project_hash
-        when Settings.potepan.title.skill_tags
-          project_hash[:skill_tag_array] = compose_skill_tags detail_html, project_hash
+        when Settings.potepan.title.environment
+          compose_environment detail_html, project_hash
+        when Settings.potepan.title.tags
+          project_hash[:tag_array] = compose_tags detail_html, project_hash
         else
           next
         end
@@ -198,29 +200,46 @@ class PotepanScrapingService
       project_hash[:create_json][:other_skills] = other_skills if other_skills.present?
     end
 
-    # スキルタグ構成メソッド
-    def compose_skill_tags(detail_html, project_hash)
-      skill_array = detail_html.css('dd p').text.split(', ')
-      skill_tags_array = []
-      skill_array.map do |skill_tag_name|
-        # スキル名称検索用(全角,大文字,空白なし)
-        search_name = skill_tag_name.upcase.tr(UPPER_CASE, LOWER_CASE)
-        # 空白が存在する場合
-        search_name.gsub!(UPPER_SPACE, NO_SPACE) if search_name.include?(UPPER_SPACE)
-        search_name.gsub!(LOWER_SPACE, NO_SPACE) if search_name.include?(LOWER_SPACE)
-        # skillハッシュ
-        skill_tag_hash = {
-          skill_tag_name: skill_tag_name,
-          skill_tag_name_search: search_name,
-        }
-        # スキルタイプ判別 FIXME
-        skill_type_hash = ProjectService.descriminate_skill_type_from_db search_name
-        skill_tag_hash.merge! skill_type_hash
-        # 既存スキルタグの判別と新規作成
-        skill_tag_hash[:skill_tag_id] = ProjectService.descriminate_skill_id skill_tag_hash
-        skill_tags_array.push skill_tag_hash
+    # 開発環境構成メソッド
+    def compose_environment(detail_html, project_hash)
+      environment = detail_html.css('dd p').text
+      project_hash[:create_json][:environment] = environment if environment.present?
+    end
+
+    # タグ構成メソッド
+    def compose_tags(detail_html, project_hash)
+      tags_html_array = detail_html.css('dd p a')
+      puts "[INFO]:: #{tags_html_array}"
+      tags_array = []
+      tags_html_array.map do |tag_html|
+        discriminate_tags tag_html, tags_array
       end
-      skill_tags_array
+      project_hash[:tag_array] = tags_array
+    end
+
+    # タグ判別メソッド
+    def discriminate_tags(tag_html, tags_array)
+      tag_name = tag_html.text
+      # タグ名称検索用(全角,大文字,空白なし)
+      search_name = tag_name.upcase.tr(UPPER_CASE, LOWER_CASE)
+      # 空白が存在する場合
+      search_name.gsub!(UPPER_SPACE, NO_SPACE) if search_name.include?(UPPER_SPACE)
+      search_name.gsub!(LOWER_SPACE, NO_SPACE) if search_name.include?(LOWER_SPACE)
+      # タグタイプ取得
+      tag = Tag.search_existing_tag(tag_name)
+      tag_type_name = tag.present? ? tag.first.tag_type_name : 'その他'
+      # タグタイプ判別
+      tag_type_id = ProjectService.descriminate_tag_type tag_type_name
+      # タグハッシュ
+      tag_hash = {
+        tag_type_name: tag_type_name,
+        tag_type_id: tag_type_id,
+        tag_name: tag_name,
+        tag_name_search: search_name,
+      }
+      # 既存スキルタグの判別と新規作成
+      tag_hash[:tag_id] = ProjectService.descriminate_tag_id tag_hash
+      tags_array.push tag_hash
     end
   end
 end
