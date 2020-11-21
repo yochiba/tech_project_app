@@ -48,7 +48,7 @@ class ProjectService
   # RPA
   RPA_TITLE_ARRAY = [
     'RPA',
-  ]
+  ].freeze
 
   # 円/月に変換する単位
   YEN_PER_MONTH_ARRAY = [

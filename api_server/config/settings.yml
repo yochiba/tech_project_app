@@ -6,7 +6,6 @@ upper_space: '　'
 lower_space: ' '
 upper_numbers: '０-９'
 lower_numbers: '0-9'
-
 # RESPONSE
 response:
   ok:
@@ -15,7 +14,6 @@ response:
   error:
     status: 500
     result: 'ERROR'
-
 # PROJECT COMMON
 price_unit_id:
   yen_per_month: 0
@@ -39,7 +37,7 @@ tag_type:
   other: 1000
 # MIDWORKS
 midworks:
-  company_name: 'MIDWORKS'
+  company_name: 'Midworks'
   company_id: 0
   url:
     host: 'https://mid-works.com'
@@ -59,7 +57,7 @@ midworks:
     industry: '業界'
 # LEVTECH
 levtech:
-  company_name: 'LEVTECH'
+  company_name: 'レバテック'
   company_id: 1
   url:
     host: 'https://freelance.levtech.jp'
@@ -75,7 +73,7 @@ levtech:
     contract_location: '契約形態最寄り駅'
 # POTEPAN
 potepan:
-  company_name: 'POTEPAN'
+  company_name: 'ポテパン'
   company_id: 2
   url:
     host: 'https://freelance.potepan.com'
@@ -87,3 +85,11 @@ potepan:
     environment: '開発環境'
     location: '勤務地'
     tags: 'キーワード'
+# PEBANK
+pebank:
+  company_name: 'PE-BANK'
+  company_id: 3
+  url:
+    host: 'https://pe-bank.jp'
+    new_projects: 'https://pe-bank.jp/project'
+  title:
