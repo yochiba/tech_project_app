@@ -28,6 +28,8 @@ class Api::V1::ScrapingController < ApplicationController
   # response_json format for scraping
   def response_json(project_json_array, result_flg)
     response_json = {
+
+    
       project_count: project_json_array.size,
       project_list: project_json_array,
       status: result_flg ? Settings.response.ok.status : Settings.response.error.status,

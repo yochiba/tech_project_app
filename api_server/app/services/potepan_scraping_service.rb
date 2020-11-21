@@ -15,7 +15,7 @@ class PotepanScrapingService
   # 東京都の案件
   AREA_TOKYO = '/prefecture-1'
   # FIXME 取得する最大ページ数
-  MAX_PAGE_COUNT = 1
+  MAX_PAGE_COUNT = 10
   # 1ページの表示件数
   PROJECTS_PER_PAGE = 10
   # 空文字
@@ -67,7 +67,7 @@ class PotepanScrapingService
           Rails.logger.info exception
         end
         project_json_array = compose_project_json_array project_json_array, project_list_html
-        sleep 1
+        sleep 5
       end
       project_json_array
     end
@@ -81,7 +81,7 @@ class PotepanScrapingService
         # エラー案件の場合はスキップ
         next if project_hash[:error_project]
         project_json_array.push project_hash
-        sleep 0.5
+        sleep 2
       end
       project_json_array
     end
