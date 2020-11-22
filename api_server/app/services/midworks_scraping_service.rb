@@ -199,21 +199,21 @@ class MidworksScrapingService
           location = detail.css('td').text
           break if location.blank?
           project_hash[:location_name] = location.gsub!(/( \/ .*)/, NO_SPACE)
-          project_hash[:create_json][:location_id] = ProjectService.compose_location_id(location)
+          project_hash[:create_json][:location_id] = ScrapingService.compose_location_id(location)
         when Settings.midworks.title.industry
           industry = detail.css('td').text
           break if industry.blank?
           project_hash[:industry_name] = industry
-          project_hash[:create_json][:industry_id] = ProjectService.compose_industry_id(industry)
+          project_hash[:create_json][:industry_id] = ScrapingService.compose_industry_id(industry)
         when Settings.midworks.title.position
           position_html_array = detail.css('td')
           break if position_html_array.blank?
-          project_hash[:position_array] = ProjectService.compose_position_array position_html_array
+          project_hash[:position_array] = ScrapingService.compose_position_array position_html_array
         when Settings.midworks.title.contract
           contract = detail.css('td').text
           break if contract.blank?
           project_hash[:contract_name] = contract.gsub!(/（(.*?)）/, NO_SPACE)
-          project_hash[:create_json][:contract_id] = ProjectService.compose_contract_id(contract)
+          project_hash[:create_json][:contract_id] = ScrapingService.compose_contract_id(contract)
         else
           next
         end
@@ -225,12 +225,13 @@ class MidworksScrapingService
       # 最大単価と最小単価
       price_array = price_with_ope.gsub(/（(.*?)）/, NO_SPACE).split('~')
       price_unit_name = price_array[1].gsub(/（(.*?)）/, NO_SPACE).delete('0-9')
-      project_hash[:create_json].merge! ProjectService.descriminate_price_unit_id price_unit_name
-      # FIXME 全ての値に * 10000してしまうとイレギュラーが来た場合に変な値になる
-      project_hash[:create_json].merge!({
-        min_price: price_array[0].gsub(/[^\d]/, NO_SPACE).to_i * 10000,
-        max_price: price_array[1].gsub(/[^\d]/, NO_SPACE).to_i * 10000,
-      })
+      project_hash[:create_json].merge! ScrapingService.descriminate_price_unit_id price_unit_name
+      if price_unit_name.include?('万')
+        project_hash[:create_json].merge!({
+          min_price: price_array[0].gsub(/[^\d]/, NO_SPACE).to_i * 10000,
+          max_price: price_array[1].gsub(/[^\d]/, NO_SPACE).to_i * 10000,
+        })
+      end
     end
 
     # 稼働構成メソッド
@@ -246,7 +247,7 @@ class MidworksScrapingService
         })
         ope_unit_name = ope_unit_array[0].delete(LOWER_NUMS)
         # 稼働単位
-        project_hash[:create_json].merge! ProjectService.descriminate_ope_unit_id ope_unit_name
+        project_hash[:create_json].merge! ScrapingService.descriminate_ope_unit_id ope_unit_name
       end
     end
 
@@ -274,7 +275,7 @@ class MidworksScrapingService
         search_name.gsub!(UPPER_SPACE, NO_SPACE) if search_name.include?(UPPER_SPACE)
         search_name.gsub!(LOWER_SPACE, NO_SPACE) if search_name.include?(LOWER_SPACE)
         # タグタイプ判別
-        tag_type_id = ProjectService.descriminate_tag_type tag_type_name
+        tag_type_id = ScrapingService.descriminate_tag_type tag_type_name
         # タグハッシュ
         tag_hash = {
           tag_type_name: tag_type_name,
@@ -283,7 +284,7 @@ class MidworksScrapingService
           tag_name_search: search_name,
         }
         # 既存スキルタグの判別と新規作成
-        tag_hash[:tag_id] = ProjectService.descriminate_tag_id tag_hash
+        tag_hash[:tag_id] = ScrapingService.descriminate_tag_id tag_hash
         tags_array.push tag_hash
       end
       tags_array

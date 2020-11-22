@@ -7,6 +7,8 @@ Rails.application.routes.draw do
       get '/scrape-midworks', to: 'scraping#scrape_midworks'
       get '/scrape-levtech', to: 'scraping#scrape_levtech'
       get '/scrape-potepan', to: 'scraping#scrape_potepan'
+      # projects controller
+      get '/projects/index', to: 'projects#index'
     end
   end
 end

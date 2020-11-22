@@ -165,14 +165,14 @@ class LevtechScrapingService
       price_unit_name.gsub!(/[\r\n]|,|〜|[\d]|収益シミュレーションを見る|（収支シミュレーション）/, NO_SPACE)
       # '円円／◯◯'で取得されてしまう場合
       price_unit_name.gsub!('円円', '円') if price_unit_name.include?('円円')
-      project_hash[:create_json].merge! ProjectService.descriminate_price_unit_id price_unit_name
+      project_hash[:create_json].merge! ScrapingService.descriminate_price_unit_id price_unit_name
     end
 
     # 職種・ポジション構成メソッド
     def compose_position(summary_row, project_hash)
       position_class = '.pjtSummary__row__desc.pjtSummary__row__desc--tag a'
       position_html_array = summary_row.css(position_class)
-      project_hash[:position_array] = ProjectService.compose_position_array position_html_array
+      project_hash[:position_array] = ScrapingService.compose_position_array position_html_array
     end
 
     # 契約情報構成メソッド
@@ -183,10 +183,10 @@ class LevtechScrapingService
         next if row_name.blank?
         if index.zero?
           project_hash[:contract_name] = row_name.gsub!(/[\r\n]|（(.*?)）/, NO_SPACE)
-          project_hash[:create_json][:contract_id] = ProjectService.compose_contract_id(row_name)
+          project_hash[:create_json][:contract_id] = ScrapingService.compose_contract_id(row_name)
         else
           project_hash[:location_name] = row_name.gsub!(/（(.*?)）/, STATION_STR)
-          project_hash[:create_json][:location_id] = ProjectService.compose_location_id(row_name)
+          project_hash[:create_json][:location_id] = ScrapingService.compose_location_id(row_name)
         end
       end
     end
@@ -253,7 +253,7 @@ class LevtechScrapingService
         search_name.gsub!(UPPER_SPACE, NO_SPACE) if search_name.include?(UPPER_SPACE)
         search_name.gsub!(LOWER_SPACE, NO_SPACE) if search_name.include?(LOWER_SPACE)
         # スキルタイプ判別
-        tag_type_id = ProjectService.descriminate_tag_type tag_type_name
+        tag_type_id = ScrapingService.descriminate_tag_type tag_type_name
         # タグハッシュ
         tag_hash = {
           tag_type_name: tag_type_name,
@@ -262,7 +262,7 @@ class LevtechScrapingService
           tag_name_search: search_name,
         }
         # 既存スキルタグの判別と新規作成
-        tag_hash[:tag_id] = ProjectService.descriminate_tag_id tag_hash
+        tag_hash[:tag_id] = ScrapingService.descriminate_tag_id tag_hash
         tags_array.push tag_hash
       end
       tags_array
