@@ -147,7 +147,7 @@ class PotepanScrapingService
       # 単価単位名称
       price_unit_name = price_str.gsub(/[\d]/, NO_SPACE)
       project_hash[:create_json][:max_price] = max_price
-      project_hash[:create_json].merge! ProjectService.descriminate_price_unit_id price_unit_name
+      project_hash[:create_json].merge! ScrapingService.descriminate_price_unit_id price_unit_name
     end
 
     # 案件詳細判別メソッド
@@ -186,7 +186,7 @@ class PotepanScrapingService
       location = detail_html.css('dd p a').text
       if location.present?
         project_hash[:location_name] = location
-        project_hash[:create_json][:location_id] = ProjectService.compose_location_id(location)
+        project_hash[:create_json][:location_id] = ScrapingService.compose_location_id(location)
       end
     end
 
@@ -230,7 +230,7 @@ class PotepanScrapingService
       tag = Tag.search_existing_tag(tag_name)
       tag_type_name = tag.present? ? tag.first.tag_type_name : OTHER_STR
       # タグタイプ判別
-      tag_type_id = ProjectService.descriminate_tag_type tag_type_name
+      tag_type_id = ScrapingService.descriminate_tag_type tag_type_name
       # タグハッシュ
       tag_hash = {
         tag_type_name: tag_type_name,
@@ -239,7 +239,7 @@ class PotepanScrapingService
         tag_name_search: search_name,
       }
       # 既存スキルタグの判別と新規作成
-      tag_hash[:tag_id] = ProjectService.descriminate_tag_id tag_hash
+      tag_hash[:tag_id] = ScrapingService.descriminate_tag_id tag_hash
       tags_array.push tag_hash
     end
   end

@@ -6,6 +6,7 @@ upper_space: '　'
 lower_space: ' '
 upper_numbers: '０-９'
 lower_numbers: '0-9'
+project_list_count: 20
 # RESPONSE
 response:
   ok:
