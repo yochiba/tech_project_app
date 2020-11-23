@@ -6,33 +6,33 @@
 class ProjectService
   class << self
     # get project_list
-    def project_list(page)
-      project_list = []
+    def project_list(page, search_query)
+      pjt_list = []
       # OFFSET
-      offset = page.to_i * Settings.project_list_count
+      offset = page.to_i * Settings.pjt_list_count
       # GET PROJECT LIST
-      projects = Project.project_list offset
-      if projects.present?
-        projects.map do |project|
-          project_hash = project.as_json
-          tag_list = compose_tag_list project
-          project_hash[:tag_list] = tag_list if tag_list.present?
-          project_hash[:location] = compose_location project if project.location_id.present?
-          project_hash[:industry] = compose_industry project if project.industry_id.present?
-          position_list = comopse_position_list project
-          project_hash[:position_list] = position_list if position_list.present?
-          project_list.push project_hash
+      pjts = Project.project_list offset
+      if pjts.present?
+        pjts.map do |pjt|
+          pjt_hash = pjt.as_json
+          tag_list = compose_tag_list pjt
+          pjt_hash[:tag_list] = tag_list if tag_list.present?
+          pjt_hash[:location] = compose_location pjt if pjt.location_id.present?
+          pjt_hash[:industry] = compose_industry pjt if pjt.industry_id.present?
+          position_list = comopse_position_list pjt
+          pjt_hash[:position_list] = position_list if position_list.present?
+          pjt_list.push pjt_hash
         end
       end
-      project_list
+      pjt_list
     end
 
     private
 
     # compose project tag_list
-    def compose_tag_list(project)
+    def compose_tag_list(pjt)
       tag_list = []
-      mid_tags = project.mid_tags
+      mid_tags = pjt.mid_tags
       if mid_tags.present?
         mid_tags.map do |mid_tag|
           tag = Tag.find(mid_tag.tag_id)
@@ -49,8 +49,8 @@ class ProjectService
     end
 
     # compose  project location
-    def compose_location(project)
-      location = project.location
+    def compose_location(pjt)
+      location = pjt.location
       location_hash = {
         location_id: location.id,
         location_name: location.location_name,
@@ -59,8 +59,8 @@ class ProjectService
     end
 
     # compose project industry_list
-    def compose_industry(project)
-      industry = project.industry
+    def compose_industry(pjt)
+      industry = pjt.industry
       industry_hash = {
         industry_id: industry.id,
         industry_name: industry.industry_name,
@@ -69,9 +69,9 @@ class ProjectService
     end
 
     # compose project position_list
-    def comopse_position_list(project)
+    def comopse_position_list(pjt)
       position_list = []
-      mid_positions = project.mid_positions
+      mid_positions = pjt.mid_positions
       if mid_positions.present?
         mid_positions.map do |mid_position|
           position = Position.find(mid_position.position_id)

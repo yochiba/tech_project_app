@@ -16,7 +16,7 @@ class Project < ApplicationRecord
   scope :project_list, ->(offset) {
     where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
       order(created_at: :desc).
-      limit(Settings.project_list_count).
+      limit(Settings.pjt_list_count).
       offset(offset)
   }
 end
