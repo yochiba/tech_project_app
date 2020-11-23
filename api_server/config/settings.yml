@@ -6,12 +6,15 @@ upper_space: '　'
 lower_space: ' '
 upper_numbers: '０-９'
 lower_numbers: '0-9'
-project_list_count: 20
+pjt_list_count: 20
 # RESPONSE
 response:
   ok:
     status: 200
     result: 'OK'
+  not_found:
+    status: 404
+    result: 'NOT FOUND'
   error:
     status: 500
     result: 'ERROR'
