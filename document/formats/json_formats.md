@@ -48,10 +48,15 @@
 ```
 
 ## search query
+
+### 検索の順番
+先にタグ検索→その検索結果からキーワード検索を行う(キーワードが存在する場合)
 ```
 {
-  "keywords": ["string"],
-  "tags": {
+  "page": "integer",
+  "sort": "string,
+  "search_query": {
+    "tags": {
       "language": ["string"],
       "framework": ["string"],
       "db": ["string"],
@@ -60,14 +65,16 @@
       "package": ["string"],
       "rpa": ["string"],
       "other": ["string"]
-  },
-  "price": {
+    },
+    "location": ["string"],
+    "position": ["string"],
+    "industry": ["string"],
+    "contract": ["string"],
+    "price": {
       "min_price": "integer",
       "max_price": "integer"
-  },
-  "location": ["string"],
-  "position": ["string"],
-  "industry": ["string"],
-  "contract": ["string"]
+    },
+    "keywords": ["string"]
+  }
 }
 ```
