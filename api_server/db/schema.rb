@@ -12,10 +12,7 @@
 
 ActiveRecord::Schema.define(version: 2020_11_15_075448) do
 
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
-
-  create_table "contracts", force: :cascade do |t|
+  create_table "contracts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "contract_name", null: false
     t.integer "deleted_flg", default: 0, null: false
     t.datetime "deleted_at"
@@ -23,7 +20,7 @@ ActiveRecord::Schema.define(version: 2020_11_15_075448) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "industries", force: :cascade do |t|
+  create_table "industries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "industry_name", null: false
     t.integer "deleted_flg", default: 0, null: false
     t.datetime "deleted_at"
@@ -31,7 +28,7 @@ ActiveRecord::Schema.define(version: 2020_11_15_075448) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "locations", force: :cascade do |t|
+  create_table "locations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "location_name", null: false
     t.integer "deleted_flg", default: 0, null: false
     t.datetime "deleted_at"
@@ -39,7 +36,7 @@ ActiveRecord::Schema.define(version: 2020_11_15_075448) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "mid_positions", force: :cascade do |t|
+  create_table "mid_positions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "project_id", null: false
     t.bigint "position_id", null: false
     t.integer "deleted_flg", default: 0, null: false
@@ -50,7 +47,7 @@ ActiveRecord::Schema.define(version: 2020_11_15_075448) do
     t.index ["project_id"], name: "index_mid_positions_on_project_id"
   end
 
-  create_table "mid_tags", force: :cascade do |t|
+  create_table "mid_tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "project_id", null: false
     t.bigint "tag_id", null: false
     t.integer "deleted_flg", default: 0, null: false
@@ -61,7 +58,7 @@ ActiveRecord::Schema.define(version: 2020_11_15_075448) do
     t.index ["tag_id"], name: "index_mid_tags_on_tag_id"
   end
 
-  create_table "positions", force: :cascade do |t|
+  create_table "positions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "position_name", null: false
     t.string "position_name_search", null: false
     t.integer "deleted_flg", default: 0, null: false
@@ -70,7 +67,7 @@ ActiveRecord::Schema.define(version: 2020_11_15_075448) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "projects", force: :cascade do |t|
+  create_table "projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "title", null: false
     t.text "description"
     t.integer "company_id", null: false
@@ -101,7 +98,7 @@ ActiveRecord::Schema.define(version: 2020_11_15_075448) do
     t.index ["location_id"], name: "index_projects_on_location_id"
   end
 
-  create_table "tags", force: :cascade do |t|
+  create_table "tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "tag_name", null: false
     t.string "tag_name_search", null: false
     t.string "tag_type_name", default: "その他", null: false
