@@ -3,7 +3,7 @@
 # class_type: Model
 # class_name: Tag
 class Tag < ApplicationRecord
-  has_many :mid_tags
+  has_many :projects, through: :mid_tags
 
   validates :tag_name, :tag_name_search, :tag_type_id, :deleted_flg, presence: true
   validates :tag_type_id, :deleted_flg, numericality: { greater_than_or_equal_to: 0 }

@@ -11,24 +11,17 @@ class ProjectService
       # offset
       offset = page.to_i * Settings.pjt_list_count
       # 一覧検索
-      # in_flg = false
       # if search_query.blank?
       #   pjts Project.project_list_latest offset
-      #   in_flg = true
       # end
       pjts = Project.project_list_latest offset
 
       if pjts.present?
         pjts.map do |pjt|
           pjt_hash = pjt.as_json
-          tag_list = compose_tag_list pjt
-          pjt_hash[:tag_list] = tag_list if tag_list.present?
-          position_list = comopse_position_list pjt
-          pjt_hash[:position_list] = position_list if position_list.present?
           pjt_list.push pjt_hash
         end
       end
-      # puts "[INFO]:::::::::::::::: IN!!" if in_flg
       pjt_list
     end
 
