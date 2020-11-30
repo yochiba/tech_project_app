@@ -3,8 +3,8 @@
 # class_type: Model
 # class_name: MidPosition
 class MidPosition < ApplicationRecord
-  belongs_to :projects, optional: true
-  belongs_to :positions, optional: true
+  belongs_to :project, optional: true
+  belongs_to :position, optional: true
 
   validates :project_id, :position_id, :deleted_flg, presence: true
   validates :deleted_flg, numericality: { greater_than_or_equal_to: 0 }
