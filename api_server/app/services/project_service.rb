@@ -6,123 +6,107 @@
 class ProjectService
   class << self
     # get project_list
-    def project_list(page, sort, search_query)
+    def project_list(params)
+      page = params[:page]
+      sort = params[:sort]
       pjt_list = []
       # offset
       offset = (page.to_i - 1) * Settings.pjt_list_count
+      # location, contract, industry, tagを構成
+      search_hash = compose_search_hash params 
       # 一覧検索
       pjts = []
-      if search_query.blank?
-        pjts = Project.project_list offset, sort
+      if search_hash[:search_type].blank?
+        pjts = Project.project_list sort, offset
       else
-        if search_query[:location_list].present?
-          search_query[:location_list] = compose_location_id_list search_query[:location_list]
-        end
-
-        if search_query[:contract_list].present?
-          search_query[:contract_list] = compose_contract_id_list search_query[:contract_list]
-        end
-
-        if search_query[:industry_list].present?
-          search_query[:industry_list] = compose_industry_id_list search_query[:industry_list]
-        end
-
-        if search_query[:tag_list].present?
-          search_query[:tag_list] = compose_tag_id_list search_query[:tag_list]
-        end
         # 検索条件の分岐
-        pjts = get_search_result offset, sort, search_query
+        pjts = extract_search_query sort, offset, search_hash
       end
-
-      if pjts.present?
-        pjts.map do |pjt|
-          pjt_hash = pjt.as_json
-          pjt_list.push pjt_hash
-        end
-      end
+      pjts.map { |pjt| pjt_list.push pjt.as_json } if pjts.present?
       pjt_list
     end
 
     private
 
-    # compose location id list
-    def compose_location_id_list(location_name_list)
-      location_id_list = []
-      location_name_list.map do |location_name|
-        locations = Location.select_location_id location_name
-        locations.map { |location| location_id_list.push location.id }
+    # compose name_list_query
+    def compose_search_hash(params)
+      search_hash = {
+        search_type: [],
+      }
+
+      if params[:locations].present?
+        search_hash[:location_list] = compose_column_id_list params[:locations].split(','), 0
+        search_hash[:search_type].push 0
       end
-      location_id_list
+  
+      if params[:contracts].present?
+        search_hash[:contract_list] = compose_column_id_list params[:contracts].split(','), 1
+        search_hash[:search_type].push 1
+      end
+  
+      if params[:industries].present?
+        search_hash[:industry_list] = compose_column_id_list params[:industries].split(','), 2
+        search_hash[:search_type].push 2
+      end
+  
+      if params[:tags].present?
+        search_hash[:tag_list] = compose_column_id_list params[:tags].split(','), 3
+        search_hash[:search_type].push 3
+      end
+      search_hash
     end
 
-    # compose contract id list
-    def compose_contract_id_list(contract_name_list)
-      contract_id_list = []
-      contract_name_list.map do |contract_name|
-        contracts = Contract.select_contract_id contract_name
-        contracts.map { |contract| contract_id_list.push contract.id }
+    # compose column id list
+    def compose_column_id_list(column_name_list, search_type)
+      column_id_list = []
+      column_name_list.map do |column_name|
+        search_result = []
+        case search_type
+        when Settings.search.type.location
+          search_result = Location.select_location_id column_name
+        when Settings.search.type.contract
+          search_result = Contract.select_contract_id column_name
+        when Settings.search.type.industry
+          search_result = Industry.select_industry_id column_name
+        when Settings.search.type.tag
+          search_result = Tag.select_tag_id column_name
+        end
+        search_result.map { |result| column_id_list.push result.id }
       end
-      puts "[INFO contract_id_list] #{contract_id_list}"
-      contract_id_list
+      column_id_list
     end
 
-    # compose industry id list
-    def compose_industry_id_list(industry_name_list)
-      industry_id_list = []
-      industry_name_list.map do |industry_name|
-        industries = Industry.select_industry_id industry_name
-        industries.map { |industry| industry_id_list.push industry.id }
-      end
-      industry_id_list
-    end
-
-    # compose tag id list
-    def compose_tag_id_list(tag_name_search_list)
-      tag_id_list = []
-      tag_name_search_list.map do |tag_name_search|
-        tags = Tag.select_tag_id tag_name_search
-        tags.map { |tag| tag_id_list.push tag.id }
-      end
-      tag_id_list
-    end
-
-    # FIXME ここの条件分岐を修正　よりシンプルに
-    # FIX contractsのパラメータ時の挙動変かも
-    def get_search_result(offset, sort, search_query)
-      location = search_query[:locations_list]
-      contract = search_query[:contract_list]
-      industry = search_query[:industry_list]
-      tag = search_query[:tag_list]
-
-      if location.present? && contract.present? && industry.present? && tag.present?
-        pjts = Project.project_list_search_all_tags offset, sort, search_query
-
-      elsif location.present? && contract.present? && industry.present? && tag.blank?
-        pjts = Project.project_list_search_location_contract_industry offset, sort, search_query
-      elsif location.present? && contract.present? && industry.blank? && tag.present?
-        pjts = Project.project_list_search_location_contract_tag offset, sort, search_query
-      elsif location.present? && contract.blank? && industry.present? && tag.present?
-        pjts = Project.project_list_search_location_industry_tag offset, sort, search_query
-      elsif location.blank? && contract.present? && industry.present? && tag.present?
-        pjts = Project.project_list_search_contract_industry_tag offset, sort, search_query
-
-      elsif location.present? && contract.present? && industry.blank? && tag.blank?
-        pjts = Project.project_list_search_location_contract offset, sort, search_query
-      elsif location.present? && contract.blank? && industry.blank? && tag.present?
-        pjts = Project.project_list_search_location_tag offset, sort, search_query
-      elsif location.blank? && contract.blank? && industry.present? && tag.present?
-        pjts = Project.project_list_search_industry_tag offset, sort, search_query
-      elsif location.blank? && contract.present? && industry.present? && tag.blank?
-        pjts = Project.project_list_search_contract_industry offset, sort, search_query
-
-      elsif location.present? && contract.blank? && industry.blank? && tag.blank?
-        pjts = Project.project_list_search_location offset, sort, search_query
-      elsif location.blank? && contract.blank? && industry.blank? && tag.present?
-        pjts = Project.project_list_search_tag offset, sort, search_query
-      elsif location.blank? && contract.blank? && industry.present? && tag.blank?
-        pjts = Project.project_list_search_industry offset, sort, search_query
-      elsif location.blank? && contract.present? && industry.blank? && tag.blank?
-        pjts = Project.project_list_search_contract offset, sort, search_query
+    # extract search query
+    def extract_search_query(sort, offset, search_hash)
+      search_type = search_hash[:search_type]
+      pjts = []
+      case search_type
+      when Settings.search.type_list.all
+        pjts = Project.project_list_search_all_tags sort, offset, search_hash
+      when Settings.search.type_list.location_contract_industry
+        pjts = Project.project_list_search_location_contract_industry sort, offset, search_hash
+      when Settings.search.type_list.contract_industry_tag
+        pjts = Project.project_list_search_contract_industry_tag sort, offset, search_hash
+      when Settings.search.type_list.location_industry_tag
+        pjts = Project.project_list_search_location_industry_tag sort, offset, search_hash
+      when Settings.search.type_list.location_contract_tag
+        pjts = Project.project_list_location_contract_tag sort, offset, search_hash
+      when Settings.search.type_list.location_contract
+        pjts = Project.project_list_search_location_contract sort, offset, search_hash
+      when Settings.search.type_list.contract_industry
+        pjts = Project.project_list_search_contract_industry sort, offset, search_hash
+      when Settings.search.type_list.industry_tag
+        pjts = Project.project_list_search_industry_tag sort, offset, search_hash
+      when Settings.search.type_list.location_tag
+        pjts = Project.project_list_search_location_tag sort, offset, search_hash
+      when Settings.search.type_list.location
+        pjts = Project.project_list_search_location sort, offset, search_hash
+      when Settings.search.type_list.contract
+        pjts = Project.project_list_search_contract sort, offset, search_hash
+      when Settings.search.type_list.industry
+        pjts = Project.project_list_search_industry sort, offset, search_hash
+      when Settings.search.type_list.tag
+        pjts = Project.project_list_search_tag sort, offset, search_hash
       end
       pjts
     end
