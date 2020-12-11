@@ -7,4 +7,11 @@ class Position < ApplicationRecord
 
   validates :position_name, :deleted_flg, presence: true
   validates :deleted_flg, numericality: { greater_than_or_equal_to: 0 }
+
+  # select id from positions
+  scope :select_position_id, ->(position_name_search) {
+    select(:id).
+      where('positions.position_name_search LIKE ?', "%#{position_name_search}%").
+      where(deleted_flg: 0, deleted_at: nil)
+  }
 end

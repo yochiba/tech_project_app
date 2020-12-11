@@ -22,134 +22,15 @@ class Project < ApplicationRecord
       project_list_accessories(sort, offset)
   }
 
-  # search by all tags([0, 1, 2, 3])
-  scope :project_list_search_all_tags, ->(sort, offset, search_hash) {
-    project_list_select.
+  # search by all tags([0, 1, 2, 3, 4])
+  scope :project_list_search_all_types, ->(sort, offset, search_hash) {
+    project_list.
       project_list_left_outer_joins.
       where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
       where_location_id_in(search_hash[:location_list]).
       where_contract_id_in(search_hash[:contract_list]).
       where_industry_id_in(search_hash[:industry_list]).
-      where_tag_id_in(search_hash[:tag_list]).
-      project_list_accessories(sort, offset)
-  }
-
-  # location, contract, industry([0, 1, 2])
-  scope :project_list_search_location_contract_industry, ->(sort, offset, search_hash) {
-    project_list_select.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
-      where_location_id_in(search_hash[:location_list]).
-      where_contract_id_in(search_hash[:contract_list]).
-      where_industry_id_in(search_hash[:industry_list]).
-      project_list_accessories(sort, offset)
-  }
-
-  # location, contract, industry([1, 2, 3])
-  scope :project_list_search_contract_industry_tag, ->(sort, offset, search_hash) {
-    project_list_select.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
-      where_contract_id_in(search_hash[:contract_list]).
-      where_industry_id_in(search_hash[:industry_list]).
-      where_tag_id_in(search_hash[:tag_list]).
-      project_list_accessories(sort, offset)
-  }
-
-  # location, industry, tag([0, 2, 3])
-  scope :project_list_search_location_industry_tag, ->(sort, offset, search_hash) {
-    project_list_select.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
-      where_location_id_in(search_hash[:location_list]).
-      where_industry_id_in(search_hash[:industry_list]).
-      where_tag_id_in(search_hash[:tag_list]).
-      project_list_accessories(sort, offset)
-  }
-
-  # location, contract, tag([0, 1, 3])
-  scope :project_list_location_contract_tag, ->(sort, offset, search_hash) {
-    project_list_select.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
-      where_location_id_in(search_hash[:location_list]).
-      where_contract_id_in(search_hash[:contract_list]).
-      where_tag_id_in(search_hash[:tag_list]).
-      project_list_accessories(sort, offset)
-  }
-
-  # location, contract([0, 1])
-  scope :project_list_search_location_contract, ->(sort, offset, search_hash) {
-    project_list_select.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
-      where_location_id_in(search_hash[:location_list]).
-      where_contract_id_in(search_hash[:contract_list]).
-      project_list_accessories(sort, offset)
-  }
-
-  # contract, industry([1, 2])
-  scope :project_list_search_contract_industry, ->(sort, offset, search_hash) {
-    project_list_select.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
-      where_contract_id_in(search_hash[:contract_list]).
-      where_industry_id_in(search_hash[:industry_list]).
-      project_list_accessories(sort, offset)
-  }
-
-  # industry, tag([2, 3])
-  scope :project_list_search_industry_tag, ->(sort, offset, search_hash) {
-    project_list_select.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
-      where_industry_id_in(search_hash[:industry_list]).
-      where_tag_id_in(search_hash[:tag_list]).
-      project_list_accessories(sort, offset)
-  }
-
-  # location, tag([0, 3])
-  scope :project_list_search_location_tag, ->(sort, offset, search_hash) {
-    project_list_select.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
-      where_contract_id_in(search_hash[:contract_list]).
-      where_industry_id_in(search_hash[:industry_list]).
-      project_list_accessories(sort, offset)
-  }
-
-  # location([0])
-  scope :project_list_search_location, ->(sort, offset, search_hash) {
-    project_list_select.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
-      where_location_id_in(search_hash[:location_list]).
-      project_list_accessories(sort, offset)
-  }
-
-  # contract([1])
-  scope :project_list_search_contract, ->(sort, offset, search_hash) {
-    project_list_select.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
-      where_contract_id_in(search_hash[:contract_list]).
-      project_list_accessories(sort, offset)
-  }
-
-  # industry([2])
-  scope :project_list_search_industry, ->(sort, offset, search_hash) {
-    project_list_select.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
-      where_industry_id_in(search_hash[:industry_list]).
-      project_list_accessories(sort, offset)
-  }
-
-  # tag([3])
-  scope :project_list_search_tag, ->(sort, offset, search_hash) {
-    project_list_select.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
+      where_positon_id_in(search_hash[:position_list]).
       where_tag_id_in(search_hash[:tag_list]).
       project_list_accessories(sort, offset)
   }
@@ -190,6 +71,11 @@ class Project < ApplicationRecord
   # WHERE industry_id IN ()
   scope :where_industry_id_in, ->(industry_list) {
     where('industries.id IN (?)', industry_list)
+  }
+
+  # WHERE position_id IN ()
+  scope :where_position_id_in, ->(position_list) {
+    where('positions.id IN (?)', position_list)
   }
 
   # WHERE tag_id IN ()
