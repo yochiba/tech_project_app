@@ -47,43 +47,43 @@ class PotepanScrapingService
       page_class = '.project__wrapper .project__index-title p span'
       total_projects = new_projects_page_html.css(page_class).text.to_i
       page_count = total_projects / PROJECTS_PER_PAGE
-      page_count_array = page_count >= MAX_PAGE_COUNT ? [*1..MAX_PAGE_COUNT] : [*1..page_count]
+      page_count_list = page_count >= MAX_PAGE_COUNT ? [*1..MAX_PAGE_COUNT] : [*1..page_count]
       # 案件情報json作成
-      project_json_array = request_project_list page_count_array
+      project_json_list = request_project_list page_count_list
       Rails.logger.info "[SCRAPING END]:: PotepanScrapingService"
-      project_json_array
+      project_json_list
     end
 
     private
 
     # 案件情報一覧リクエストメソッド
-    def request_project_list(page_count_array)
-      project_json_array = []
-      page_count_array.map do |page|
+    def request_project_list(page_count_list)
+      project_json_list = []
+      page_count_list.map do |page|
         begin
           url = "#{NEW_PROJECTS_URL}#{AREA_TOKYO}?page=#{page}"
           project_list_html = Nokogiri::HTML.parse(open(url, allow_redirections: :all))
         rescue => exception
           Rails.logger.info exception
         end
-        project_json_array = compose_project_json_array project_json_array, project_list_html
+        project_json_list = compose_project_json_list project_json_list, project_list_html
         sleep 5
       end
-      project_json_array
+      project_json_list
     end
 
     # 案件情報json配列構成メソッド
-    def compose_project_json_array(project_json_array, project_list_html)
-      project_id_array = project_list_html.css('.single-project__title')
-      project_id_array.map do |project_id|
+    def compose_project_json_list(project_json_list, project_list_html)
+      project_id_list = project_list_html.css('.single-project__title')
+      project_id_list.map do |project_id|
         project_url = "#{HOST_URL}#{project_id[:href]}"
         project_hash = compose_project project_url
         # エラー案件の場合はスキップ
         next if project_hash[:error_project]
-        project_json_array.push project_hash
+        project_json_list.push project_hash
         sleep 2
       end
-      project_json_array
+      project_json_list
     end
 
     # 各案件の情報を構成
@@ -118,8 +118,8 @@ class PotepanScrapingService
       # 案件単価
       compose_price project_html, project_hash
       # 詳細
-      project_detail_array = project_html.css('.single-project__data-area dl')
-      descriminate_detail_html project_detail_array, project_hash
+      project_detail_list = project_html.css('.single-project__data-area dl')
+      descriminate_detail_html project_detail_list, project_hash
 
       project_hash
     end
@@ -151,8 +151,8 @@ class PotepanScrapingService
     end
 
     # 案件詳細判別メソッド
-    def descriminate_detail_html(detail_html_array, project_hash)
-      detail_html_array.map do |detail_html|
+    def descriminate_detail_html(detail_html_list, project_hash)
+      detail_html_list.map do |detail_html|
         # 案件詳細情報の各項目のタイトルを取得
         detail_title = detail_html.css('dt').text
         next if detail_title.blank?
@@ -168,7 +168,7 @@ class PotepanScrapingService
         when Settings.potepan.title.environment
           compose_environment detail_html, project_hash
         when Settings.potepan.title.tags
-          project_hash[:tag_array] = compose_tags detail_html, project_hash
+          project_hash[:tag_list] = compose_tags detail_html, project_hash
         else
           next
         end
@@ -210,16 +210,16 @@ class PotepanScrapingService
 
     # タグ構成メソッド
     def compose_tags(detail_html, project_hash)
-      tags_html_array = detail_html.css('dd p a')
-      tags_array = []
-      tags_html_array.map do |tag_html|
-        discriminate_tags tag_html, tags_array
+      tags_html_list = detail_html.css('dd p a')
+      tags_list = []
+      tags_html_list.map do |tag_html|
+        discriminate_tags tag_html, tags_list
       end
-      project_hash[:tag_array] = tags_array
+      project_hash[:tag_list] = tags_list
     end
 
     # タグ判別メソッド
-    def discriminate_tags(tag_html, tags_array)
+    def discriminate_tags(tag_html, tags_list)
       tag_name = tag_html.text
       # タグ名称検索用(全角,大文字,空白なし)
       search_name = tag_name.upcase.tr(UPPER_CASE, LOWER_CASE)
@@ -240,7 +240,7 @@ class PotepanScrapingService
       }
       # 既存スキルタグの判別と新規作成
       tag_hash[:tag_id] = ScrapingService.descriminate_tag_id tag_hash
-      tags_array.push tag_hash
+      tags_list.push tag_hash
     end
   end
 end

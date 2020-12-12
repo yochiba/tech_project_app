@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       get '/scrape-potepan', to: 'scraping#scrape_potepan'
       # projects controller
       get '/projects/index', to: 'projects#index'
+      get '/projects/show', to: 'projects#show'
     end
   end
 end

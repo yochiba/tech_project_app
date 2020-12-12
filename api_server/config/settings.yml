@@ -6,6 +6,18 @@ upper_space: '　'
 lower_space: ' '
 upper_numbers: '０-９'
 lower_numbers: '0-9'
+# RESPONSE
+res:
+  ok:
+    status: 200
+    result: 'OK'
+  no_content:
+    status: 204
+    result: 'NO CONTENT'
+  error:
+    status: 500
+    result: 'ERROR'
+# PROJECT COMMON
 pjt_list_count: 20
 search:
   type:
@@ -14,18 +26,6 @@ search:
     industry: 2
     position: 3
     tag: 4
-# RESPONSE
-response:
-  ok:
-    status: 200
-    result: 'OK'
-  not_found:
-    status: 404
-    result: 'NOT FOUND'
-  error:
-    status: 500
-    result: 'ERROR'
-# PROJECT COMMON
 price_unit_id:
   yen_per_month: 0
   yen_per_hour: 1

@@ -42,19 +42,19 @@ class LevtechScrapingService
       # 総案件数からページ数取得
       total_projects = new_projects_page_html.css('.search__result__summary span').text.to_i
       page_count = total_projects / PROJECTS_PER_PAGE
-      page_count_array = page_count >= MAX_PAGE_COUNT ? [*1..MAX_PAGE_COUNT] : [*1..page_count]
+      page_count_list = page_count >= MAX_PAGE_COUNT ? [*1..MAX_PAGE_COUNT] : [*1..page_count]
       # 案件情報json作成
-      project_json_array = request_project_list page_count_array
+      project_json_list = request_project_list page_count_list
       Rails.logger.info "[SCRAPING END]:: LevtechScrapingService"
-      project_json_array
+      project_json_list
     end
 
     private
 
     # 案件情報一覧リクエストメソッド
-    def request_project_list(page_count_array)
-      project_json_array = []
-      page_count_array.map do |page|
+    def request_project_list(page_count_list)
+      project_json_list = []
+      page_count_list.map do |page|
         begin
           page_param = page == 1 ? "#{AREA_TOKYO}" : "#{AREA_TOKYO}/p#{page}"
           url = "#{NEW_PROJECTS_URL}#{page_param}"
@@ -62,24 +62,24 @@ class LevtechScrapingService
         rescue => exception
           Rails.logger.info exception
         end
-        project_json_array = compose_project_json_array project_json_array, project_list_html
+        project_json_list = compose_project_json_list project_json_list, project_list_html
         sleep 10
       end
-      project_json_array
+      project_json_list
     end
 
     # 案件情報json配列構成メソッド
-    def compose_project_json_array(project_json_array, project_list_html)
-      project_id_array = project_list_html.css('.prjHead__ttl a')
-      project_id_array.map do |project_id|
+    def compose_project_json_list(project_json_list, project_list_html)
+      project_id_list = project_list_html.css('.prjHead__ttl a')
+      project_id_list.map do |project_id|
         project_url = "#{HOST_URL}#{project_id[:href]}"
         project_hash = compose_project project_url
         # エラー案件の場合はスキップ
         next if project_hash[:error_project]
-        project_json_array.push project_hash
+        project_json_list.push project_hash
         sleep 2
       end
-      project_json_array
+      project_json_list
     end
 
     # 各案件の情報を構成
@@ -114,8 +114,8 @@ class LevtechScrapingService
       summary_html = project_html.css('.pjtSummary')
       compose_summary summary_html, project_hash
       # detail
-      detail_html_array = project_html.css('.pjtDetail__row')
-      descriminate_detail detail_html_array, project_hash
+      detail_html_list = project_html.css('.pjtDetail__row')
+      descriminate_detail detail_html_list, project_hash
       project_hash
     end
 
@@ -136,8 +136,8 @@ class LevtechScrapingService
 
     # 概要構成メソッド
     def compose_summary(summary_html, project_hash)
-      summary_row_array = summary_html.css('.pjtSummary__row')
-      summary_row_array.map do |summary_row|
+      summary_row_list = summary_html.css('.pjtSummary__row')
+      summary_row_list.map do |summary_row|
         title = summary_row.css('.pjtSummary__row__ttl').text
         if title.include?(Settings.levtech.title.price)
           title = title.slice!(Settings.levtech.title.price)
@@ -171,14 +171,14 @@ class LevtechScrapingService
     # 職種・ポジション構成メソッド
     def compose_position(summary_row, project_hash)
       position_class = '.pjtSummary__row__desc.pjtSummary__row__desc--tag a'
-      position_html_array = summary_row.css(position_class)
-      project_hash[:position_array] = ScrapingService.compose_position_array position_html_array
+      position_html_list = summary_row.css(position_class)
+      project_hash[:position_list] = ScrapingService.compose_position_list position_html_list
     end
 
     # 契約情報構成メソッド
     def compose_contract_location(summary_row, project_hash)
-      row_array = summary_row.css('.pjtSummary__row__desc')
-      row_array.map.with_index do |row, index|
+      row_list = summary_row.css('.pjtSummary__row__desc')
+      row_list.map.with_index do |row, index|
         row_name = row.text
         next if row_name.blank?
         if index.zero?
@@ -192,8 +192,8 @@ class LevtechScrapingService
     end
 
     # 案件詳細判別メソッド
-    def descriminate_detail(detail_html_array, project_hash)
-      detail_html_array.map do |detail_html|
+    def descriminate_detail(detail_html_list, project_hash)
+      detail_html_list.map do |detail_html|
         title = detail_html.css('.pjtDetail__row__ttl').text
         case title
         when Settings.levtech.title.description
@@ -216,35 +216,35 @@ class LevtechScrapingService
 
     # スキル構成メソッド
     def compose_skill(detail_html, project_hash)
-      skill_array = detail_html.css('.descDetail__txt')
+      skill_list = detail_html.css('.descDetail__txt')
       # 必須スキル
-      if skill_array[0].present?
-        required_skills = skill_array[0].text
+      if skill_list[0].present?
+        required_skills = skill_list[0].text
         project_hash[:create_json][:required_skills] = required_skills
       end
       # 歓迎スキル
-      if skill_array[2].present?
-        other_skills = skill_array[2].text
+      if skill_list[2].present?
+        other_skills = skill_list[2].text
         project_hash[:create_json][:other_skills] = other_skills
       end
     end
 
     # スキルタグ構成メソッド
     def compose_tags(detail_html, project_hash)
-      tags_html_array = detail_html.css('.pjtDetail__row__desc .descDetail')
-      tags_array = []
-      tags_html_array.map do |tag_html|
-        discriminate_tags tag_html, tags_array
+      tags_html_list = detail_html.css('.pjtDetail__row__desc .descDetail')
+      tags_list = []
+      tags_html_list.map do |tag_html|
+        discriminate_tags tag_html, tags_list
       end
-      project_hash[:tag_array] = tags_array if tags_array.present?
+      project_hash[:tag_list] = tags_list if tags_list.present?
     end
 
     # タグ判別メソッド
-    def discriminate_tags(tag_html, tags_array)
+    def discriminate_tags(tag_html, tags_list)
       tag_type_name = tag_html.css('.descDetail__ttl').text
       # タグ名称配列
-      tag_name_html_array = tag_html.css('.descDetail__txt .pjtTag')
-      tag_name_html_array.map do |tag_name_html|
+      tag_name_html_list = tag_html.css('.descDetail__txt .pjtTag')
+      tag_name_html_list.map do |tag_name_html|
         tag_name = tag_name_html.text
         next if tag_name.blank?
         # タグ名称検索用(全角,大文字,空白なし)
@@ -263,9 +263,9 @@ class LevtechScrapingService
         }
         # 既存スキルタグの判別と新規作成
         tag_hash[:tag_id] = ScrapingService.descriminate_tag_id tag_hash
-        tags_array.push tag_hash
+        tags_list.push tag_hash
       end
-      tags_array
+      tags_list
     end
   end
 end
