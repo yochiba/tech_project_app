@@ -20,57 +20,57 @@ class ScrapingService
   LOWER_NUMS = Settings.lower_numbers
 
   # プログラミング言語
-  LANGUAGE_TITLE_ARRAY = [
+  LANGUAGE_TITLE_LIST = [
     'プログラミング言語',
     '言語',
   ].freeze
   # フレームワーク
-  FRAMEWORK_TITLE_ARRAY = [
+  FRAMEWORK_TITLE_LIST = [
     'フレームワーク',
   ].freeze
   # データベース
-  DATABASE_TITLE_ARRAY = [
+  DATABASE_TITLE_LIST = [
     'データベース',
     'DB',
   ].freeze
   # ツール
-  TOOL_TITLE_ARRAY = [
+  TOOL_TITLE_LSIT = [
     'ツール',
   ].freeze
   # OS
-  OS_TITLE_ARRAY = [
+  OS_TITLE_LIST = [
     'OS',
   ].freeze
   # パッケージ類
-  PACKAGE_TITLE_ARRAY = [
+  PACKAGE_TITLE_LIST = [
     'サーバ基盤・パッケージ',
   ].freeze
   # RPA
-  RPA_TITLE_ARRAY = [
+  RPA_TITLE_LIST = [
     'RPA',
   ].freeze
 
   # 円/月に変換する単位
-  YEN_PER_MONTH_ARRAY = [
+  YEN_PER_MONTH_LIST = [
     '万円/月',
     '円／月',
     '円/月',
   ].freeze
 
-  YEN_PER_HOUR_ARRAY = [
+  YEN_PER_HOUR_LIST = [
     '円／時',
   ].freeze
 
   # 稼働時間 時間
-  HOUR_ARRAY = [
+  HOUR_LIST = [
     '時間',
   ].freeze
 
   class << self
     # 案件登録メソッド
-    def compose_project_json(project_json_array)
+    def compose_project_json(project_json_list)
       result_flg = true
-      project_json_array.map do |project_json|
+      project_json_list.map do |project_json|
         Rails.logger.info "[TARGET CREATE URL]:: #{project_json[:create_json][:url]}"
         # 案件の作成
         project = Project.create(project_json[:create_json])
@@ -78,15 +78,15 @@ class ScrapingService
           result_flg = false
           return result_flg
         end
-        tag_array = project_json[:tag_array]
-        position_array = project_json[:position_array]
+        tag_list = project_json[:tag_list]
+        position_list = project_json[:position_list]
         # tag & projectの紐付け
-        if tag_array.present?
-          result_flg = compose_mid_tag project, tag_array
+        if tag_list.present?
+          result_flg = compose_mid_tag project, tag_list
         end
         # position & projectの紐付け
-        if position_array.present?
-          result_flg = compose_mid_position project, position_array
+        if position_list.present?
+          result_flg = compose_mid_position project, position_list
         end
       end
       result_flg
@@ -96,19 +96,19 @@ class ScrapingService
     def descriminate_tag_type(tag_type_name)
       tag_type_id = 0
       case tag_type_name
-      when *LANGUAGE_TITLE_ARRAY
+      when *LANGUAGE_TITLE_LIST
         tag_type_id = Settings.tag_type.language
-      when *FRAMEWORK_TITLE_ARRAY
+      when *FRAMEWORK_TITLE_LIST
         tag_type_id = Settings.tag_type.framework
-      when *DATABASE_TITLE_ARRAY
+      when *DATABASE_TITLE_LIST
         tag_type_id = Settings.tag_type.db
-      when *TOOL_TITLE_ARRAY
+      when *TOOL_TITLE_LSIT
         tag_type_id = Settings.tag_type.tool
-      when *OS_TITLE_ARRAY
+      when *OS_TITLE_LIST
         tag_type_id = Settings.tag_type.os
-      when *PACKAGE_TITLE_ARRAY
+      when *PACKAGE_TITLE_LIST
         tag_type_id = Settings.tag_type.package
-      when *RPA_TITLE_ARRAY
+      when *RPA_TITLE_LIST
         tag_type_id = Settings.tag_type.rpa
       else
         tag_type_id = Settings.tag_type.other
@@ -134,9 +134,9 @@ class ScrapingService
     end
 
     # ポジション構成メソッド
-    def compose_position_array(position_html_array)
-      position_array = []
-      position_html_array.map do |position_html|
+    def compose_position_list(position_html_list)
+      position_list = []
+      position_html_list.map do |position_html|
         position = position_html.text
         # ポジション名称検索用(全角,大文字,空白なし)
         search_name = position.upcase.tr(UPPER_CASE, LOWER_CASE)
@@ -148,9 +148,9 @@ class ScrapingService
           position_name_search: search_name,
         }
         position_hash[:position_id] = compose_position_id(position_hash)
-        position_array.push position_hash
+        position_list.push position_hash
       end
-      position_array
+      position_list
     end
 
     # ロケーションID構成メソッド
@@ -182,10 +182,10 @@ class ScrapingService
     def descriminate_price_unit_id(price_unit_name)
       price_unit_id = 0
       case price_unit_name
-      when *YEN_PER_MONTH_ARRAY
+      when *YEN_PER_MONTH_LIST
         price_unit_id = Settings.price_unit_id.yen_per_month
         price_unit_name = Settings.price_unit_name.yen_per_month
-      when *YEN_PER_HOUR_ARRAY
+      when *YEN_PER_HOUR_LIST
         price_unit_id = Settings.price_unit_id.yen_per_hour
         price_unit_name = Settings.price_unit_name.yen_per_hour
       else
@@ -202,7 +202,7 @@ class ScrapingService
     def descriminate_ope_unit_id(ope_unit_name)
       ope_unit_id = 0
       case ope_unit_name
-      when *HOUR_ARRAY
+      when *HOUR_LIST
         ope_unit_id = Settings.operation_unit_id.hour
       else
         ope_unit_id = Settings.operation_unit_id.other
@@ -231,9 +231,9 @@ class ScrapingService
     end
 
     # mid_tags構成メソッド
-    def compose_mid_tag(project, tag_array)
+    def compose_mid_tag(project, tag_list)
       result_flg = true
-      tag_array.map do |tag|
+      tag_list.map do |tag|
         mid_tag = project.mid_tags.create!(
           tag_id: tag[:tag_id],
         )
@@ -243,9 +243,9 @@ class ScrapingService
     end
 
     # mid_position構成メソッド
-    def compose_mid_position(project, position_array)
+    def compose_mid_position(project, position_list)
       result_flg = true
-      position_array.map do |position|
+      position_list.map do |position|
         mid_position = project.mid_positions.create!(
           position_id: position[:position_id],
         )

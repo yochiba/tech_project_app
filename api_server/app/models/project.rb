@@ -14,15 +14,22 @@ class Project < ApplicationRecord
   validates :title, :company_id, :company, :url, :display_flg, :deleted_flg, presence: true
   validates :display_flg, :deleted_flg, numericality: { greater_than_or_equal_to: 0 }
 
+  # single project data
+  scope :single_project,  ->(pjt_id) {
+    project_select.
+      project_list_left_outer_joins.
+      find_by(id: pjt_id, display_flg: 0, deleted_flg: 0, deleted_at: nil)
+  }
+
   # project list(sort)
   scope :project_list, ->(sort, offset) {
-    project_list_select.
+    project_select.
       project_list_left_outer_joins.
       where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
       project_list_accessories(sort, offset)
   }
 
-  # search by all tags([0, 1, 2, 3, 4])
+  # search by all types
   scope :project_list_search_all_types, ->(sort, offset, search_hash) {
     project_list.
       project_list_left_outer_joins.
@@ -35,17 +42,22 @@ class Project < ApplicationRecord
       project_list_accessories(sort, offset)
   }
 
-  # project list select
-  scope :project_list_select, -> do
+  scope :select_found_rows, -> do
+    select('DISTINCT found_rows() AS total_pages')
+  end
+
+  # project select
+  scope :project_select, -> do
     select(
-      'projects.*,
-      locations.location_name,
-      contracts.contract_name,
-      industries.industry_name,
-      GROUP_CONCAT(DISTINCT(positions.position_name)) AS position_name_list,
-      GROUP_CONCAT(DISTINCT(positions.position_name_search)) AS position_name_search_list,
-      GROUP_CONCAT(DISTINCT(tags.tag_name)) AS tag_name_list,
-      GROUP_CONCAT(DISTINCT(tags.tag_name_search)) AS tag_name_search_list'
+      'SQL_CALC_FOUND_ROWS
+       projects.*,
+       locations.location_name,
+       contracts.contract_name,
+       industries.industry_name,
+       GROUP_CONCAT(DISTINCT(positions.position_name)) AS position_name_list,
+       GROUP_CONCAT(DISTINCT(positions.position_name_search)) AS position_name_search_list,
+       GROUP_CONCAT(DISTINCT(tags.tag_name)) AS tag_name_list,
+       GROUP_CONCAT(DISTINCT(tags.tag_name_search)) AS tag_name_search_list'
     )
   end
 
@@ -57,6 +69,10 @@ class Project < ApplicationRecord
       left_joins(:positions).
       left_joins(:tags)
   end
+
+  scope :where_project_id, ->(project_id) {
+    where(id: project_id)
+  }
 
   # WHERE location_id IN ()
   scope :where_location_id_in, ->(location_list) {

@@ -5,13 +5,15 @@ class Api::V1::ProjectsController < ApplicationController
   # GET index
   def index
     # search_query = compose_search_query params
-    pjt_list = ProjectService.project_list params
-    response_json = {
-      count: pjt_list.size,
-      project_list: pjt_list,
-      result: pjt_list.present? ? Settings.response.ok.result : Settings.response.not_found.result,
-      status: pjt_list.present? ? Settings.response.ok.status : Settings.response.not_found.status,
-    }
-    render json: response_json
+    pjt_json = ProjectService.project_list_json params
+    res_json = ResponseService.pjts_list_search_result_json pjt_json
+    render json: res_json
+  end
+
+  # GET show
+  def show
+    pjt_json = ProjectService.project_json(params[:id])
+    res_json = ResponseService.pjt_json pjt_json
+    render json: res_json
   end
 end

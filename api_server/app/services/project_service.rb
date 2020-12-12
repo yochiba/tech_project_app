@@ -4,6 +4,10 @@
 # class_name: ProjectService
 # description: common class for projects
 class ProjectService
+  # project list count
+  PJT_LIST_COUNT = Settings.pjt_list_count
+
+  # column type numbers
   LOCATION_TYPE = Settings.search.type.location
   CONTRACT_TYPE = Settings.search.type.contract
   INDUSTRY_TYPE = Settings.search.type.industry
@@ -11,16 +15,23 @@ class ProjectService
   TAG_TYPE = Settings.search.type.tag
 
   class << self
-    # get project_list
-    def project_list(params)
+    # get project json
+    def project_json(pjt_id)
+      pjt = Project.single_project(pjt_id)
+      pjt_json = pjt.as_json
+      pjt_json
+    end
+
+    # get project_list_json
+    def project_list_json(params)
       page = params[:page]
       sort = params[:sort]
-      pjt_list = []
       # offset
-      offset = (page.to_i - 1) * Settings.pjt_list_count
+      offset = (page.to_i - 1) * PJT_LIST_COUNT
       # location, contract, industry, tagを2構成
       search_hash = compose_search_conditions_hash params
-      # 一覧検索
+      # 検索
+      pjt_list = []
       pjts = []
       if search_hash[:search_type].blank?
         pjts = Project.project_list sort, offset
@@ -28,7 +39,14 @@ class ProjectService
         pjts = execute_search_query sort, offset, search_hash
       end
       pjts.map { |pjt| pjt_list.push pjt.as_json } if pjts.present?
-      pjt_list
+
+      project_json = {
+        pjts_count: pjt_list.size,
+        pjts_list: pjt_list,
+      }
+      # puts "[INFO PROJECTS JSON]:: #{project_json}"
+      project_json.merge! compose_count_hash
+      project_json
     end
 
     private
@@ -96,7 +114,7 @@ class ProjectService
     # execute search query
     def execute_search_query(sort, offset, search_hash)
       search_type_list = search_hash[:search_type]
-      search_query = Project.project_list_select.project_list_left_outer_joins
+      search_query = Project.project_select.project_list_left_outer_joins
 
       search_type_list.map do |search_type|
         case search_type
@@ -115,6 +133,28 @@ class ProjectService
       search_query.merge! Project.project_list_accessories sort, offset
       pjts = ActiveRecord::Base.connection.select_all search_query.to_sql
       pjts
+    end
+
+    # compose total pages
+    def compose_count_hash
+      found_rows = Project.select_found_rows
+      total_pjts = found_rows.as_json.first['total_pages'].to_i
+
+      total_pages = total_pjts / PJT_LIST_COUNT
+
+      if total_pjts < PJT_LIST_COUNT && total_pjts != 0
+        total_pages = 1
+      elsif total_pjts.zero?
+        total_pages = 0
+      end
+
+      total_pages += 1 if total_pjts % PJT_LIST_COUNT != 0
+
+      count_hash = {
+        total_pjts_count: total_pjts,
+        total_pages: total_pages,
+      }
+      count_hash
     end
   end
 end
