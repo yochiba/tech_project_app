@@ -4,12 +4,13 @@
 # class_name: Project
 class Project < ApplicationRecord
   belongs_to :location, optional: true
-  belongs_to :industry, optional: true
   belongs_to :contract, optional: true
   has_many :mid_positions
   has_many :positions, through: :mid_positions
   has_many :mid_tags
   has_many :tags, through: :mid_tags
+  has_many :mid_industries
+  has_many :industries, through: :mid_industries
 
   validates :title, :company_id, :company, :url, :display_flg, :deleted_flg, presence: true
   validates :display_flg, :deleted_flg, numericality: { greater_than_or_equal_to: 0 }
@@ -53,9 +54,10 @@ class Project < ApplicationRecord
        projects.*,
        locations.location_name,
        contracts.contract_name,
-       industries.industry_name,
        GROUP_CONCAT(DISTINCT(positions.position_name)) AS position_name_list,
        GROUP_CONCAT(DISTINCT(positions.position_name_search)) AS position_name_search_list,
+       GROUP_CONCAT(DISTINCT(industries.industry_name)) AS industry_name_list,
+       GROUP_CONCAT(DISTINCT(industries.industry_name_search)) AS industry_name_search_list,
        GROUP_CONCAT(DISTINCT(tags.tag_name)) AS tag_name_list,
        GROUP_CONCAT(DISTINCT(tags.tag_name_search)) AS tag_name_search_list'
     )
@@ -65,7 +67,7 @@ class Project < ApplicationRecord
   scope :project_list_left_outer_joins, -> do
     left_joins(:location).
       left_joins(:contract).
-      left_joins(:industry).
+      left_joins(:industries).
       left_joins(:positions).
       left_joins(:tags)
   end

@@ -15,7 +15,7 @@ class PotepanScrapingService
   # 東京都の案件
   AREA_TOKYO = '/prefecture-1'
   # FIXME 取得する最大ページ数
-  MAX_PAGE_COUNT = 4
+  MAX_PAGE_COUNT = 2
   # 1ページの表示件数
   PROJECTS_PER_PAGE = 10
   # 空文字

@@ -199,12 +199,11 @@ class MidworksScrapingService
           location = detail.css('td').text
           break if location.blank?
           project_hash[:location_name] = location.gsub!(/( \/ .*)/, NO_SPACE)
-          project_hash[:create_json][:location_id] = ScrapingService.compose_location_id(location)
+          project_hash[:create_json][:location_id] = ScrapingService.compose_location_id location
         when Settings.midworks.title.industry
-          industry = detail.css('td').text
-          break if industry.blank?
-          project_hash[:industry_name] = industry
-          project_hash[:create_json][:industry_id] = ScrapingService.compose_industry_id(industry)
+          industry_html_list = detail.css('td')
+          break if industry_html_list.blank?
+          project_hash[:industry_list] = ScrapingService.compose_industry_list industry_html_list
         when Settings.midworks.title.position
           position_html_list = detail.css('td')
           break if position_html_list.blank?
@@ -213,7 +212,7 @@ class MidworksScrapingService
           contract = detail.css('td').text
           break if contract.blank?
           project_hash[:contract_name] = contract.gsub!(/（(.*?)）/, NO_SPACE)
-          project_hash[:create_json][:contract_id] = ScrapingService.compose_contract_id(contract)
+          project_hash[:create_json][:contract_id] = ScrapingService.compose_contract_id contract
         else
           next
         end
