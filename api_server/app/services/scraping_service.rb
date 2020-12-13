@@ -80,6 +80,7 @@ class ScrapingService
         end
         tag_list = project_json[:tag_list]
         position_list = project_json[:position_list]
+        industry_list = project_json[:industry_list]
         # tag & projectの紐付け
         if tag_list.present?
           result_flg = compose_mid_tag project, tag_list
@@ -87,6 +88,10 @@ class ScrapingService
         # position & projectの紐付け
         if position_list.present?
           result_flg = compose_mid_position project, position_list
+        end
+        # industry & projectの紐付け
+        if industry_list.present?
+          result_flg = compose_mid_industry project, industry_list
         end
       end
       result_flg
@@ -153,21 +158,47 @@ class ScrapingService
       position_list
     end
 
+    # 業界構成メソッド
+    def compose_industry_list(industry_html_list)
+      industry_list = []
+      industry_html_list.map do |industry_html|
+        industry = industry_html.text
+        # industryに複数の業界が混在している場合
+        if industry.include?('・')
+          industry_text_list = industry.split('・')
+          industry_text_list.map do |industry_text|
+            industry_hash = compose_industry_hash industry_text
+            industry_list.push industry_hash
+          end
+        else
+          industry_hash = compose_industry_hash industry
+          industry_list.push industry_hash
+        end
+      end
+      industry_list
+    end
+
+    # industry_hash構成メソッド
+    def compose_industry_hash(industry_text)
+      # ポジション名称検索用(全角,大文字,空白なし)
+      search_name = industry_text.upcase.tr(UPPER_CASE, LOWER_CASE)
+      # 空白が存在する場合
+      search_name.gsub!(UPPER_SPACE, NO_SPACE) if search_name.include?(UPPER_SPACE)
+      search_name.gsub!(LOWER_SPACE, NO_SPACE) if search_name.include?(LOWER_SPACE)
+      industry_hash = {
+        industry_name: industry_text,
+        industry_name_search: search_name,
+      }
+      industry_hash[:industry_id] = compose_industry_id(industry_hash)
+      industry_hash
+    end
+
     # ロケーションID構成メソッド
     def compose_location_id(location_name)
       # 既存のデータに存在しないかを確認する
       location = Location.find_by(location_name: location_name)
       location = Location.create!(location_name: location_name) if location.blank?
       location.id
-    end
-
-    # 業界ID構成メソッド
-    def compose_industry_id(industry_name)
-      # 既存のデータに存在しないかを確認する
-      industry = Industry.find_by(industry_name: industry_name)
-      industry = Industry.confirm_industry(industry_name).first if industry.blank?
-      industry = Industry.create!(industry_name: industry_name) if industry.blank?
-      industry.id
     end
 
     # 契約情報ID構成メソッド
@@ -230,6 +261,21 @@ class ScrapingService
       position.id
     end
 
+    # 業界ID構成メソッド
+    def compose_industry_id(industry_hash)
+      industry_name = industry_hash[:industry_name]
+      search_name = industry_hash[:industry_name_search]
+      # 既存のデータに存在しないかを確認する
+      industry = Industry.find_by(industry_name_search: search_name)
+      if industry.blank?
+        industry = Industry.create!(
+          industry_name: industry_name,
+          industry_name_search: search_name,
+        )
+      end
+      industry.id
+    end
+
     # mid_tags構成メソッド
     def compose_mid_tag(project, tag_list)
       result_flg = true
@@ -250,6 +296,18 @@ class ScrapingService
           position_id: position[:position_id],
         )
         result_flg = false if mid_position.blank?
+      end
+      result_flg
+    end
+
+    # mid_industry構成メソッド
+    def compose_mid_industry(project, industry_list)
+      result_flg = true
+      industry_list.map do |industry|
+        mid_industry = project.mid_industries.create!(
+          industry_id: industry[:industry_id],
+        )
+        result_flg = false if mid_industry.blank?
       end
       result_flg
     end

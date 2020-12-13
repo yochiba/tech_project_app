@@ -4,6 +4,7 @@ class CreateIndustries < ActiveRecord::Migration[6.0]
   def change
     create_table :industries do |t|
       t.string :industry_name, null: false
+      t.string :industry_name_search, null: false
       t.integer :deleted_flg, default: 0, null: false
       t.datetime :deleted_at
 

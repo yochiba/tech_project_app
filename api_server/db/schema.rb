@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_15_075448) do
+ActiveRecord::Schema.define(version: 2020_12_12_172325) do
 
   create_table "contracts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "contract_name", null: false
@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 2020_11_15_075448) do
 
   create_table "industries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "industry_name", null: false
+    t.string "industry_name_search", null: false
     t.integer "deleted_flg", default: 0, null: false
     t.datetime "deleted_at"
     t.datetime "created_at", precision: 6, null: false
@@ -34,6 +35,17 @@ ActiveRecord::Schema.define(version: 2020_11_15_075448) do
     t.datetime "deleted_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "mid_industries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.bigint "industry_id", null: false
+    t.integer "deleted_flg", default: 0, null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["industry_id"], name: "index_mid_industries_on_industry_id"
+    t.index ["project_id"], name: "index_mid_industries_on_project_id"
   end
 
   create_table "mid_positions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -87,14 +99,12 @@ ActiveRecord::Schema.define(version: 2020_11_15_075448) do
     t.string "price_unit"
     t.bigint "location_id"
     t.bigint "contract_id"
-    t.bigint "industry_id"
     t.integer "display_flg", default: 0, null: false
     t.integer "deleted_flg", default: 0, null: false
     t.datetime "deleted_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["contract_id"], name: "index_projects_on_contract_id"
-    t.index ["industry_id"], name: "index_projects_on_industry_id"
     t.index ["location_id"], name: "index_projects_on_location_id"
   end
 
