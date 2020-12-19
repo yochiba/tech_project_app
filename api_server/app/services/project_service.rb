@@ -44,7 +44,6 @@ class ProjectService
         pjts_count: pjt_list.size,
         pjts_list: pjt_list,
       }
-      # puts "[INFO PROJECTS JSON]:: #{project_json}"
       project_json.merge! compose_count_hash
       project_json
     end
