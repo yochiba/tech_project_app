@@ -11,6 +11,7 @@ class CreateIndustries < ActiveRecord::Migration[6.0]
   def change
     create_table :industries do |t|
       t.string :industry_name, null: false
+      t.string :industry_name_search, null: false
       t.integer :deleted_flg, default: 0, null: false
       t.datetime :deleted_at
 
@@ -28,10 +29,11 @@ end
 |-:|:-|:-|:-|:-|:-|:-|
 |1|id|integer|ID|NO||auto increment|
 |2|industry_name|string|業界名称|NO|||
-|3|deleted_flg|integer|削除フラグ|NO|0|0:未削除, 1:削除<br>論理削除で30日が経過したら削除|
-|4|deleted_at|date|削除日時|YES|||
-|5|created_at|date|作成日時|NO|||
-|6|updated_at|date|更新日時|NO|||
+|3|industry_name_search|string|業界名称 検索用|NO|||
+|4|deleted_flg|integer|削除フラグ|NO|0|0:未削除, 1:削除<br>論理削除で30日が経過したら削除|
+|5|deleted_at|date|削除日時|YES|||
+|6|created_at|date|作成日時|NO|||
+|7|updated_at|date|更新日時|NO|||
 
 ***
 

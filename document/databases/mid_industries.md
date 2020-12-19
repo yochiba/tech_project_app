@@ -1,17 +1,15 @@
-# mid_positions
+# mid_industries
 
 - ## description
-  the database middle table for position
+  the database middle table for industry
 
 - ## model
 ```
-# frozen_string_literal: true
-
-class CreateMidPositions < ActiveRecord::Migration[6.0]
+class CreateMidIndustries < ActiveRecord::Migration[6.0]
   def change
-    create_table :mid_positions do |t|
+    create_table :mid_industries do |t|
       t.references :project, null: false
-      t.references :position, null: false
+      t.references :industry, null: false
       t.integer :deleted_flg, default: 0, null: false
       t.datetime :deleted_at
 
@@ -29,7 +27,7 @@ end
 |-:|:-|:-|:-|:-|:-|:-|
 |1|id|integer|ID|NO||auto increment|
 |2|project_id|integer|案件ID|NO|||
-|3|position_id|integer|ポジションID|NO|||
+|3|industry_id|integer|業界ID|NO|||
 |4|deleted_flg|integer|削除フラグ|NO|0|0:未削除, 1:削除<br>論理削除で30日が経過したら削除|
 |5|deleted_at|date|削除日時|YES|||
 |6|created_at|date|作成日時|NO|||
@@ -41,4 +39,4 @@ end
 |name|table name|japanese name|description|
 |:-|:-|:-|:-|
 |project_id|integer|案件ID||
-|position_id|integer|ポジションID||
+|industry_id|integer|業界ID||
