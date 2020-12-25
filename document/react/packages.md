@@ -41,7 +41,7 @@ create-react-app client --typescript
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react"
+    "jsx": "react",
   },
   "include": [
     "src"
@@ -137,12 +137,26 @@ touch .babelrc
 ```
 
 ## dotenv導入
+***
 ```
-yarn add --dev dotenv
-touch .env.local
+yarn add --dev dotenv dotenv-cli
+touch .env && touch .env.staging && touch .env.production
+```
+
+## react router導入
+***
+```
+yarn add --dev react-router-dom @types/react-router-dom
+```
+
+## axiosの導入
+***
+```
+yarn add --dev axios
 ```
 
 ## 参考文献
 ***
 - https://ics.media/entry/16329/#webpack-ts-react
 - https://tech.playground.style/javascript/babel-webpack/
+- https://dev.classmethod.jp/articles/react-dotenv-cli/
