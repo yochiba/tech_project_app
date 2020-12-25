@@ -80,28 +80,28 @@ ActiveRecord::Schema.define(version: 2020_12_12_172325) do
   end
 
   create_table "projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "title", null: false
-    t.text "description"
-    t.integer "company_id", null: false
-    t.string "company", null: false
-    t.string "url"
-    t.text "required_skills"
-    t.text "other_skills"
-    t.text "environment"
-    t.integer "weekly_attendance"
-    t.integer "min_operation_unit"
-    t.integer "max_operation_unit"
-    t.integer "operation_unit_id"
-    t.string "operation_unit"
-    t.integer "min_price"
-    t.integer "max_price"
-    t.integer "price_unit_id"
-    t.string "price_unit"
-    t.bigint "location_id"
-    t.bigint "contract_id"
+    t.string "title", null: false, comment: "案件タイトル"
+    t.text "description", comment: "案件説明"
+    t.integer "company_id", null: false, comment: "案件掲載企業ID"
+    t.string "company", null: false, comment: "案件掲載企業名"
+    t.string "url", default: "", null: false, comment: "案件URL"
+    t.text "required_skills", comment: "必須スキル"
+    t.text "other_skills", comment: "尚可スキル"
+    t.text "environment", comment: "開発環境"
+    t.integer "weekly_attendance", comment: "出勤日数/週"
+    t.integer "min_operation_unit", default: 0, null: false, comment: "最低稼働時間"
+    t.integer "max_operation_unit", default: 0, null: false, comment: "最高稼働時間"
+    t.integer "operation_unit_id", comment: "稼働時間単位ID"
+    t.string "operation_unit", comment: "稼働時間単位"
+    t.integer "min_price", default: 0, null: false, comment: "最低単価"
+    t.integer "max_price", default: 0, null: false, comment: "最高単価"
+    t.integer "price_unit_id", comment: "単価単位ID"
+    t.string "price_unit", comment: "単価単位"
+    t.bigint "location_id", comment: "勤務地"
+    t.bigint "contract_id", comment: "契約形態"
     t.integer "display_flg", default: 0, null: false
-    t.integer "deleted_flg", default: 0, null: false
-    t.datetime "deleted_at"
+    t.integer "deleted_flg", default: 0, null: false, comment: "削除フラグ"
+    t.datetime "deleted_at", comment: "削除日時"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["contract_id"], name: "index_projects_on_contract_id"

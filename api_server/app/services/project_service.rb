@@ -24,27 +24,12 @@ class ProjectService
 
     # get project_list_json
     def project_list_json(params)
-      page = params[:page]
+      page = params[:page].to_i
       sort = params[:sort]
-      # offset
-      offset = (page.to_i - 1) * PJT_LIST_COUNT
-      # location, contract, industry, tagを2構成
+      # location, contract, industry, tagを構成
       search_hash = compose_search_conditions_hash params
       # 検索
-      pjt_list = []
-      pjts = []
-      if search_hash[:search_type].blank?
-        pjts = Project.project_list sort, offset
-      else
-        pjts = execute_search_query sort, offset, search_hash
-      end
-      pjts.map { |pjt| pjt_list.push pjt.as_json } if pjts.present?
-
-      project_json = {
-        pjts_count: pjt_list.size,
-        pjts_list: pjt_list,
-      }
-      project_json.merge! compose_count_hash
+      project_json = execute_search_query sort, page, search_hash
       project_json
     end
 
@@ -111,10 +96,54 @@ class ProjectService
     end
 
     # execute search query
-    def execute_search_query(sort, offset, search_hash)
-      search_type_list = search_hash[:search_type]
-      search_query = Project.project_select.project_list_left_outer_joins
+    def execute_search_query(sort, page, search_hash)
+      # offset
+      offset = (page - 1) * PJT_LIST_COUNT
 
+      pjt_hash_list = []
+      total_pjts = 0
+      if search_hash[:search_type].blank?
+        pjt_hash_list = Project.select_option.project_list.sub_options sort, offset
+        total_pjts_query = Project.select_total_count.project_list.group('projects.id')
+        total_pjts = total_pjts_query.as_json.size
+      else
+        search_type_list = search_hash[:search_type]
+        search_query = Project.project_list_left_outer_joins
+        # 検索クエリ作成
+        compose_search_query search_type_list, search_query, search_hash
+        # 総件数取得
+        total_pjts_query = search_query.merge Project.select_total_count.group('projects.id')
+        total_pjts = total_pjts_query.as_json.size
+        # 案件データ取得
+        search_query.merge! Project.select_option
+        search_query.merge! Project.sub_options sort, offset
+        pjt_hash_list = ActiveRecord::Base.connection.select_all search_query.to_sql
+      end
+
+      pjt_list = []
+      if pjt_hash_list.present?
+        pjt_hash_list.map do |pjt|
+          # GROUP_CONCATで取得した文字列を配列化
+          compose_name_list pjt
+          pjt_list.push pjt.as_json
+        end
+      end
+
+      # 総ページ数を取得
+      total_pages = compose_total_pages total_pjts
+      project_json = {
+        current_page: page,
+        total_pages: total_pages,
+        total_pjt_count: total_pjts,
+        sort: sort,
+        pjt_count: pjt_list.size,
+        pjt_list: pjt_list,
+      }
+      project_json
+    end
+
+    # 検索クエリ作成
+    def compose_search_query(search_type_list, search_query, search_hash)
       search_type_list.map do |search_type|
         case search_type
         when LOCATION_TYPE
@@ -129,31 +158,51 @@ class ProjectService
           search_query.merge! Project.where_tag_id_in search_hash[:tag_list]
         end
       end
-      search_query.merge! Project.project_list_accessories sort, offset
-      pjts = ActiveRecord::Base.connection.select_all search_query.to_sql
-      pjts
     end
 
-    # compose total pages
-    def compose_count_hash
-      found_rows = Project.select_found_rows
-      total_pjts = found_rows.as_json.first['total_pages'].to_i
+    # compose name list
+    def compose_name_list(pjt)
+      if pjt['position_name_list'].present?
+        position_name_list = pjt['position_name_list']
+        pjt['position_name_list'] = position_name_list.split(',')
+      end
 
+      if pjt['position_name_search_list'].present?
+        position_name_search_list = pjt['position_name_search_list']
+        pjt['position_name_search_list'] = position_name_search_list.split(',')
+      end
+
+      if pjt['industry_name_list'].present?
+        industry_name_list = pjt['industry_name_list']
+        pjt['industry_name_list'] = industry_name_list.split(',')
+      end
+
+      if pjt['industry_name_search_list'].present?
+        industry_name_search_list = pjt['industry_name_search_list']
+        pjt['industry_name_search_list'] = industry_name_search_list.split(',')
+      end
+
+      if pjt['tag_name_list'].present?
+        tag_name_list = pjt['tag_name_list']
+        pjt['tag_name_list'] = tag_name_list.split(',')
+      end
+
+      if pjt['tag_name_search_list'].present?
+        tag_name_search_list = pjt['tag_name_search_list']
+        pjt['tag_name_search_list'] = tag_name_search_list.split(',')
+      end
+    end
+
+    # 総ページ数
+    def compose_total_pages(total_pjts)
       total_pages = total_pjts / PJT_LIST_COUNT
-
       if total_pjts < PJT_LIST_COUNT && total_pjts != 0
         total_pages = 1
       elsif total_pjts.zero?
         total_pages = 0
       end
-
-      total_pages += 1 if total_pjts % PJT_LIST_COUNT != 0
-
-      count_hash = {
-        total_pjts_count: total_pjts,
-        total_pages: total_pages,
-      }
-      count_hash
+      total_pages += 1 if total_pjts % PJT_LIST_COUNT >= 1
+      total_pages
     end
   end
 end

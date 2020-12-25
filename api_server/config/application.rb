@@ -36,7 +36,7 @@ module ApiServer
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
     # CORS
-    cors_allowed_origins = ENV['CORS_ALLOWED_ORIGINS_HOST'].present? ? ENV['CORS_ALLOWED_ORIGINS_HOST'] : 'http://localhost:3001'
+    cors_allowed_origins = ENV['CORS_ALLOWED_ORIGINS_HOST'].present? ? ENV['CORS_ALLOWED_ORIGINS_HOST'] : 'http://localhost:3000'
     config.x.cors_allowed_origins = ENV.fetch('CORS_ALLOWED_ORIGINS', cors_allowed_origins)
     # Rspec
     config.generators do |g|

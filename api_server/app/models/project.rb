@@ -12,46 +12,31 @@ class Project < ApplicationRecord
   has_many :mid_industries
   has_many :industries, through: :mid_industries
 
-  validates :title, :company_id, :company, :url, :display_flg, :deleted_flg, presence: true
+  validates :title, :company_id, :company, :url, :min_operation_unit, :display_flg,
+            :max_operation_unit, :min_price, :max_price, :deleted_flg, presence: true
   validates :display_flg, :deleted_flg, numericality: { greater_than_or_equal_to: 0 }
 
-  # single project data
+  # project
   scope :single_project,  ->(pjt_id) {
-    project_select.
+    select_option.
       project_list_left_outer_joins.
       find_by(id: pjt_id, display_flg: 0, deleted_flg: 0, deleted_at: nil)
   }
 
-  # project list(sort)
-  scope :project_list, ->(sort, offset) {
-    project_select.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
-      project_list_accessories(sort, offset)
+  # project list
+  scope :project_list, -> {
+    project_list_left_outer_joins.
+      where(display_flg: 0, deleted_flg: 0, deleted_at: nil)
   }
 
-  # search by all types
-  scope :project_list_search_all_types, ->(sort, offset, search_hash) {
-    project_list.
-      project_list_left_outer_joins.
-      where(display_flg: 0, deleted_flg: 0, deleted_at: nil).
-      where_location_id_in(search_hash[:location_list]).
-      where_contract_id_in(search_hash[:contract_list]).
-      where_industry_id_in(search_hash[:industry_list]).
-      where_positon_id_in(search_hash[:position_list]).
-      where_tag_id_in(search_hash[:tag_list]).
-      project_list_accessories(sort, offset)
-  }
-
-  scope :select_found_rows, -> do
-    select('DISTINCT found_rows() AS total_pages')
+  scope :select_total_count, -> do
+    select('count(*)')
   end
 
-  # project select
-  scope :project_select, -> do
+  # project select options
+  scope :select_option, -> do
     select(
-      'SQL_CALC_FOUND_ROWS
-       projects.*,
+      'projects.*,
        locations.location_name,
        contracts.contract_name,
        GROUP_CONCAT(DISTINCT(positions.position_name)) AS position_name_list,
@@ -72,6 +57,7 @@ class Project < ApplicationRecord
       left_joins(:tags)
   end
 
+  # WHERE project_id IN ()
   scope :where_project_id, ->(project_id) {
     where(id: project_id)
   }
@@ -101,7 +87,7 @@ class Project < ApplicationRecord
     where('tags.id IN (?)', tag_list)
   }
 
-  scope :project_list_accessories, ->(sort, offset) {
+  scope :sub_options, ->(sort, offset) {
     group('projects.id').
       order(sort).
       limit(Settings.pjt_list_count).
