@@ -8,6 +8,7 @@ class CreateProjects < ActiveRecord::Migration[6.0]
       t.integer :company_id, null: false, comment: '案件掲載企業ID'
       t.string :company, null: false, comment: '案件掲載企業名'
       t.string :url, null: false, default: '', comment: '案件URL'
+      t.string :affiliate_url, null: false, default: '', comment: 'アフィリエイトURL'
       t.text :required_skills, comment: '必須スキル'
       t.text :other_skills, comment: '尚可スキル'
       t.text :environment, comment: '開発環境'

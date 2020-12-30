@@ -100,6 +100,7 @@ class PotepanScrapingService
           company: Settings.potepan.company_name,
           company_id: Settings.potepan.company_id,
           url: url,
+          affiliate_url: Settings.potepan.url.affiliate_url,
         },
         error_project: false,
       }

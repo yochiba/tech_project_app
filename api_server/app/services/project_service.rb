@@ -17,7 +17,9 @@ class ProjectService
   class << self
     # get project json
     def project_json(pjt_id)
-      pjt = Project.single_project(pjt_id)
+      pjt = Project.single_project(pjt_id.to_i)
+      # GROUP_CONCATで取得した文字列を配列化
+      compose_name_list pjt
       pjt_json = pjt.as_json
       pjt_json
     end

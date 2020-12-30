@@ -61,17 +61,17 @@ const initProjectsData: ProjectsData = {
   pjt_list: []
 }
 
-type initProjectListParams = {
+type InitProjectListParams = {
   page: number;
   sort: string;
 }
 
 const Projects: React.FC = () => {
 
-  const [projectsData, setProjectsData] = useState(initProjectsData);
+  const [projectsData, setProjectsData] = useState<ProjectsData>(initProjectsData);
 
   useEffect(() => {
-    const initProjectListParams: initProjectListParams = {
+    const initProjectListParams: InitProjectListParams = {
       page: projectsData.current_page,
       sort: 'created_at DESC',
     }
@@ -81,12 +81,10 @@ const Projects: React.FC = () => {
     })
     .then((res) => {
       setProjectsData(res.data);
-      // localStorage.setItem('projectsData', JSON.stringify(res.data));
-      // console.log(localStorage.getItem('projectsData'));
     })
     .catch((res) => {
       console.log(res);
-    })
+    });
   }, [projectsData.current_page])
 
   window.scrollTo(0, 0);
@@ -100,20 +98,23 @@ const Projects: React.FC = () => {
               const maxPriceStr: string = String(pjt.max_price.toLocaleString());
               return (
                 <li className='pjt-box' key={`pjt${indexPjt}`}>
-                  <Link to={`/project/${pjt.id}`} className='pjt-link' key={`pjtLink${indexPjt}`}>
+                  <Link to={`/project/${pjt.id}`}
+                    className='pjt-link'
+                    key={`pjtLink${indexPjt}`}
+                  >
                     <h2 className='pjt-title'>{pjt.title}</h2>
                   </Link>
                   <div className='pjt-summary'>
                     <ul>
                       <li className='pjt-price' key={`pjtPrice${indexPjt}`}>
-                        単価：{minPriceStr}~{maxPriceStr}円
+                        単価：{minPriceStr}~{maxPriceStr}{pjt.price_unit}
                       </li>
                       <li className='pjt-location' key={`pjtLocation${indexPjt}`}>
                         最寄駅：{pjt.location_name}
                       </li>
-                      <li className={`pjtTags${indexPjt}`}>
+                      <li className={`pjt-tags${indexPjt}`}>
                         {tagList(pjt)}
-                        <li className='pjtUpdatedAt' key={`pjtUpdatedAt${indexPjt}`}>
+                        <li className='pjt-updated-at' key={`pjtUpdatedAt${indexPjt}`}>
                           更新日：{pjt.updated_at}
                         </li>
                       </li>
@@ -125,13 +126,14 @@ const Projects: React.FC = () => {
             })
           }
         </ul>
-        <div className='pjt-page-btn'>
+        <div className='paging-btn-container'>
           {
             [...Array(projectsData.total_pages)].map((_, index: number) => {
               let page: number = index + 1;
               return(
                 <>
-                  <button 
+                  <button
+                    className='paging-btn'
                     onClick={() => {setProjectsData({...projectsData,current_page: page})}}
                     key={`pageButton${page}`}
                   >
@@ -156,7 +158,7 @@ const tagList = (pjt: ProjectHash) => {
         タグ：{tagNameList.map((tag_name: string, indexTagName: number) => {
           return(
             <li
-              className='pjtTagName'
+              className='pjt-tag-name'
               key={`pjtTagName${indexTagName}`}
             >
               {tag_name}

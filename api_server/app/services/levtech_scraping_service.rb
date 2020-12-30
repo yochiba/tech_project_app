@@ -96,6 +96,7 @@ class LevtechScrapingService
           company: Settings.levtech.company_name,
           company_id: Settings.levtech.company_id,
           url: url,
+          affiliate_url: Settings.levtech.url.affiliate_url,
         },
         error_project: false,
       }

@@ -85,6 +85,7 @@ ActiveRecord::Schema.define(version: 2020_12_12_172325) do
     t.integer "company_id", null: false, comment: "案件掲載企業ID"
     t.string "company", null: false, comment: "案件掲載企業名"
     t.string "url", default: "", null: false, comment: "案件URL"
+    t.string "affiliate_url", default: "", null: false, comment: "アフィリエイトURL"
     t.text "required_skills", comment: "必須スキル"
     t.text "other_skills", comment: "尚可スキル"
     t.text "environment", comment: "開発環境"
