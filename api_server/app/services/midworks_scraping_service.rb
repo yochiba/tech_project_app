@@ -104,6 +104,7 @@ class MidworksScrapingService
           company: Settings.midworks.company_name,
           company_id: Settings.midworks.company_id,
           url: url,
+          affiliate_url: Settings.midworks.url.affiliate_url,
         },
         error_project: false,
       }

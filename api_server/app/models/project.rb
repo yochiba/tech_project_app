@@ -12,7 +12,7 @@ class Project < ApplicationRecord
   has_many :mid_industries
   has_many :industries, through: :mid_industries
 
-  validates :title, :company_id, :company, :url, :min_operation_unit, :display_flg,
+  validates :title, :company_id, :company, :url, :affiliate_url, :min_operation_unit, :display_flg,
             :max_operation_unit, :min_price, :max_price, :deleted_flg, presence: true
   validates :display_flg, :deleted_flg, numericality: { greater_than_or_equal_to: 0 }
 

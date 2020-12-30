@@ -53,6 +53,7 @@ midworks:
   url:
     host: 'https://mid-works.com'
     new_projects: 'https://mid-works.com/projects'
+    affiliate_url: 'sample_url'
   title:
     description: '業務内容'
     skill: 'スキルについて'
@@ -73,6 +74,7 @@ levtech:
   url:
     host: 'https://freelance.levtech.jp'
     new_projects: 'https://freelance.levtech.jp/project'
+    affiliate_url: 'sample_url'
   title:
     description: '職務内容'
     skill: '求めるスキル'
@@ -89,6 +91,7 @@ potepan:
   url:
     host: 'https://freelance.potepan.com'
     new_projects: 'https://freelance.potepan.com/project'
+    affiliate_url: 'sample_url'
   title:
     description: '業務内容'
     required_skills: '必須スキル'
@@ -103,4 +106,5 @@ pebank:
   url:
     host: 'https://pe-bank.jp'
     new_projects: 'https://pe-bank.jp/project'
+    affiliate_url: 'sample_url'
   title:
