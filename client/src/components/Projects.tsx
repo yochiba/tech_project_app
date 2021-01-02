@@ -61,8 +61,18 @@ const initProjectsData: ProjectsData = {
   pjt_list: []
 }
 
-type InitProjectListParams = {
+type SearchParams = {
   page: number;
+  sort: string;
+  tags: string;
+  locations: string;
+  contracts: string;
+  positions: string;
+  industries: string;
+}
+
+type SortHash = {
+  title: string;
   sort: string;
 }
 
@@ -71,13 +81,18 @@ const Projects: React.FC = () => {
   const [projectsData, setProjectsData] = useState<ProjectsData>(initProjectsData);
 
   useEffect(() => {
-    const initProjectListParams: InitProjectListParams = {
+    const initSearchParams: SearchParams = {
       page: projectsData.current_page,
-      sort: 'created_at DESC',
+      sort: projectsData.sort,
+      tags: '',
+      locations: '',
+      contracts: '',
+      positions: '',
+      industries: '', 
     }
-  
-    Axios.get(`${Common.API_ENDPOINT}projects/index`, {
-      params: initProjectListParams,
+
+    Axios.get(`${Common.API_ENDPOINT}search/index`, {
+      params: initSearchParams,
     })
     .then((res) => {
       setProjectsData(res.data);
@@ -85,12 +100,55 @@ const Projects: React.FC = () => {
     .catch((res) => {
       console.log(res);
     });
-  }, [projectsData.current_page])
+  }, [projectsData.current_page, projectsData.sort])
+
+  // 案件一覧ソート
+  const SORT_LIST: SortHash[] = [
+    {
+      title: Common.SORT_TITLE_LATEST,
+      sort: Common.SORT_QUERY_LATEST,
+    },
+    {
+      title: Common.SORT_TITLE_OLDEST,
+      sort: Common.SORT_QUERY_OLDEST,
+    },
+    {
+      title: Common.SORT_TITLE_PRICE_DESC,
+      sort: Common.SORT_QUERY_PRICE_DESC,
+    },
+    {
+      title: Common.SORT_TITLE_PRICE_ASC,
+      sort: Common.SORT_QUERY_PRICE_ASC,
+    },
+  ];
 
   window.scrollTo(0, 0);
   return (
     <div>
       <section className='pjt-list'>
+        <h2 className='component-title'>案件一覧</h2>
+        <h4>現在のページ（テスト用）：{projectsData.current_page}</h4>
+        <div className='pjt-sort-btn-container'>
+          {
+            SORT_LIST.map((sortHash: SortHash, index: number) => {
+              return(
+                <button
+                  className='pjt-sort-btn'
+                  onClick={() => {setProjectsData(
+                    {
+                      ...projectsData,
+                      current_page: 1,
+                      sort: sortHash.sort,
+                    }
+                  )}}
+                  key={`sortKey${index}`}
+                >
+                  {sortHash.title}
+                </button>
+              );
+            })
+          }
+        </div>
         <ul>
           {
             projectsData.pjt_list.map((pjt: ProjectHash, indexPjt: number) => {
@@ -110,7 +168,7 @@ const Projects: React.FC = () => {
                         単価：{minPriceStr}~{maxPriceStr}{pjt.price_unit}
                       </li>
                       <li className='pjt-location' key={`pjtLocation${indexPjt}`}>
-                        最寄駅：{pjt.location_name}
+                        勤務地：{pjt.location_name}
                       </li>
                       <li className={`pjt-tags${indexPjt}`}>
                         {tagList(pjt)}

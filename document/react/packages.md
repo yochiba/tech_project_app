@@ -53,7 +53,7 @@ create-react-app client --typescript
 ***
 ```
 // webpack関連の導入
-yarn add --dev webpack webpack-cli typescript ts-loader
+yarn add --dev webpack webpack-cli typescript ts-loader webpack-dev-server
 yarn add react react-dom @types/react @types/react-dom
 
 // SASSの導入

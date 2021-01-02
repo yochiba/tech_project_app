@@ -46,5 +46,8 @@ module ApiServer
             controller_specs: false, 
             routing_specs: false
     end
+
+    # Sidekiq
+    config.active_job.queue_adapter = :sidekiq
   end
 end

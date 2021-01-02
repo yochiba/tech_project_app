@@ -20,4 +20,10 @@ class Tag < ApplicationRecord
       where('tags.tag_name_search LIKE ?', "%#{tag_name_search}%").
       where(deleted_flg: 0, deleted_at: nil)
   }
+
+  # select tag list
+  scope :select_tags, -> do
+    select(:id, :tag_name, :tag_name_search, :tag_type_name, :tag_type_id).
+      where(deleted_flg: 0, deleted_at: nil)
+  end
 end

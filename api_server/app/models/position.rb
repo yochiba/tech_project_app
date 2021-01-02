@@ -14,4 +14,10 @@ class Position < ApplicationRecord
       where('positions.position_name_search LIKE ?', "%#{position_name_search}%").
       where(deleted_flg: 0, deleted_at: nil)
   }
+
+  # select position list
+  scope :select_positions, -> do
+    select(:id, :position_name, :position_name_search).
+      where(deleted_flg: 0, deleted_at: nil)
+  end
 end
