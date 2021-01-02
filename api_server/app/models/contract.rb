@@ -14,4 +14,10 @@ class Contract < ApplicationRecord
       where('contracts.contract_name LIKE ?', "%#{contract_name}%").
       where(deleted_flg: 0, deleted_at: nil)
   }
+
+  # select contract list
+  scope :select_contracts, -> do
+    select(:id, :contract_name).
+      where(deleted_flg: 0, deleted_at: nil)
+  end
 end

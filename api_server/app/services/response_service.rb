@@ -45,5 +45,15 @@ class ResponseService
       res_json.merge! pjt_list_json
       res_json
     end
+
+    # search checkbox_items result
+    def checkbox_items_result_json(checkbox_items_json)
+      res_json = {
+        status: STATUS_OK,
+        result: RESULT_OK,
+      }
+      res_json.merge! checkbox_items_json
+      res_json
+    end
   end
 end

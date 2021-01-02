@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 # class_type: Service
-# class_name: ProjectService
-# description: common class for projects
-class ProjectService
+# class_name: SearchService
+# description: common class for search
+class SearchService
   # project list count
   PJT_LIST_COUNT = Settings.pjt_list_count
 
@@ -26,6 +26,7 @@ class ProjectService
 
     # get project_list_json
     def project_list_json(params)
+      puts "[INFO PARAMS]:: #{params}"
       page = params[:page].to_i
       sort = params[:sort]
       # location, contract, industry, tagを構成
@@ -33,6 +34,23 @@ class ProjectService
       # 検索
       project_json = execute_search_query sort, page, search_hash
       project_json
+    end
+
+    def compose_checkbox_items
+      tags = Tag.select_tags
+      locations = Location.select_locations
+      contracts = Contract.select_contracts
+      positions = Position.select_positions
+      industries = Industry.select_industries
+
+      checkbox_items_json = {
+        tagList: tags,
+        locationList: locations,
+        contractList: contracts,
+        positionList: positions,
+        industryList: industries,
+      }
+      checkbox_items_json
     end
 
     private
@@ -198,12 +216,13 @@ class ProjectService
     # 総ページ数
     def compose_total_pages(total_pjts)
       total_pages = total_pjts / PJT_LIST_COUNT
-      if total_pjts < PJT_LIST_COUNT && total_pjts != 0
+      if total_pjts <= PJT_LIST_COUNT && total_pjts != 0
         total_pages = 1
+      elsif total_pjts % PJT_LIST_COUNT != 0
+        total_pages += 1
       elsif total_pjts.zero?
         total_pages = 0
       end
-      total_pages += 1 if total_pjts % PJT_LIST_COUNT >= 1
       total_pages
     end
   end

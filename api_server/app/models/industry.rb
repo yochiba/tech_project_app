@@ -14,4 +14,10 @@ class Industry < ApplicationRecord
       where('industries.industry_name_search LIKE ?', "%#{industry_name_search}%").
       where(deleted_flg: 0, deleted_at: nil)
   }
+
+  # select industry list
+  scope :select_industries, -> do
+    select(:id, :industry_name, :industry_name_search).
+      where(deleted_flg: 0, deleted_at: nil)
+  end
 end

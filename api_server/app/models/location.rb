@@ -14,4 +14,10 @@ class Location < ApplicationRecord
       where('locations.location_name LIKE ?', "%#{location_name}%").
       where(deleted_flg: 0, deleted_at: nil)
   }
+
+  # select location list
+  scope :select_locations, -> do
+    select(:id, :location_name).
+      where(deleted_flg: 0, deleted_at: nil)
+  end
 end

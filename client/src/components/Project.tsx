@@ -106,7 +106,7 @@ const Project: React.FC = () => {
       pjtId: Number(pjtId),
     }
 
-    Axios.get(`${Common.API_ENDPOINT}projects/show`, {
+    Axios.get(`${Common.API_ENDPOINT}search/show`, {
       params: projectId,
     })
     .then((res) => {
@@ -115,7 +115,7 @@ const Project: React.FC = () => {
     .catch((res) => {
       console.log(res);
     })
-  }, [projectData.status])
+  }, [pjtId])
 
   window.scrollTo(0, 0);
   const minPriceStr: string = projectData.project.min_price === 0 || null ? '' : String(projectData.project.min_price.toLocaleString());

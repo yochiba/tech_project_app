@@ -1,7 +1,16 @@
-:verbose: false
-:pidfile: ./tmp/pids/sidekiq.pid
-:logfile: ./log/sidekiq.log
-:concurrency: 10
-:queues:
-  - default
-  - test
+schedule:
+  midworks_scraping_job:
+    cron: "0 2 * * 1"
+    args:
+      job_type: "midworks"
+    class: ScrapingJob
+  levtech_scraping_job:
+    cron: "40 17 * * *"
+    args:
+      job_type: "levtech"
+    class: ScrapingJob
+  potepan_scraping_job:
+    cron: "0 2 * * 1"
+    args:
+      job_type: "potepan"
+    class: ScrapingJob
