@@ -1,0 +1,42 @@
+@charset 'UTF-8';
+
+$smartphone1: 320px;
+$smartphone2: 480px;
+$tablet: 760px;
+$laptop: 980px;
+$desktop: 1500px;
+
+// smart phone 1
+@mixin sp1 {
+  @media (min-width: ($smartphone1)) {
+    @content;
+  }
+}
+
+// smart phone 2
+@mixin sp2 {
+  @media (min-width: ($smartphone2)) {
+    @content;
+  }
+}
+
+// tablet
+@mixin tablet {
+  @media (min-width: ($tablet)) {
+    @content;
+  }
+}
+
+// laptop
+@mixin laptop {
+  @media (min-width: ($laptop)) {
+    @content;
+  }
+}
+
+// desktop
+@mixin desktop {
+  @media (min-width: ($desktop)) {
+    @content;
+  }
+}

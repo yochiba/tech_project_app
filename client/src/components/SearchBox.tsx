@@ -1,8 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import Axios from 'axios';
 import * as Common from '../constants/common';
-import Projects from './Projects';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 type CheckBoxItem = {
   status: number;
@@ -76,64 +75,6 @@ const initSearchParams = {
   keyword: '',
 }
 
-type ProjectsData = {
-  status: number;
-  result: string;
-  pjt_count: number
-  current_page: number;
-  sort: string;
-  total_pjt_count: number;
-  total_pages: number;
-  pjt_list: ProjectHash[];
-}
-
-type ProjectHash = {
-  id: number;
-  title: string;
-  description: string;
-  company_id: number;
-  company: string;
-  url: string;
-  required_skills: string;
-  other_skills: string;
-  environment: string;
-  weekly_attendance: number;
-  min_operation_unit: number;
-  max_operation_unit: number;
-  operation_unit_id: number;
-  operation_unit: string;
-  min_price: number;
-  max_price: number;
-  price_unit_id: number;
-  price_unit: string;
-  location_id: number;
-  contract_id: number;
-  display_flg: number;
-  deleted_flg: number;
-  deleted_at: Date;
-  created_at: Date;
-  updated_at: Date;
-  location_name: string;
-  contract_name: string;
-  position_name_list: string[];
-  position_name_search_list: string[];
-  industry_name_list: string[];
-  industry_name_search_list: string[];
-  tag_name_list: string[];
-  tag_name_search_list: string[];
-}
-
-const initProjectsData: ProjectsData = {
-  status: 204,
-  result: 'NO CONTENT',
-  pjt_count: 0,
-  current_page: 0,
-  sort: '',
-  total_pjt_count: 0,
-  total_pages: 0,
-  pjt_list: []
-}
-
 type SortHash = {
   title: string;
   sort: string;
@@ -161,7 +102,7 @@ const sortList: SortHash[] = [
 const SearchBox: React.FC = () => {
   const [checkBoxItemList, setCheckBoxItemList] = useState<CheckBoxItem>(initCheckBoxItem);
   const [searchParams, setSearchParams] = useState<SearchParams>(initSearchParams);
-  const [projectsData, setProjectsData] = useState<ProjectsData>(initProjectsData);
+
   useEffect(() => {
     Axios.get(`${Common.API_ENDPOINT}search/checkbox-items`)
     .then((res) => {
@@ -172,26 +113,12 @@ const SearchBox: React.FC = () => {
     });
   }, [checkBoxItemList.status])
 
+  const history = useHistory();
+
   return(
     <>
-      <h2>検索ボックス</h2>
-      <form className='search-form' onSubmit={(e) => {
-          e.preventDefault();
-          Axios.get(`${Common.API_ENDPOINT}search/index`, {
-            params: searchParams,
-          })
-          .then((res) => {
-            setProjectsData(res.data);
-            console.log(res.data);
-            return(
-              <Projects />
-            );
-          })
-          .catch((res) => {
-            console.log(res);
-          });
-        }}
-      >
+      <h2>案件を探す</h2>
+      <form className='search-form'>
         <div className='pjt-sort-btn-container'>
           {
             sortList.map((sortHash: SortHash, index: number) => {
@@ -358,7 +285,7 @@ const SearchBox: React.FC = () => {
             })
           }
         </div>
-        <div className='search-keyword'>
+        {/* <div className='search-keyword'>
           <label htmlFor='pjt-keyword-input'>
             キーワード検索
             <input
@@ -367,11 +294,49 @@ const SearchBox: React.FC = () => {
               id='pjt-keyword-input'
             />
           </label>
-        </div>
-        <input type='submit' value='検索' />
+        </div> */}
+        <Link
+          to={
+            handleLocationSearch(
+              searchParams.tags,
+              searchParams.locations,
+              searchParams.contracts,
+              searchParams.positions,
+              searchParams.industries,
+              searchParams.keyword,
+              searchParams.sort
+            )
+          }
+          onClick={() => history.push(
+            handleLocationSearch(
+              searchParams.tags,
+              searchParams.locations,
+              searchParams.contracts,
+              searchParams.positions,
+              searchParams.industries,
+              searchParams.keyword,
+              searchParams.sort
+            )
+          )}
+        >
+          検索
+        </Link>
       </form>
     </>
   );
+}
+
+const handleLocationSearch = (
+  tags: string,
+  locations: string,
+  contracts: string,
+  positions: string,
+  industries: string,
+  keyword: string,
+  sort: string
+  ) => {
+  const locationSearch: string = `/projects?tags=${tags}&locations=${locations}&contracts=${contracts}&positions=${positions}&industries=${industries}&keyword=${keyword}&page=${'1'}&sort=${sort}`
+  return locationSearch
 }
 
 export default SearchBox;
