@@ -56,6 +56,7 @@ const initCheckBoxItem: CheckBoxItem = {
 type SearchParams = {
   page: number;
   sort: string;
+  order: string;
   tags: string;
   locations: string;
   contracts: string;
@@ -66,7 +67,8 @@ type SearchParams = {
 
 const initSearchParams = {
   page: 1,
-  sort: 'created_at DESC',
+  sort: Common.SORT_UPDATED_AT,
+  order: Common.ORDER_DESC,
   tags: '',
   locations: '',
   contracts: '',
@@ -80,22 +82,30 @@ type SortHash = {
   sort: string;
 }
 
-const sortList: SortHash[] = [
+const SORT_LIST: SortHash[] = [
   {
-    title: Common.SORT_TITLE_LATEST,
-    sort: Common.SORT_QUERY_LATEST,
+    title: Common.TITLE_UPDATED_AT,
+    sort: Common.SORT_UPDATED_AT,
   },
   {
-    title: Common.SORT_TITLE_OLDEST,
-    sort: Common.SORT_QUERY_OLDEST,
+    title: Common.TITLE_PRICE,
+    sort: Common.SORT_PRICE,
+  },
+];
+
+type OrderHash = {
+  title: string;
+  order: string;
+}
+
+const ORDER_LIST: OrderHash[] = [
+  {
+    title: Common.TITLE_DESC,
+    order: Common.ORDER_DESC,
   },
   {
-    title: Common.SORT_TITLE_PRICE_DESC,
-    sort: Common.SORT_QUERY_PRICE_DESC,
-  },
-  {
-    title: Common.SORT_TITLE_PRICE_ASC,
-    sort: Common.SORT_QUERY_PRICE_ASC,
+    title: Common.TITLE_ASC,
+    order: Common.ORDER_ASC,
   },
 ];
 
@@ -120,8 +130,9 @@ const SearchBox: React.FC = () => {
       <h2>案件を探す</h2>
       <form className='search-form'>
         <div className='pjt-sort-btn-container'>
+          {/* SORT LIST */}
           {
-            sortList.map((sortHash: SortHash, index: number) => {
+            SORT_LIST.map((sortHash: SortHash, index: number) => {              
               let checked: boolean = searchParams.sort === sortHash.sort ? true : false;
               return(
                 <>
@@ -134,11 +145,46 @@ const SearchBox: React.FC = () => {
                       name='sort'
                       id='pjt-sort-input'
                       onChange={(e) => {
-                        setSearchParams({...searchParams,sort: e.target.value});
+                        setSearchParams(
+                          {
+                            ...searchParams,
+                            sort: e.target.value,
+                          }
+                        );
                       }}
                       key={`sortInput${index}`}
                     />
                     {sortHash.title}
+                  </label>
+                </>
+              );
+            })
+          }
+          {/* ORDER LIST */}
+          {
+            ORDER_LIST.map((orderHash: OrderHash, index: number) => {              
+              let checked: boolean = searchParams.order === orderHash.order ? true : false;
+              return(
+                <>
+                  <label htmlFor='pjt-order-input' key={`orderLabel${index}`}>
+                    <input
+                      className='pjt-order-input'
+                      type='radio'
+                      checked={checked}
+                      value={orderHash.order}
+                      name='order'
+                      id='pjt-order-input'
+                      onChange={(e) => {
+                        setSearchParams(
+                          {
+                            ...searchParams,
+                            order: e.target.value,
+                          }
+                        );
+                      }}
+                      key={`orderInput${index}`}
+                    />
+                    {orderHash.title}
                   </label>
                 </>
               );
@@ -304,7 +350,8 @@ const SearchBox: React.FC = () => {
               searchParams.positions,
               searchParams.industries,
               searchParams.keyword,
-              searchParams.sort
+              searchParams.sort,
+              searchParams.order,
             )
           }
           onClick={() => history.push(
@@ -315,7 +362,8 @@ const SearchBox: React.FC = () => {
               searchParams.positions,
               searchParams.industries,
               searchParams.keyword,
-              searchParams.sort
+              searchParams.sort,
+              searchParams.order,
             )
           )}
         >
@@ -333,9 +381,19 @@ const handleLocationSearch = (
   positions: string,
   industries: string,
   keyword: string,
-  sort: string
+  sort: string,
+  order: string,
   ) => {
-  const locationSearch: string = `/projects?tags=${tags}&locations=${locations}&contracts=${contracts}&positions=${positions}&industries=${industries}&keyword=${keyword}&page=${'1'}&sort=${sort}`
+  let locationSearch: string = '/projects?';
+  locationSearch = locationSearch.concat(`tags=${tags}`);
+  locationSearch = locationSearch.concat(`&locations=${locations}`);
+  locationSearch = locationSearch.concat(`&contracts=${contracts}`);
+  locationSearch = locationSearch.concat(`&positions=${positions}`);
+  locationSearch = locationSearch.concat(`&industries=${industries}`);
+  locationSearch = locationSearch.concat(`&keyword=${keyword}`);
+  locationSearch = locationSearch.concat(`&page=${Common.FIRST_PAGE}`);
+  locationSearch = locationSearch.concat(`&sort=${sort}`);
+  locationSearch = locationSearch.concat(`&order=${order}`);
   return locationSearch
 }
 

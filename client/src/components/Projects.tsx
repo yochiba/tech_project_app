@@ -6,6 +6,7 @@ import * as Common from '../constants/common';
 type SearchParams = {
   page: number;
   sort: string;
+  order: string;
   tags: string;
   locations: string;
   contracts: string;
@@ -16,7 +17,8 @@ type SearchParams = {
 
 const initSearchParams = {
   page: Common.FIRST_PAGE,
-  sort: Common.SORT_QUERY_LATEST,
+  sort: Common.SORT_UPDATED_AT,
+  order: Common.ORDER_DESC,
   tags: '',
   locations: '',
   contracts: '',
@@ -31,6 +33,7 @@ type ProjectsData = {
   pjtCount: number
   currentPage: number;
   sort: string;
+  order: string;
   totalPjtCount: number;
   totalPages: number;
   pjtList: ProjectHash[];
@@ -78,7 +81,8 @@ const initProjectsData: ProjectsData = {
   result: 'NO CONTENT',
   pjtCount: 0,
   currentPage: Common.FIRST_PAGE,
-  sort: 'created_at DESC',
+  sort: Common.SORT_UPDATED_AT,
+  order: Common.ORDER_DESC,
   totalPjtCount: 0,
   totalPages: 1,
   pjtList: [],
@@ -92,20 +96,28 @@ type SortHash = {
 
 const SORT_LIST: SortHash[] = [
   {
-    title: Common.SORT_TITLE_LATEST,
-    sort: Common.SORT_QUERY_LATEST,
+    title: Common.TITLE_UPDATED_AT,
+    sort: Common.SORT_UPDATED_AT,
   },
   {
-    title: Common.SORT_TITLE_OLDEST,
-    sort: Common.SORT_QUERY_OLDEST,
+    title: Common.TITLE_PRICE,
+    sort: Common.SORT_PRICE,
+  },
+];
+
+type OrderHash = {
+  title: string;
+  order: string;
+}
+
+const ORDER_LIST: OrderHash[] = [
+  {
+    title: Common.TITLE_DESC,
+    order: Common.ORDER_DESC,
   },
   {
-    title: Common.SORT_TITLE_PRICE_DESC,
-    sort: Common.SORT_QUERY_PRICE_DESC,
-  },
-  {
-    title: Common.SORT_TITLE_PRICE_ASC,
-    sort: Common.SORT_QUERY_PRICE_ASC,
+    title: Common.TITLE_ASC,
+    order: Common.ORDER_ASC,
   },
 ];
 
@@ -123,6 +135,7 @@ const Projects: React.FC = () => {
     if (location.search) {
       let page: number = searchParams.page;
       let sort: string = searchParams.sort;
+      let order: string = searchParams.order;
       let tags: string = searchParams.tags;
       let locations: string = searchParams.locations;
       let contracts: string = searchParams.contracts;
@@ -141,6 +154,8 @@ const Projects: React.FC = () => {
             return page = Number(paramItems);
           case 'sort':
             return sort = paramItems;
+          case 'order':
+            return order = paramItems;
           case 'tags':
             return tags = paramItems;
           case 'locations':
@@ -160,6 +175,7 @@ const Projects: React.FC = () => {
       params = {
         page: page,
         sort: sort,
+        order: order,
         tags: tags,
         locations: locations,
         contracts: contracts,
@@ -186,6 +202,7 @@ const Projects: React.FC = () => {
         <h2 className='component-title'>案件一覧</h2>
         <h4>現在のページ（テスト用）：{projectsData.currentPage}</h4>
         <div className='pjt-sort-btn-container'>
+          {/* SORT LIST */}
           {
             SORT_LIST.map((sortHash: SortHash, index: number) => {
               return(
@@ -201,6 +218,7 @@ const Projects: React.FC = () => {
                         projectsData.searchParams.keyword,
                         Common.FIRST_PAGE,
                         sortHash.sort,
+                        projectsData.searchParams.order,
                       )
                     }
                     onClick={(e) => {
@@ -214,6 +232,7 @@ const Projects: React.FC = () => {
                           projectsData.searchParams.keyword,
                           Common.FIRST_PAGE,
                           sortHash.sort,
+                          projectsData.searchParams.order,
                         )
                       )
                       setSearchParams({
@@ -225,6 +244,53 @@ const Projects: React.FC = () => {
                     key={`sortKey${index}`}
                   >
                     {sortHash.title}
+                  </Link>
+                </>
+              );
+            })
+          }
+          {/* ORDER LIST */}
+          {
+            ORDER_LIST.map((orderHash: OrderHash, index: number) => {
+              return(
+                <>
+                  <Link
+                    to={
+                      handleLocationSearch(
+                        projectsData.searchParams.tags,
+                        projectsData.searchParams.locations,
+                        projectsData.searchParams.contracts,
+                        projectsData.searchParams.positions,
+                        projectsData.searchParams.industries,
+                        projectsData.searchParams.keyword,
+                        Common.FIRST_PAGE,
+                        projectsData.searchParams.sort,
+                        orderHash.order,
+                      )
+                    }
+                    onClick={(e) => {
+                      history.push(
+                        handleLocationSearch(
+                          projectsData.searchParams.tags,
+                        projectsData.searchParams.locations,
+                        projectsData.searchParams.contracts,
+                        projectsData.searchParams.positions,
+                        projectsData.searchParams.industries,
+                        projectsData.searchParams.keyword,
+                        Common.FIRST_PAGE,
+                        projectsData.searchParams.sort,
+                        orderHash.order,
+                        )
+                      )
+                      setSearchParams({
+                        ...searchParams,
+                        page: Common.FIRST_PAGE,
+                        order: orderHash.order,
+                      })
+                    }}
+                    key={`orderKey${index}`}
+                  >
+                    {orderHash.title}
                   </Link>
                 </>
               );
@@ -255,7 +321,7 @@ const Projects: React.FC = () => {
                       <li className={`pjt-tags${indexPjt}`}>
                         {tagList(pjt)}
                         <li className='pjt-updated-at' key={`pjtUpdatedAt${indexPjt}`}>
-                          更新日：{pjt.updated_at}
+                          更新日：{dateFormat(pjt.updated_at, 'YYYY年MM月DD日')}
                         </li>
                       </li>
                     </ul>
@@ -282,7 +348,8 @@ const Projects: React.FC = () => {
                         projectsData.searchParams.industries,
                         projectsData.searchParams.keyword,
                         page,
-                        projectsData.searchParams.sort
+                        projectsData.searchParams.sort,
+                        projectsData.searchParams.order,
                       )
                     }
                     onClick={(e) => {
@@ -295,7 +362,8 @@ const Projects: React.FC = () => {
                           projectsData.searchParams.industries,
                           projectsData.searchParams.keyword,
                           page,
-                          projectsData.searchParams.sort
+                          projectsData.searchParams.sort,
+                          projectsData.searchParams.order,
                         )
                       )
                       setSearchParams({
@@ -325,9 +393,19 @@ const handleLocationSearch = (
   industries: string,
   keyword: string,
   page: number,
-  sort: string
+  sort: string,
+  order: string
   ) => {
-  const locationSearch: string = `/projects?tags=${tags}&locations=${locations}&contracts=${contracts}&positions=${positions}&industries=${industries}&keyword=${keyword}&page=${page}&sort=${sort}`
+  let locationSearch: string = '/projects?';
+  locationSearch = locationSearch.concat(`tags=${tags}`);
+  locationSearch = locationSearch.concat(`&locations=${locations}`);
+  locationSearch = locationSearch.concat(`&contracts=${contracts}`);
+  locationSearch = locationSearch.concat(`&positions=${positions}`);
+  locationSearch = locationSearch.concat(`&industries=${industries}`);
+  locationSearch = locationSearch.concat(`&keyword=${keyword}`);
+  locationSearch = locationSearch.concat(`&page=${page}`);
+  locationSearch = locationSearch.concat(`&sort=${sort}`);
+  locationSearch = locationSearch.concat(`&order=${order}`);
   return locationSearch
 }
 
@@ -350,6 +428,21 @@ const tagList = (pjt: ProjectHash) => {
       </ul>
     )
   }
+}
+
+// 日付フォーマットメソッド
+const dateFormat = (dateParam: Date, format: string) => {
+  let date: Date = new Date(dateParam);
+
+  let year: number = date.getFullYear();
+  let month: number = date.getMonth() + 1;
+  let day: number = date.getDate();
+
+  format = format.replace(/YYYY/, year.toString());
+  format = format.replace(/MM/, month.toString());
+  format = format.replace(/DD/, day.toString());
+
+  return format;
 }
 
 export default Projects

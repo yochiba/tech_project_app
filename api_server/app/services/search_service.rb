@@ -28,13 +28,15 @@ class SearchService
     def project_list_json(params)
       page = params[:page].to_i
       sort = params[:sort]
+      order = params[:order]
       # location, contract, industry, tagを構成
       search_hash = compose_search_conditions_hash params
       # 検索
-      project_json = execute_search_query sort, page, search_hash
+      project_json = execute_search_query sort, order, page, search_hash
       params_json = {
         page: page,
         sort: sort,
+        order: order,
         tags: params[:tags],
         locations: params[:locations],
         contracts: params[:contracts],
@@ -126,14 +128,16 @@ class SearchService
     end
 
     # execute search query
-    def execute_search_query(sort, page, search_hash)
+    def execute_search_query(sort, order, page, search_hash)
       # offset
       offset = (page - 1) * PJT_LIST_COUNT
+      # sort option
+      sort_option = "#{sort} #{order}"
 
       pjt_hash_list = []
       total_pjts = 0
       if search_hash[:search_type].blank?
-        pjt_hash_list = Project.select_option.project_list.sub_options sort, offset
+        pjt_hash_list = Project.select_option.project_list.sub_options sort_option, offset
         total_pjts_query = Project.select_total_count.project_list.group('projects.id')
         total_pjts = total_pjts_query.as_json.size
       else
@@ -146,7 +150,7 @@ class SearchService
         total_pjts = total_pjts_query.as_json.size
         # 案件データ取得
         search_query.merge! Project.select_option
-        search_query.merge! Project.sub_options sort, offset
+        search_query.merge! Project.sub_options sort_option, offset
         pjt_hash_list = ActiveRecord::Base.connection.select_all search_query.to_sql
       end
 
@@ -159,8 +163,6 @@ class SearchService
         end
       end
 
-
-
       # 総ページ数を取得
       total_pages = compose_total_pages total_pjts
       project_json = {
@@ -168,6 +170,7 @@ class SearchService
         totalPages: total_pages,
         totalPjtCount: total_pjts,
         sort: sort,
+        order: order,
         pjtCount: pjt_list.size,
         pjtList: pjt_list,
       }
