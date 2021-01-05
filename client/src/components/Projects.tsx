@@ -1,17 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import Axios from 'axios';
 import * as Common from '../constants/common';
+
+type SearchParams = {
+  page: number;
+  sort: string;
+  tags: string;
+  locations: string;
+  contracts: string;
+  positions: string;
+  industries: string;
+  keyword: string;
+}
+
+const initSearchParams = {
+  page: Common.FIRST_PAGE,
+  sort: Common.SORT_QUERY_LATEST,
+  tags: '',
+  locations: '',
+  contracts: '',
+  positions: '',
+  industries: '',
+  keyword: '',
+}
 
 type ProjectsData = {
   status: number;
   result: string;
-  pjt_count: number
-  current_page: number;
+  pjtCount: number
+  currentPage: number;
   sort: string;
-  total_pjt_count: number;
-  total_pages: number;
-  pjt_list: ProjectHash[];
+  totalPjtCount: number;
+  totalPages: number;
+  pjtList: ProjectHash[];
+  searchParams: SearchParams;
 }
 
 type ProjectHash = {
@@ -53,22 +76,13 @@ type ProjectHash = {
 const initProjectsData: ProjectsData = {
   status: 204,
   result: 'NO CONTENT',
-  pjt_count: 0,
-  current_page: 1,
+  pjtCount: 0,
+  currentPage: Common.FIRST_PAGE,
   sort: 'created_at DESC',
-  total_pjt_count: 0,
-  total_pages: 1,
-  pjt_list: []
-}
-
-type SearchParams = {
-  page: number;
-  sort: string;
-  tags: string;
-  locations: string;
-  contracts: string;
-  positions: string;
-  industries: string;
+  totalPjtCount: 0,
+  totalPages: 1,
+  pjtList: [],
+  searchParams: initSearchParams,
 }
 
 type SortHash = {
@@ -76,23 +90,86 @@ type SortHash = {
   sort: string;
 }
 
+const SORT_LIST: SortHash[] = [
+  {
+    title: Common.SORT_TITLE_LATEST,
+    sort: Common.SORT_QUERY_LATEST,
+  },
+  {
+    title: Common.SORT_TITLE_OLDEST,
+    sort: Common.SORT_QUERY_OLDEST,
+  },
+  {
+    title: Common.SORT_TITLE_PRICE_DESC,
+    sort: Common.SORT_QUERY_PRICE_DESC,
+  },
+  {
+    title: Common.SORT_TITLE_PRICE_ASC,
+    sort: Common.SORT_QUERY_PRICE_ASC,
+  },
+];
+
 const Projects: React.FC = () => {
 
+  const [searchParams, setSearchParams] = useState<SearchParams>(initSearchParams);
   const [projectsData, setProjectsData] = useState<ProjectsData>(initProjectsData);
 
-  useEffect(() => {
-    const initSearchParams: SearchParams = {
-      page: projectsData.current_page,
-      sort: projectsData.sort,
-      tags: '',
-      locations: '',
-      contracts: '',
-      positions: '',
-      industries: '', 
-    }
+  const location = useLocation();
+  const history = useHistory();
 
+  useEffect(() => {
+    let params: SearchParams = searchParams;
+
+    if (location.search) {
+      let page: number = searchParams.page;
+      let sort: string = searchParams.sort;
+      let tags: string = searchParams.tags;
+      let locations: string = searchParams.locations;
+      let contracts: string = searchParams.contracts;
+      let positions: string = searchParams.positions;
+      let industries: string = searchParams.industries;
+      let keyword: string = searchParams.keyword;
+
+      let paramsList: string[] = location.search.slice(1).split('&');
+      paramsList.map((paramBase: string) => {
+        let paramsBase: string[] = paramBase.split('=');
+        let paramTitle: string = paramsBase[0];
+        let paramItems: string = paramsBase[1];
+
+        switch(paramTitle){
+          case 'page':
+            return page = Number(paramItems);
+          case 'sort':
+            return sort = paramItems;
+          case 'tags':
+            return tags = paramItems;
+          case 'locations':
+            return locations = paramItems;
+          case 'contracts':
+            return contracts = paramItems;
+          case 'positions':
+            return positions = paramItems;
+          case 'industries':
+            return industries = paramItems;
+          case 'keyword':
+            return keyword = paramItems;
+          default:
+            return null;
+        }
+      })
+      params = {
+        page: page,
+        sort: sort,
+        tags: tags,
+        locations: locations,
+        contracts: contracts,
+        positions: positions,
+        industries: industries,
+        keyword: keyword,
+      }
+    }
     Axios.get(`${Common.API_ENDPOINT}search/index`, {
-      params: initSearchParams,
+      params: params,
     })
     .then((res) => {
       setProjectsData(res.data);
@@ -100,58 +177,63 @@ const Projects: React.FC = () => {
     .catch((res) => {
       console.log(res);
     });
-  }, [projectsData.current_page, projectsData.sort])
-
-  // 案件一覧ソート
-  const SORT_LIST: SortHash[] = [
-    {
-      title: Common.SORT_TITLE_LATEST,
-      sort: Common.SORT_QUERY_LATEST,
-    },
-    {
-      title: Common.SORT_TITLE_OLDEST,
-      sort: Common.SORT_QUERY_OLDEST,
-    },
-    {
-      title: Common.SORT_TITLE_PRICE_DESC,
-      sort: Common.SORT_QUERY_PRICE_DESC,
-    },
-    {
-      title: Common.SORT_TITLE_PRICE_ASC,
-      sort: Common.SORT_QUERY_PRICE_ASC,
-    },
-  ];
+  }, [searchParams]);
 
   window.scrollTo(0, 0);
   return (
     <div>
       <section className='pjt-list'>
         <h2 className='component-title'>案件一覧</h2>
-        <h4>現在のページ（テスト用）：{projectsData.current_page}</h4>
+        <h4>現在のページ（テスト用）：{projectsData.currentPage}</h4>
         <div className='pjt-sort-btn-container'>
           {
             SORT_LIST.map((sortHash: SortHash, index: number) => {
               return(
-                <button
-                  className='pjt-sort-btn'
-                  onClick={() => {setProjectsData(
-                    {
-                      ...projectsData,
-                      current_page: 1,
-                      sort: sortHash.sort,
+                <>
+                  <Link
+                    to={
+                      handleLocationSearch(
+                        projectsData.searchParams.tags,
+                        projectsData.searchParams.locations,
+                        projectsData.searchParams.contracts,
+                        projectsData.searchParams.positions,
+                        projectsData.searchParams.industries,
+                        projectsData.searchParams.keyword,
+                        Common.FIRST_PAGE,
+                        sortHash.sort,
+                      )
                     }
-                  )}}
-                  key={`sortKey${index}`}
-                >
-                  {sortHash.title}
-                </button>
+                    onClick={(e) => {
+                      history.push(
+                        handleLocationSearch(
+                          projectsData.searchParams.tags,
+                          projectsData.searchParams.locations,
+                          projectsData.searchParams.contracts,
+                          projectsData.searchParams.positions,
+                          projectsData.searchParams.industries,
+                          projectsData.searchParams.keyword,
+                          Common.FIRST_PAGE,
+                          sortHash.sort,
+                        )
+                      )
+                      setSearchParams({
+                        ...searchParams,
+                        page: Common.FIRST_PAGE,
+                        sort: sortHash.sort,
+                      })
+                    }}
+                    key={`sortKey${index}`}
+                  >
+                    {sortHash.title}
+                  </Link>
+                </>
               );
             })
           }
         </div>
         <ul>
           {
-            projectsData.pjt_list.map((pjt: ProjectHash, indexPjt: number) => {
+            projectsData.pjtList.map((pjt: ProjectHash, indexPjt: number) => {
               const minPriceStr: string = pjt.min_price === 0 || null ? '' : String(pjt.min_price.toLocaleString());
               const maxPriceStr: string = String(pjt.max_price.toLocaleString());
               return (
@@ -186,17 +268,44 @@ const Projects: React.FC = () => {
         </ul>
         <div className='paging-btn-container'>
           {
-            [...Array(projectsData.total_pages)].map((_, index: number) => {
+            [...Array(projectsData.totalPages)].map((_, index: number) => {
               let page: number = index + 1;
               return(
                 <>
-                  <button
-                    className='paging-btn'
-                    onClick={() => {setProjectsData({...projectsData,current_page: page})}}
-                    key={`pageButton${page}`}
+                  <Link
+                    to={
+                      handleLocationSearch(
+                        projectsData.searchParams.tags,
+                        projectsData.searchParams.locations,
+                        projectsData.searchParams.contracts,
+                        projectsData.searchParams.positions,
+                        projectsData.searchParams.industries,
+                        projectsData.searchParams.keyword,
+                        page,
+                        projectsData.searchParams.sort
+                      )
+                    }
+                    onClick={(e) => {
+                      history.push(
+                        handleLocationSearch(
+                          projectsData.searchParams.tags,
+                          projectsData.searchParams.locations,
+                          projectsData.searchParams.contracts,
+                          projectsData.searchParams.positions,
+                          projectsData.searchParams.industries,
+                          projectsData.searchParams.keyword,
+                          page,
+                          projectsData.searchParams.sort
+                        )
+                      )
+                      setSearchParams({
+                        ...searchParams,
+                        page: page,
+                      })
+                    }}
                   >
                     {page}
-                  </button>
+                  </Link>
                 </>
               );
             })
@@ -205,6 +314,21 @@ const Projects: React.FC = () => {
       </section>
     </div>
   )
+}
+
+// URL作成メソッド
+const handleLocationSearch = (
+  tags: string,
+  locations: string,
+  contracts: string,
+  positions: string,
+  industries: string,
+  keyword: string,
+  page: number,
+  sort: string
+  ) => {
+  const locationSearch: string = `/projects?tags=${tags}&locations=${locations}&contracts=${contracts}&positions=${positions}&industries=${industries}&keyword=${keyword}&page=${page}&sort=${sort}`
+  return locationSearch
 }
 
 // タグ一覧

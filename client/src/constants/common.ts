@@ -12,3 +12,5 @@ export const SORT_QUERY_PRICE_DESC: string = 'max_price DESC';
 
 export const SORT_TITLE_PRICE_ASC: string = '単価が低い順';
 export const SORT_QUERY_PRICE_ASC: string = 'max_price ASC';
+
+export const FIRST_PAGE: number = 1;

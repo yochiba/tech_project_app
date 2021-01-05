@@ -39,8 +39,8 @@ class ResponseService
     # projects list search result
     def pjts_list_search_result_json(pjt_list_json)
       res_json = {
-        status: pjt_list_json[:pjt_count].zero? ? STATUS_NO_CONTENT : STATUS_OK,
-        result: pjt_list_json[:pjt_count].zero? ? RESULT_NO_CONTENT : RESULT_OK,
+        status: pjt_list_json[:pjtCount].zero? ? STATUS_NO_CONTENT : STATUS_OK,
+        result: pjt_list_json[:pjtCount].zero? ? RESULT_NO_CONTENT : RESULT_OK,
       }
       res_json.merge! pjt_list_json
       res_json

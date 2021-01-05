@@ -26,13 +26,23 @@ class SearchService
 
     # get project_list_json
     def project_list_json(params)
-      puts "[INFO PARAMS]:: #{params}"
       page = params[:page].to_i
       sort = params[:sort]
       # location, contract, industry, tagを構成
       search_hash = compose_search_conditions_hash params
       # 検索
       project_json = execute_search_query sort, page, search_hash
+      params_json = {
+        page: page,
+        sort: sort,
+        tags: params[:tags],
+        locations: params[:locations],
+        contracts: params[:contracts],
+        positions: params[:positions],
+        industries: params[:industries],
+        keyword: params[:keyword],
+      }
+      project_json[:searchParams] = params_json
       project_json
     end
 
@@ -149,15 +159,17 @@ class SearchService
         end
       end
 
+
+
       # 総ページ数を取得
       total_pages = compose_total_pages total_pjts
       project_json = {
-        current_page: page,
-        total_pages: total_pages,
-        total_pjt_count: total_pjts,
+        currentPage: page,
+        totalPages: total_pages,
+        totalPjtCount: total_pjts,
         sort: sort,
-        pjt_count: pjt_list.size,
-        pjt_list: pjt_list,
+        pjtCount: pjt_list.size,
+        pjtList: pjt_list,
       }
       project_json
     end

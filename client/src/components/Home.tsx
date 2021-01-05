@@ -5,8 +5,8 @@ const Home: React.FC = () => {
   return (
     <section className='home'>
       <header className='header'>
-        <SearchBox />
       </header>
+      <SearchBox />
     </section>
   )
 }
