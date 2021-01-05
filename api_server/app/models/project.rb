@@ -87,9 +87,9 @@ class Project < ApplicationRecord
     where('tags.id IN (?)', tag_list)
   }
 
-  scope :sub_options, ->(sort, offset) {
+  scope :sub_options, ->(sort_option, offset) {
     group('projects.id').
-      order(sort).
+      order(sort_option).
       limit(Settings.pjt_list_count).
       offset(offset)
   }

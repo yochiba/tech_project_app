@@ -1,16 +1,14 @@
 // API エンドポイント
 export const API_ENDPOINT: string = process.env.REACT_APP_API_ENDPOINT!;
 
-export const SORT_TITLE_LATEST: string = '新着順';
-export const SORT_QUERY_LATEST: string = 'created_at DESC';
+export const TITLE_DESC: string = '降順';
+export const TITLE_ASC: string = '昇順';
+export const ORDER_DESC: string = 'DESC';
+export const ORDER_ASC: string = 'ASC';
 
-export const SORT_TITLE_OLDEST: string = '古い順';
-export const SORT_QUERY_OLDEST: string = 'created_at ASC';
-
-export const SORT_TITLE_PRICE_DESC: string = '単価が高い順';
-export const SORT_QUERY_PRICE_DESC: string = 'max_price DESC';
-
-export const SORT_TITLE_PRICE_ASC: string = '単価が低い順';
-export const SORT_QUERY_PRICE_ASC: string = 'max_price ASC';
+export const TITLE_UPDATED_AT: string = '更新日';
+export const TITLE_PRICE: string = '単価';
+export const SORT_UPDATED_AT: string = 'created_at';
+export const SORT_PRICE: string = 'max_price';
 
 export const FIRST_PAGE: number = 1;
