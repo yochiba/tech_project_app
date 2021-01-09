@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useHistory } from 'react-router-dom';
+import { 
+  Link,
+  Redirect,
+  useLocation,
+  useHistory,
+} from 'react-router-dom';
 import Axios from 'axios';
 import * as Common from '../constants/common';
 
@@ -188,12 +193,17 @@ const Projects: React.FC = () => {
       params: params,
     })
     .then((res) => {
+      // FIXME 案件検索ヒット数が0の場合に以下の条件に入る
+      if (res.data.totalPjtCount === 0) {
+        console.log('NO CONTENT');
+        <Redirect to='/' />
+      }
       setProjectsData(res.data);
     })
     .catch((res) => {
       console.log(res);
     });
-  }, [searchParams]);
+  }, [searchParams, location.search]);
 
   window.scrollTo(0, 0);
   return (
@@ -201,28 +211,14 @@ const Projects: React.FC = () => {
       <section className='pjt-list'>
         <h2 className='component-title'>案件一覧</h2>
         <h4>現在のページ（テスト用）：{projectsData.currentPage}</h4>
-        <div className='pjt-sort-btn-container'>
-          {/* SORT LIST */}
-          {
-            SORT_LIST.map((sortHash: SortHash, index: number) => {
-              return(
-                <>
-                  <Link
-                    to={
-                      handleLocationSearch(
-                        projectsData.searchParams.tags,
-                        projectsData.searchParams.locations,
-                        projectsData.searchParams.contracts,
-                        projectsData.searchParams.positions,
-                        projectsData.searchParams.industries,
-                        projectsData.searchParams.keyword,
-                        Common.FIRST_PAGE,
-                        sortHash.sort,
-                        projectsData.searchParams.order,
-                      )
-                    }
-                    onClick={(e) => {
-                      history.push(
+        <div className='sort-option-btn-container'>
+          <div className='sort-btn-box'>
+            {
+              SORT_LIST.map((sortHash: SortHash, index: number) => {
+                return(
+                  <>
+                    <Link
+                      to={
                         handleLocationSearch(
                           projectsData.searchParams.tags,
                           projectsData.searchParams.locations,
@@ -234,22 +230,37 @@ const Projects: React.FC = () => {
                           sortHash.sort,
                           projectsData.searchParams.order,
                         )
-                      )
-                      setSearchParams({
-                        ...searchParams,
-                        page: Common.FIRST_PAGE,
-                        sort: sortHash.sort,
-                      })
-                    }}
-                    key={`sortKey${index}`}
-                  >
-                    {sortHash.title}
-                  </Link>
-                </>
-              );
-            })
-          }
-          {/* ORDER LIST */}
+                      }
+                      onClick={(e) => {
+                        history.push(
+                          handleLocationSearch(
+                            projectsData.searchParams.tags,
+                            projectsData.searchParams.locations,
+                            projectsData.searchParams.contracts,
+                            projectsData.searchParams.positions,
+                            projectsData.searchParams.industries,
+                            projectsData.searchParams.keyword,
+                            Common.FIRST_PAGE,
+                            sortHash.sort,
+                            projectsData.searchParams.order,
+                          )
+                        )
+                        setSearchParams({
+                          ...searchParams,
+                          page: Common.FIRST_PAGE,
+                          sort: sortHash.sort,
+                        })
+                      }}
+                      key={`sortKey${index}`}
+                    >
+                      {sortHash.title}
+                    </Link>
+                  </>
+                );
+              })
+            }
+          </div>
+          <div className='order-btn-box'>
           {
             ORDER_LIST.map((orderHash: OrderHash, index: number) => {
               return(
@@ -296,6 +307,7 @@ const Projects: React.FC = () => {
               );
             })
           }
+          </div>
         </div>
         <ul>
           {
@@ -311,22 +323,28 @@ const Projects: React.FC = () => {
                     <h2 className='pjt-title'>{pjt.title}</h2>
                   </Link>
                   <div className='pjt-summary'>
-                    <ul>
-                      <li className='pjt-price' key={`pjtPrice${indexPjt}`}>
-                        単価：{minPriceStr}~{maxPriceStr}{pjt.price_unit}
-                      </li>
-                      <li className='pjt-location' key={`pjtLocation${indexPjt}`}>
-                        勤務地：{pjt.location_name}
-                      </li>
-                      <li className={`pjt-tags${indexPjt}`}>
-                        {tagList(pjt)}
-                        <li className='pjt-updated-at' key={`pjtUpdatedAt${indexPjt}`}>
-                          更新日：{dateFormat(pjt.updated_at, 'YYYY年MM月DD日')}
-                        </li>
-                      </li>
-                    </ul>
+                    <table>
+                      <tr>
+                        <th className='pjt-price'>
+                          単価：
+                        </th>
+                        <td>
+                          {minPriceStr}~{maxPriceStr}{pjt.price_unit}
+                        </td>
+                        <th className='pjt-location'>
+                          勤務地：
+                        </th>
+                        <td>
+                          {pjt.location_name}
+                        </td>
+                      </tr>
+                      {tagList(pjt)}
+                      <div className='pjt-updated-at'>
+                        更新日：{dateFormat(pjt.updated_at, 'YYYY年MM月DD日')}
+                      </div>
+                    </table>
                   </div>
-                  <h3 className='pjt-company'>From {pjt.company}</h3>
+                  <h4 className='pjt-company'>From {pjt.company}</h4>
                 </li>
               );
             })
@@ -411,22 +429,46 @@ const handleLocationSearch = (
 
 // タグ一覧
 const tagList = (pjt: ProjectHash) => {
+
+  let displayTagList: string [] = [];
   const tagNameList: string[] = pjt.tag_name_list;
+  const positionNameList: string[] = pjt.position_name_list;
+  const industryNameList: string[] = pjt.industry_name_list;
+
   if (tagNameList !== null) {
+    displayTagList =  displayTagList.concat(tagNameList);
+  }
+  if (positionNameList !== null) {
+    displayTagList = displayTagList.concat(positionNameList);
+  }
+  if (industryNameList !== null) {
+    displayTagList = displayTagList.concat(industryNameList);
+  }
+
+  if (displayTagList.length !== 0) {
     return(
-      <ul>
-        タグ：{tagNameList.map((tag_name: string, indexTagName: number) => {
-          return(
-            <li
-              className='pjt-tag-name'
-              key={`pjtTagName${indexTagName}`}
-            >
-              {tag_name}
-            </li>
-          );
-        })}
-      </ul>
+      <tr>
+        <th>
+          タグ：
+        </th>
+        <td>
+          <ul>
+            {displayTagList.map((tag_name: string, indexTagName: number) => {
+              return(
+                <li
+                  className='pjt-tag-name'
+                  key={`pjtTagName${indexTagName}`}
+                >
+                  {tag_name}
+                </li>
+              );
+            })}
+          </ul>
+        </td>
+      </tr>
     )
+  } else {
+    return null;
   }
 }
 

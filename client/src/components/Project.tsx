@@ -7,7 +7,7 @@ type ParamTypes = {
   pjtId: string;
 }
 
-type projectData = {
+type ProjectData = {
   status: number;
   result: string;
   project: ProjectHash;
@@ -30,7 +30,7 @@ type ProjectHash = {
   operation_unit_id: number;
   operation_unit: string;
   min_price: number;
-  max_price: string;
+  max_price: number;
   price_unit_id: number;
   price_unit: string;
   location_id: number;
@@ -52,7 +52,7 @@ type ProjectHash = {
 
 const currentDate: Date = new Date();
 
-const initProjectData: projectData = {
+const initProjectData: ProjectData = {
   status: 204,
   result: 'NO CONTENT',
   project: {
@@ -72,7 +72,7 @@ const initProjectData: projectData = {
     operation_unit_id: 0,
     operation_unit: '',
     min_price: 0,
-    max_price: '',
+    max_price: 0,
     price_unit_id: 0,
     price_unit: '',
     location_id: 0,
@@ -99,7 +99,7 @@ type InitProjectParams = {
 
 const Project: React.FC = () => {
   const { pjtId } = useParams<ParamTypes>();
-  const [projectData, setProjectData] = useState<projectData>(initProjectData);
+  const [projectData, setProjectData] = useState<ProjectData>(initProjectData);
 
   useEffect(() => {
     const projectId: InitProjectParams = {
@@ -118,52 +118,177 @@ const Project: React.FC = () => {
   }, [pjtId])
 
   window.scrollTo(0, 0);
-  const minPriceStr: string = projectData.project.min_price === 0 || null ? '' : String(projectData.project.min_price.toLocaleString());
-  const maxPriceStr: string = String(projectData.project.max_price.toLocaleString());
-
-  const minOperationStr: string = projectData.project.min_operation_unit === 0 || null ? '' : projectData.project.min_operation_unit.toString();
-  const maxOperationStr: string = projectData.project.max_operation_unit === 0 || null ? '' : projectData.project.max_operation_unit.toString();
   return(
-    <div>
-      <section className='project'>
-        <h1>{projectData.project.title}</h1>
-        <h3>勤務地</h3>
-        {projectData.project.location_name}
-        <h3>単価</h3>
-        {minPriceStr}~{maxPriceStr}{projectData.project.price_unit}
-        <h3>案件内容</h3>
-        <p>{projectData.project.description}</p>
-        <h3>必須スキル</h3>
-        <p>{projectData.project.required_skills}</p>
-        <h3>歓迎スキル</h3>
-        <p>{projectData.project.other_skills}</p>
-        <h3>開発環境</h3>
-        <p>{projectData.project.environment}</p>
-        <h3>稼働時間</h3>
-        {minOperationStr}~{maxOperationStr}{projectData.project.operation_unit}
-        <h3>週稼働日数</h3>
-        {projectData.project.weekly_attendance}
-        <h3>契約形態</h3>
-        {projectData.project.contract_name}
-        {/* <h3>ポジション</h3>
-        {projectData.project.position_name_list.map((position: string) => {
-          return(
-            {position}
-          );
-        })}
-        <h3>業界</h3>
-        {projectData.project.industry_name_list.map((industry: string) => {
-          return(
-            {industry}
-          );
-        })}
-        <h3>タグ</h3>
-        {projectData.project.tag_name_list.map((tag: string) => {
-          return(
-            {tag}
-          );
-        })} */}
+    <div className='project'>
+      <section className='pjt-box'>
+        <h1 className='pjt-title'>{projectData.project.title}</h1>
+        <div className='pjt-table-container'>
+          <table className='pjt-summary-table'>
+            {
+              Common.PROJECT_SUMMARY_TITLE.map((title: string) => {
+                return pjtSummary(title, projectData.project);
+              })
+            }
+          </table>
+          <table className='pjt-tags-table'>
+            {
+              Common.PROJECT_TAGS_TITLE.map((title: string) => {
+                return pjtTags(title, projectData.project);
+              })
+            }
+          </table>
+        </div>
+        {affiliateUrl(projectData.project.affiliate_url)}
+        <ul>
+          {
+            Common.PROJECT_DETAIL_TITLE.map((title: string, index: number) => {
+              return pjtDetail(title, projectData.project, index);
+            })
+          }
+        </ul>
+        {affiliateUrl(projectData.project.affiliate_url)}
       </section>
+    </div>
+  );
+}
+
+// for pjt-summary-table
+const pjtSummary = (title: string, project: ProjectHash) => {
+  let value: string = '';
+  switch (title) {
+    case '勤務地':
+      value = project.location_name;
+      break;
+    case '単価':
+      const minPrice: number = project.min_price;
+      const maxPrice: number = project.max_price;
+
+      const minPriceStr: string = minPrice === 0 || minPrice === null ? '' : String(minPrice.toLocaleString());
+      const maxPriceStr: string = maxPrice === 0 || maxPrice === null ? '' : String(maxPrice.toLocaleString());
+
+      if (minPriceStr !== '' || maxPriceStr !== '') {
+        value = `${minPriceStr}~${maxPriceStr}${project.price_unit}`;
+      } else {
+        value = '';
+      }
+      break;
+    case '稼働時間':
+      const minOperation: number = project.min_operation_unit;
+      const maxOperation: number = project.max_operation_unit;
+
+      const minOperationStr: string = minOperation === 0 || minOperation === null ? '' : minOperation.toString();
+      const maxOperationStr: string = maxOperation === 0 || maxOperation === null ? '' : maxOperation.toString();
+
+      if (minOperationStr !== '' || maxOperationStr !== '') {
+        value = `${minOperationStr}~${maxOperationStr}${project.operation_unit}`;
+      } else {
+        value = '';
+      }
+      break;
+    case '契約形態':
+      value = project.contract_name;
+      break;
+    case '週稼働日数':
+      const weeklyAttendance: number = project.weekly_attendance;
+      value = weeklyAttendance === 0 || weeklyAttendance === null ? '' : String(project.weekly_attendance);
+      break;
+    default:
+      break;
+  }
+
+  if (value !== null && value !== '') {
+    return (
+      <tr>
+        <th>
+          {title}：
+        </th>
+        <td>
+          {value}
+        </td>
+      </tr>
+    );
+  } else {
+    return null;    
+  }
+}
+
+const pjtTags = (title: string, project: ProjectHash) => {
+  let valueList: string[] = [];
+  switch (title) {
+    case 'ポジション':
+      valueList = project.position_name_list;
+      break;
+    case '業界':
+      valueList = project.industry_name_list;
+      break;
+    case 'タグ':
+      valueList = project.tag_name_list;
+      break;
+    default:
+      break;
+  }
+
+  if (valueList !== null) {
+    return (
+      <tr>
+        <th>
+          {title}：
+        </th>
+        <td>
+          {valueList.map((value: string) => {
+            return (
+              <div className='tag'>
+                {value}
+              </div>
+            );
+          })}
+        </td>
+      </tr>
+    );
+  } else {
+    return null;    
+  }
+}
+
+// 案件詳細
+const pjtDetail = (title: string, project: ProjectHash, index: number) => {
+  let value: string = '';
+  switch (title) {
+    case '案件内容':
+      value = project.description;
+      break;
+    case '必須スキル':
+      value = project.required_skills;
+      break;
+    case '歓迎スキル':
+      value = project.other_skills;
+      break;
+    case '開発環境':
+      value = project.environment;
+      break;
+    default:
+      break;
+  }
+
+  if (value !== null && value !== '' ) {
+    return (
+      <li className='pjt-detail-li' key={`pjtLi${index}`}>
+        <h3 className='pjt-detail-title'>{title}</h3>
+        <p className='pjt-detail-value'>{value}</p>
+      </li>
+    );
+  } else {
+    return null;
+  }
+}
+
+// アフィリエイトリンク
+const affiliateUrl = (url: string) => {
+  return (
+    <div className='affiliate-link'>
+      <a href={url} target='_blank' rel='noreferrer'>
+        {Common.AFFILIATE_LINK_TITLE}
+      </a>
     </div>
   );
 }

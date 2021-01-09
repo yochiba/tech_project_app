@@ -12,3 +12,26 @@ export const SORT_UPDATED_AT: string = 'created_at';
 export const SORT_PRICE: string = 'max_price';
 
 export const FIRST_PAGE: number = 1;
+
+export const PROJECT_SUMMARY_TITLE: string[] = [
+  '勤務地',
+  '単価',
+  '稼働時間',
+  '契約形態',
+  '週稼働日数',
+];
+
+export const PROJECT_TAGS_TITLE: string[] = [
+  'ポジション',
+  '業界',
+  'タグ',
+];
+
+export const PROJECT_DETAIL_TITLE: string[] = [
+  '案件内容',
+  '必須スキル',
+  '歓迎スキル',
+  '開発環境',
+];
+
+export const AFFILIATE_LINK_TITLE: string = '案件お問い合わせはこちら';
