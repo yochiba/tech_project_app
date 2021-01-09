@@ -66,7 +66,7 @@ type SearchParams = {
 }
 
 const initSearchParams = {
-  page: 1,
+  page: Common.FIRST_PAGE,
   sort: Common.SORT_UPDATED_AT,
   order: Common.ORDER_DESC,
   tags: '',

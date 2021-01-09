@@ -155,8 +155,15 @@ yarn add --dev react-router-dom @types/react-router-dom
 yarn add --dev axios
 ```
 
+## react-helmet(htmlのheadタグを設定するためのプラグイン)
+***
+```
+yarn add --dev react-helmet @types/react-helmet
+```
+
 ## 参考文献
 ***
 - https://ics.media/entry/16329/#webpack-ts-react
 - https://tech.playground.style/javascript/babel-webpack/
 - https://dev.classmethod.jp/articles/react-dotenv-cli/
+- https://github.com/nfl/react-helmet
