@@ -207,7 +207,7 @@ const Projects: React.FC = () => {
 
   window.scrollTo(0, 0);
   return (
-    <div>
+    <div className='projects'>
       <section className='pjt-list'>
         <h2 className='component-title'>案件一覧</h2>
         <h4>現在のページ（テスト用）：{projectsData.currentPage}</h4>

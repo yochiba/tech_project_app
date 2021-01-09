@@ -1,6 +1,8 @@
 // API エンドポイント
 export const API_ENDPOINT: string = process.env.REACT_APP_API_ENDPOINT!;
 
+export const WEBSITE_NAME: string = 'Techies Guild';
+
 export const TITLE_DESC: string = '降順';
 export const TITLE_ASC: string = '昇順';
 export const ORDER_DESC: string = 'DESC';
