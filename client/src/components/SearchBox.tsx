@@ -129,67 +129,69 @@ const SearchBox: React.FC = () => {
     <>
       <h2>案件を探す</h2>
       <form className='search-form'>
-        <div className='pjt-sort-btn-container'>
-          {/* SORT LIST */}
-          {
-            SORT_LIST.map((sortHash: SortHash, index: number) => {              
-              let checked: boolean = searchParams.sort === sortHash.sort ? true : false;
-              return(
-                <>
-                  <label htmlFor='pjt-sort-input' key={`sortLabel${index}`}>
-                    <input
-                      className='pjt-sort-input'
-                      type='radio'
-                      checked={checked}
-                      value={sortHash.sort}
-                      name='sort'
-                      id='pjt-sort-input'
-                      onChange={(e) => {
-                        setSearchParams(
-                          {
-                            ...searchParams,
-                            sort: e.target.value,
-                          }
-                        );
-                      }}
-                      key={`sortInput${index}`}
-                    />
-                    {sortHash.title}
-                  </label>
-                </>
-              );
-            })
-          }
-          {/* ORDER LIST */}
-          {
-            ORDER_LIST.map((orderHash: OrderHash, index: number) => {              
-              let checked: boolean = searchParams.order === orderHash.order ? true : false;
-              return(
-                <>
-                  <label htmlFor='pjt-order-input' key={`orderLabel${index}`}>
-                    <input
-                      className='pjt-order-input'
-                      type='radio'
-                      checked={checked}
-                      value={orderHash.order}
-                      name='order'
-                      id='pjt-order-input'
-                      onChange={(e) => {
-                        setSearchParams(
-                          {
-                            ...searchParams,
-                            order: e.target.value,
-                          }
-                        );
-                      }}
-                      key={`orderInput${index}`}
-                    />
-                    {orderHash.title}
-                  </label>
-                </>
-              );
-            })
-          }
+        <div className='sort-option-checkbox-container'>
+          <div className='sort-checkbox-box'>
+            {
+              SORT_LIST.map((sortHash: SortHash, index: number) => {              
+                let checked: boolean = searchParams.sort === sortHash.sort ? true : false;
+                return(
+                  <>
+                    <label htmlFor='pjt-sort-input' key={`sortLabel${index}`}>
+                      <input
+                        className='pjt-sort-input'
+                        type='radio'
+                        checked={checked}
+                        value={sortHash.sort}
+                        name='sort'
+                        id='pjt-sort-input'
+                        onChange={(e) => {
+                          setSearchParams(
+                            {
+                              ...searchParams,
+                              sort: e.target.value,
+                            }
+                          );
+                        }}
+                        key={`sortInput${index}`}
+                      />
+                      {sortHash.title}
+                    </label>
+                  </>
+                );
+              })
+            }
+          </div>
+          <div className='order-checkbox-box'>
+            {
+              ORDER_LIST.map((orderHash: OrderHash, index: number) => {              
+                let checked: boolean = searchParams.order === orderHash.order ? true : false;
+                return(
+                  <>
+                    <label htmlFor='pjt-order-input' key={`orderLabel${index}`}>
+                      <input
+                        className='pjt-order-input'
+                        type='radio'
+                        checked={checked}
+                        value={orderHash.order}
+                        name='order'
+                        id='pjt-order-input'
+                        onChange={(e) => {
+                          setSearchParams(
+                            {
+                              ...searchParams,
+                              order: e.target.value,
+                            }
+                          );
+                        }}
+                        key={`orderInput${index}`}
+                      />
+                      {orderHash.title}
+                    </label>
+                  </>
+                );
+              })
+            }
+          </div>
         </div>
         <div className='search-tab search-tag-tab'>
           <h3>タグで探す</h3>
