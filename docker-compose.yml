@@ -1,0 +1,48 @@
+version: '3.5'
+
+services:
+  mysql:
+    build: ./mysql/
+    container_name: mysql
+    tty: true
+    ports: 
+      - 3306:3306
+    networks:
+      - techies-guild
+  redis:
+    build: ./redis
+    volumes:
+      - ./data/redis:/data
+    container_name: redis
+    tty: true
+    ports:
+      - 6379:6379
+    networks:
+      - techies-guild
+  api_server:
+    build: ./api_server
+    volumes:
+      - ./api_server:/app
+      - ./api_server/vendor/bundle:/app/vendor/bundle
+    container_name: api_server
+    tty: true
+    ports:
+      - 3001:3001
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - techies-guild
+  client:
+    build: ./client
+    volumes:
+      - ./node/app:/app
+    container_name: client
+    tty: true
+    ports:
+      - 3000:3000
+    networks:
+      - techies-guild
+networks:
+  techies-guild:
+    driver: bridge
