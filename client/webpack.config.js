@@ -38,7 +38,7 @@ module.exports = {
       },
     ]
   },
-  // import 文で .ts や .tsx ファイルを解決するため
+  // import 文で .ts や .tsx ファイルを解決
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"]
   },
