@@ -27,6 +27,8 @@
 config/master.key
 config/credentials.yml.enc
 config/database.yml
+config/database.yml.mac_local
+config/database.yml.docker
 config/settings.local.yml
 config/settings/*.local.yml
 config/environments/*.local.yml
