@@ -11,8 +11,6 @@ services:
       - techies-guild
   redis:
     build: ./redis
-    volumes:
-      - ./data/redis:/data
     container_name: redis
     tty: true
     ports:
@@ -21,9 +19,6 @@ services:
       - techies-guild
   api_server:
     build: ./api_server
-    volumes:
-      - ./api_server:/app
-      - ./api_server/vendor/bundle:/app/vendor/bundle
     container_name: api_server
     tty: true
     ports:
@@ -35,12 +30,21 @@ services:
       - techies-guild
   client:
     build: ./client
-    volumes:
-      - ./node/app:/app
     container_name: client
     tty: true
+    networks:
+      - techies-guild
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    tty: true
+    restart: unless-stopped
     ports:
-      - 3000:3000
+      - 8080:80
+      - 443:443
+    depends_on:
+      - api_server
+      - client
     networks:
       - techies-guild
 networks:

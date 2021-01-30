@@ -1,4 +1,5 @@
 api_server/dump.rdb
-
-docker/mysql/my.cnf
 data/redis/dump.rdb
+redis/dump.rdb
+.devcontainer
+.vscode

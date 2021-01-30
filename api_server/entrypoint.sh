@@ -4,7 +4,7 @@ set -e
 rm -f /tech_project_app/tmp/pids/server.pid
 
 touch ~/.bash_profile
-echo "export CORS_ALLOWED_ORIGINS_HOST='http://localhost:3000'" >> ~/.bash_profile
+echo "export CORS_ALLOWED_ORIGINS_HOST='http://localhost:8080'" >> ~/.bash_profile
 echo "export MYSQL_USERNAME='root'" >> ~/.bash_profile
 echo "export MYSQL_PASSWORD='test'" >> ~/.bash_profile
 source ~/.bash_profile
