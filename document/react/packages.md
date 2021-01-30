@@ -161,6 +161,13 @@ yarn add --dev axios
 yarn add --dev react-helmet @types/react-helmet
 ```
 
+
+## ドキュメントルート
+***
+```
+/var/www/html/app/tech_project_app/dist
+```
+
 ## 参考文献
 ***
 - https://ics.media/entry/16329/#webpack-ts-react
