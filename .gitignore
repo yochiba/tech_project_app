@@ -3,3 +3,4 @@ data/redis/dump.rdb
 redis/dump.rdb
 .devcontainer
 .vscode
+.DS_Store
