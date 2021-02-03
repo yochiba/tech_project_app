@@ -25,7 +25,6 @@
 
 # Ignore master key for decrypting credentials and more.
 config/master.key
-config/credentials.yml.enc
 config/database.yml
 config/database.yml.mac_local
 config/database.yml.docker
@@ -36,4 +35,4 @@ config/environments/*.local.yml
 .gitignoregibo 2.2.4 by Simon Whitaker <sw@netcetera.org>
 https://github.com/simonwhitaker/gibo
 
-/config/credentials/
+/config/credentials/development.key

@@ -1,7 +1,9 @@
 FROM ruby:2.7.0
 
+ENV CORS_ALLOWED_ORIGINS_HOST=http://localhost:8080
 ENV MYSQL_USERNAME=root
 ENV MYSQL_PASSWORD=test
+ENV MYSQL_HOST=mysql
 ENV REDIS_HOST=redis
 ENV REDIS_PORT=6379
 ENV TZ=Asia/Tokyo
@@ -24,11 +26,13 @@ RUN apt update -qq && apt install -y sudo vim git build-essential libpq-dev node
     && cd tech_project_app/ \
     && sudo rm -rf client document mysql nginx redis docker-compose.yml \
     && cd api_server/ \
+    && mkdir -p ./config/credentials \
     && bundle install
 
 WORKDIR /var/www/html/app/tech_project_app/api_server
 
-COPY ./config/database.yml /var/www/html/app/tech_project_app/api_server/config
+COPY ./config/database.yml /var/www/html/app/tech_project_app/api_server/config/
+
 COPY ./entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
