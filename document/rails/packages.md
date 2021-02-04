@@ -19,8 +19,14 @@ bundle exec sidekiq -C config/sidekiq.yml
 EDITOR="vi" rails credentials:edit -e development
 cd ../
 # TODO change the command after RAILS_ENV= depends on environment
+sudo docker cp development.key api_server:/var/www/html/app/tech_project_app/api_server/config/credentials
+sudo docker cp development.yml.enc api_server:/var/www/html/app/tech_project_app/api_server/config/credentials
+
 rails db:create RAILS_ENV=development
 rails db:migrate RAILS_ENV=development
+
+bundle exec unicorn_rails -D -p 3001 -c config/unicorn.rb -E development
+
 # デーモン化できない
 bundle exec sidekiq -C config/sidekiq.yml
 
