@@ -45,7 +45,7 @@ ENTRYPOINT ["entrypoint.sh"]
 EXPOSE 3001
 
 # TODO change the command after -E depends on environment
-CMD ["bundle", "exec", "unicorn_rails", "-p", "3001", "-c", "config/unicorn.rb", "-E", "development"]
+# CMD ["bundle", "exec", "unicorn_rails", "-p", "3001", "-c", "config/unicorn.rb", "-E", "development"]
 
 # FROM ruby:3.0.0-alpine
 
