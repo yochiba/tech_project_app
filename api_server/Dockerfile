@@ -46,38 +46,3 @@ EXPOSE 3001
 
 # TODO change the command after -E depends on environment
 # CMD ["bundle", "exec", "unicorn_rails", "-p", "3001", "-c", "config/unicorn.rb", "-E", "development"]
-
-# FROM ruby:3.0.0-alpine
-
-# ENV CORS_ALLOWED_ORIGINS_HOST=http://localhost:8080
-# ENV MYSQL_USERNAME=root
-# ENV MYSQL_PASSWORD=test
-# ENV MYSQL_HOST=mysql
-# ENV REDIS_HOST=redis
-# ENV REDIS_PORT=6379
-# ENV TZ=Asia/Tokyo
-
-# RUN apk update \
-#     && apk add --no-cache --virtual=.build-deps build-base \
-#     && apk add --no-cache sudo vim git mariadb-client tzdata nodejs npm yarn openssl \
-#     # create application
-#     && cd /var && mkdir -p www/html/app \
-#     && cd www/html/app \
-#     && git clone --depth 1 https://b9ca610614485d8b568ef218195d3f0ba0b1fa64:x-oauth-basic@github.com/yochiba/tech_project_app.git \
-#     && cd tech_project_app/ \
-#     && sudo rm -rf client document mysql nginx redis docker-compose.yml \
-#     && cd api_server/ \
-#     && bundle install
-
-# WORKDIR /var/www/html/app/tech_project_app/api_server
-
-# COPY ./config/database.yml /var/www/html/app/tech_project_app/api_server/config/
-
-# COPY ./entrypoint.sh /usr/bin/
-# RUN chmod +x /usr/bin/entrypoint.sh
-# ENTRYPOINT ["entrypoint.sh"]
-
-# EXPOSE 3001
-
-# # TODO change the command after -E depends on environment
-# CMD ["bundle", "exec", "unicorn_rails", "-D", "-p", "3001", "-c", "config/unicorn.rb", "-E", "development"]

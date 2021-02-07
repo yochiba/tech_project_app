@@ -15,4 +15,3 @@ rails db:migrate RAILS_ENV=development
 
 # Then exec the container's main process (what's set as CMD in the Dockerfile).
 bundle exec unicorn_rails -p 3001 -c config/unicorn.rb -E development
-# exec "$@"
