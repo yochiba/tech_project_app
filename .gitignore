@@ -11,3 +11,4 @@ Dockerfile_production
 nginx/techies_guild_staging.conf
 api_server/entrypoint_staging.sh
 docker-compose-staging.yml
+document/docker/ecr.md

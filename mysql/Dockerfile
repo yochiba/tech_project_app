@@ -4,7 +4,8 @@ ENV MYSQL_ROOT_PASSWORD=test
 ENV MYSQL_USER=root
 ENV TZ=Asia/Tokyo
 
-RUN apt update -qq && apt install -y sudo vim
+RUN apt update -qq
+RUN apt install -y sudo vim
 
 EXPOSE 3306
 

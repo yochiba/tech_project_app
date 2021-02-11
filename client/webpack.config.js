@@ -9,7 +9,7 @@ module.exports = {
     //  出力ファイルのディレクトリ名
     path: `${__dirname}/dist`,
     // 出力ファイル名
-    filename: "main.js"
+    filename: "main.js",
   },
   module: {
     rules: [
@@ -17,7 +17,7 @@ module.exports = {
         // 拡張子 .ts もしくは .tsx の場合
         test: /\.tsx?$/,
         // TypeScript をコンパイルする
-        use: "ts-loader"
+        use: "ts-loader",
       },
       {
         test: /\.js$/,
@@ -25,8 +25,8 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['es2015', 'react']
-          }
+            presets: ['es2015', 'react'],
+          },
         }
       },
       {
@@ -37,13 +37,12 @@ module.exports = {
             loader: 'css-loader',
             options: {
               url: false,
-
-              importLoaders: 2
+              importLoaders: 2,
             },
           },
           {
             loader: 'sass-loader',
-          }
+          },
         ],
       },
     ]
