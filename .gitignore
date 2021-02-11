@@ -4,3 +4,10 @@ redis/dump.rdb
 .devcontainer
 .vscode
 .DS_Store
+
+Dockerfile_staging
+Dockerfile_production
+
+nginx/techies_guild_staging.conf
+api_server/entrypoint_staging.sh
+docker-compose-staging.yml
