@@ -19,6 +19,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "webpack",
+    "build-stg": "NODE_ENV=staging webpack --mode production",
+    "build-prod": "NODE_ENV=production webpack --mode production",
     "watch": "webpack -w",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
