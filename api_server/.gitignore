@@ -35,4 +35,4 @@ config/environments/*.local.yml
 .gitignoregibo 2.2.4 by Simon Whitaker <sw@netcetera.org>
 https://github.com/simonwhitaker/gibo
 
-/config/credentials/development.key
+/config/credentials/*.key

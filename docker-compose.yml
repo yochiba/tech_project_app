@@ -2,7 +2,9 @@ version: '3.5'
 
 services:
   mysql:
-    build: ./mysql/
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
     container_name: mysql
     tty: true
     ports: 
@@ -10,7 +12,9 @@ services:
     networks:
       - techies-guild
   redis:
-    build: ./redis
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
     container_name: redis
     tty: true
     ports:
@@ -18,7 +22,9 @@ services:
     networks:
       - techies-guild
   api_server:
-    build: ./api_server
+    build:
+      context: ./api_server
+      dockerfile: Dockerfile
     container_name: api_server
     tty: true
     ports:
@@ -29,18 +35,22 @@ services:
     networks:
       - techies-guild
   client:
-    build: ./client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
     container_name: client
     tty: true
     networks:
       - techies-guild
   nginx:
-    build: ./nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     container_name: nginx
     tty: true
     restart: unless-stopped
     ports:
-      - 8080:80
+      - 80:80
       - 443:443
     depends_on:
       - api_server
