@@ -127,7 +127,7 @@ const SearchBox: React.FC = () => {
 
   return(
     <>
-      <h2>案件を探す</h2>
+      <h2>案件を探す DOCKER TEST</h2>
       <form className='search-form'>
         <div className='sort-option-checkbox-container'>
           <div className='sort-checkbox-box'>
