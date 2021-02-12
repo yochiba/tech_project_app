@@ -12,4 +12,8 @@ nginx/techies_guild_staging.conf
 api_server/entrypoint_staging.sh
 docker-compose-staging.yml
 document/docker/ecr.md
-api_server/.ssh/
+api_server/.devcontainer.json
+client/.devcontainer.json
+mysql/.devcontainer.json
+nginx/.devcontainer.json
+redis/.devcontainer.json
