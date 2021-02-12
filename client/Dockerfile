@@ -13,8 +13,7 @@ RUN apt update -qq && apt install -y sudo vim git apt-transport-https \
     && cd /var && mkdir -p www/html/app \
     && cd www/html/app/ \
     && git clone --depth 1 https://b9ca610614485d8b568ef218195d3f0ba0b1fa64:x-oauth-basic@github.com/yochiba/tech_project_app.git \
-    && cd tech_project_app/ \
-    && sudo rm -rf api_server document mysql nginx redis docker-compose.yml
+    && cd tech_project_app/
 
 WORKDIR /var/www/html/app/tech_project_app/client
 
