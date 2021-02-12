@@ -2,7 +2,6 @@
 echo "entrypoint.sh start"
 set -es
 
-rm -f /var/www/html/app/tech_project_app/api_servertmp/pids/server.pid
 rm -f /var/www/html/app/tech_project_app/api_servertmp/pids/unicorn.pid
 
 cd /var/www/html/app/tech_project_app/api_server
