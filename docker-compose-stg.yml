@@ -1,0 +1,64 @@
+version: '3.5'
+
+services:
+  mysql_stg:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile_stg
+    container_name: mysql_stg
+    tty: true
+    ports: 
+      - 3306:3306
+    networks:
+      - techies-guild-stg
+  redis_stg:
+    build:
+      context: ./redis
+      dockerfile: Dockerfile_stg
+    container_name: redis_stg
+    tty: true
+    ports:
+      - 6379:6379
+    networks:
+      - techies-guild-stg
+  api_server_stg:
+    build:
+      context: ./api_server
+      dockerfile: Dockerfile_stg
+    container_name: api_server_stg
+    tty: true
+    ports:
+      - 3001:3001
+    depends_on:
+      - mysql_stg
+      - redis_stg
+    networks:
+      - techies-guild-stg
+  client_stg:
+    build:
+      context: ./client
+      dockerfile: Dockerfile_stg
+    container_name: client_stg
+    tty: true
+    ports:
+      - 3000:3000
+    networks:
+      - techies-guild-stg
+  nginx_stg:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile_stg
+    container_name: nginx_stg
+    tty: true
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - api_server_stg
+      - client_stg
+    networks:
+      - techies-guild-stg
+networks:
+  techies-guild-stg:
+    driver: bridge
