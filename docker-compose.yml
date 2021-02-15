@@ -5,10 +5,6 @@ services:
     build:
       context: ./mysql
       dockerfile: Dockerfile
-    volumes:
-      - .:/workspace:cached
-      - ~/.ssh:/root/.ssh
-      - ~/.gitconfig:/root/.gitconfig
     container_name: mysql
     tty: true
     ports: 
@@ -19,10 +15,6 @@ services:
     build:
       context: ./redis
       dockerfile: Dockerfile
-    volumes:
-      - .:/workspace:cached
-      - ~/.ssh:/root/.ssh
-      - ~/.gitconfig:/root/.gitconfig
     container_name: redis
     tty: true
     ports:
@@ -34,10 +26,9 @@ services:
       context: ./api_server
       dockerfile: Dockerfile
     volumes:
-      - .:/workspace:cached
-      - ~/.ssh:/root/.ssh
-      - ~/.gitconfig:/root/.gitconfig
+      - ./api_server:/var/www/html/app/tech_project_app/api_server
     container_name: api_server
+    stdin_open: true
     tty: true
     ports:
       - 3001:3001
@@ -51,9 +42,8 @@ services:
       context: ./client
       dockerfile: Dockerfile
     volumes:
-      - .:/workspace:cached
-      - ~/.ssh:/root/.ssh
-      - ~/.gitconfig:/root/.gitconfig
+      - ./client:/var/www/html/app/tech_project_app/client
+      - /var/www/html/app/tech_project_app/client/node_modules
     container_name: client
     tty: true
     ports:
@@ -64,10 +54,9 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile
-    volumes:
-      - .:/workspace:cached
-      - ~/.ssh:/root/.ssh
-      - ~/.gitconfig:/root/.gitconfig
+    # volumes:
+    #   - ./nginx/nginx.conf:/etc/nginx
+    #   - ./nginx/techies_guild.conf:/etc/nginx/conf.d
     container_name: nginx
     tty: true
     restart: unless-stopped
