@@ -17,3 +17,4 @@ client/.devcontainer.json
 mysql/.devcontainer.json
 nginx/.devcontainer.json
 redis/.devcontainer.json
+mysql/init_data/

@@ -14,7 +14,6 @@ RUN apt update && apt install -y apt-utils locales procps sudo vim \
 WORKDIR /etc/nginx/conf.d
 
 COPY ./nginx.conf /etc/nginx/
-COPY ./techies_guild.conf /etc/nginx/conf.d/
 
 EXPOSE 80 443
 
