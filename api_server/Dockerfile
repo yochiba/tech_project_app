@@ -1,4 +1,4 @@
-FROM ruby:2.7.2
+FROM ruby:2.7.2-alpine
 
 ENV DOCKER_ENV=development
 ENV CORS_ALLOWED_ORIGINS_HOST=http://localhost
@@ -10,25 +10,18 @@ ENV REDIS_PORT=6379
 ENV TZ=Asia/Tokyo
 ENV DOCKERIZE_VERSION v0.6.1
 
-RUN apt update -qq && apt install -y sudo vim git build-essential libpq-dev nodejs npm mariadb-client wget \
-    # dockerizeインストール
-    && wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    # node関連インストール
-    && sudo npm install n -g \
-    && sudo n stable \
-    && sudo apt purge -y nodejs npm \
-    && sudo n 14.15.4 \
-    && node -v \
-    # yarn install
-    && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - \
-    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list \
-    && sudo apt -y update && sudo apt install -y yarn \
-    && yarn -v \
+RUN apk add --no-cache alpine-sdk linux-headers libxml2-dev make tzdata \
+    gcc libc-dev gmp-dev sudo bash curl vim git nodejs npm mysql-client mysql-dev wget && \
+    apk add --virtual build-dependencies --no-cache build-base curl-dev && \
+    wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
+    tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
+    rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
+    touch ~/.bashrc && \
+    curl -o- -L https://yarnpkg.com/install.sh | bash && \
+    ln -s "$HOME/.yarn/bin/yarn" /usr/local/bin/yarn && \
     # apiアプリケーション作成
-    && cd /var && mkdir -p www/html/app/tech_project_app/api_server \
-    && cd www/html/app/tech_project_app/api_server
+    cd /var && mkdir -p www/html/app/tech_project_app/api_server && \
+    cd www/html/app/tech_project_app/api_server
 
 WORKDIR /var/www/html/app/tech_project_app/api_server
 

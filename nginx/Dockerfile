@@ -1,15 +1,15 @@
-FROM nginx:stable-perl
+FROM nginx:alpine
 
 ENV TZ=Asia/Tokyo
 ENV LANG ja_JP.UTF-8
 ENV LC_TIME C
 ENV HOST_URL=localhost
 
-RUN apt update && apt install -y apt-utils locales procps sudo vim \
-    && sed -i -e 's/# ja_JP.UTF-8/ja_JP.UTF-8/g' /etc/locale.gen \
-    && locale-gen ja_JP.UTF-8 \
-    && sudo rm -f /etc/nginx/conf.d/default.conf \
-    && sudo rm -f /etc/nginx/nginx.conf
+RUN apk add --no-cache alpine-sdk linux-headers libxml2-dev tzdata \
+    gcc libc-dev gmp-dev sudo bash curl vim git wget && \
+    apk add --virtual build-dependencies --no-cache build-base curl-dev && \
+    sudo rm -f /etc/nginx/conf.d/default.conf && \
+    sudo rm -f /etc/nginx/nginx.conf
 
 WORKDIR /etc/nginx/conf.d
 
