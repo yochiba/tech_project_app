@@ -4,10 +4,10 @@ set -es
 rm -f /var/www/html/app/tech_project_app/api_servertmp/pids/unicorn.pid
 # move to api_server directory
 cd /var/www/html/app/tech_project_app/api_server
-# execute bundle install
-bundle install
 # wait for mysql container started
 dockerize -wait tcp://${MYSQL_HOST}:3306 -timeout 3m
+# execute bundle install
+bundle install
 # create & migrate databse
 rails db:create RAILS_ENV=${DOCKER_ENV}
 rails db:migrate RAILS_ENV=${DOCKER_ENV}
