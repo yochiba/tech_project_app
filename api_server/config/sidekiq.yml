@@ -1,16 +1,16 @@
 schedule:
   midworks_scraping_job:
-    cron: "0 2 * * 1"
+    cron: "20 7 * * 1"
     args:
       job_type: "midworks"
     class: ScrapingJob
   levtech_scraping_job:
-    cron: "0 2 * * 1"
+    cron: "0 3 * * 1"
     args:
       job_type: "levtech"
     class: ScrapingJob
   potepan_scraping_job:
-    cron: "0 2 * * 1"
+    cron: "30 3 * * 1"
     args:
       job_type: "potepan"
     class: ScrapingJob

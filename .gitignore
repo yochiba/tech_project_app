@@ -5,16 +5,5 @@ redis/dump.rdb
 .vscode
 .DS_Store
 
-Dockerfile_staging
-Dockerfile_production
-
-nginx/techies_guild_staging.conf
-api_server/entrypoint_staging.sh
-docker-compose-staging.yml
 document/docker/ecr.md
-api_server/.devcontainer.json
-client/.devcontainer.json
-mysql/.devcontainer.json
-nginx/.devcontainer.json
-redis/.devcontainer.json
 mysql/init_data/

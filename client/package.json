@@ -18,7 +18,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build-development": "webpack",
+    "build": "webpack --mode development",
+    "build-development": "NODE_ENV=development webpack --mode development",
     "build-staging": "NODE_ENV=staging webpack --mode production",
     "build-production": "NODE_ENV=production webpack --mode production",
     "watch": "webpack -w",
