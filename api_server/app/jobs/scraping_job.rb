@@ -5,14 +5,21 @@ class ScrapingJob < ApplicationJob
 
   def perform(options = {})
     Rails.logger.info "[SCRAPING JOB START]"
+    result_flg = false
     case options[:job_type]
     when 'midworks'
-      MidworksScrapingService.scraping_root
+      pjt_json_list = MidworksScrapingService.scraping_root
+      result_flg = ScrapingService.compose_project_json pjt_json_list
     when 'levtech'
-      LevtechScrapingService.scraping_root
+      pjt_json_list = LevtechScrapingService.scraping_root
+      result_flg = ScrapingService.compose_project_json pjt_json_list
     when 'potepan'
-      PotepanScrapingService.scraping_root
+      pjt_json_list = PotepanScrapingService.scraping_root
+      result_flg = ScrapingService.compose_project_json pjt_json_list
     end
-    Rails.logger.info "[SCRAPING JOB END]"
+
+    log_info = result_flg ? '[SCRAPING JOB SUCCEEDED]' : '[SCRAPING JOB FAILED]'
+
+    Rails.logger.info log_info
   end
 end

@@ -48,37 +48,17 @@ type ProjectsData = {
 type ProjectHash = {
   id: number;
   title: string;
-  description: string;
-  company_id: number;
   company: string;
   url: string;
-  required_skills: string;
-  other_skills: string;
-  environment: string;
-  weekly_attendance: number;
-  min_operation_unit: number;
-  max_operation_unit: number;
-  operation_unit_id: number;
-  operation_unit: string;
   min_price: number;
   max_price: number;
-  price_unit_id: number;
   price_unit: string;
-  location_id: number;
-  contract_id: number;
-  display_flg: number;
-  deleted_flg: number;
-  deleted_at: Date;
-  created_at: Date;
   updated_at: Date;
   location_name: string;
   contract_name: string;
   position_name_list: string[];
-  position_name_search_list: string[];
   industry_name_list: string[];
-  industry_name_search_list: string[];
   tag_name_list: string[];
-  tag_name_search_list: string[];
 }
 
 const initProjectsData: ProjectsData = {

@@ -25,7 +25,8 @@ class Project < ApplicationRecord
 
   # project list
   scope :project_list, -> {
-    project_list_left_outer_joins.
+    selects_option.
+      project_list_left_outer_joins.
       where(display_flg: 0, deleted_flg: 0, deleted_at: nil)
   }
 
@@ -45,6 +46,23 @@ class Project < ApplicationRecord
        GROUP_CONCAT(DISTINCT(industries.industry_name_search)) AS industry_name_search_list,
        GROUP_CONCAT(DISTINCT(tags.tag_name)) AS tag_name_list,
        GROUP_CONCAT(DISTINCT(tags.tag_name_search)) AS tag_name_search_list'
+    )
+  end
+
+  # projects select options
+  scope :selects_option, -> do
+    select(
+      'projects.id,
+       projects.title,
+       projects.company,
+       projects.url,
+       projects.min_price,
+       projects.max_price,
+       projects.price_unit,
+       projects.updated_at,
+       GROUP_CONCAT(DISTINCT(positions.position_name)) AS position_name_list,
+       GROUP_CONCAT(DISTINCT(industries.industry_name)) AS industry_name_list,
+       GROUP_CONCAT(DISTINCT(tags.tag_name)) AS tag_name_list'
     )
   end
 
