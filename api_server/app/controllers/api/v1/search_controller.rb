@@ -18,7 +18,7 @@ class Api::V1::SearchController < ApplicationController
 
   # GET checkbox items
   def checkbox_items
-    checkbox_items_json = SearchService.compose_checkbox_items
+    checkbox_items_json = SearchService.compose_checkbox_items params[:keyword]
     res_json = ResponseService.checkbox_items_result_json checkbox_items_json
     render json: res_json
   end

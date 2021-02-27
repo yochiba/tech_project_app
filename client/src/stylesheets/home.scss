@@ -1,0 +1,37 @@
+@charset 'UTF-8';
+@use './module/responsive' as responsive;
+
+.home {
+  width: 100%;
+  height: auto;
+  .main-img {
+    width: 100%;
+    height: 280px;
+    background-image: url("https://image.shutterstock.com/image-photo/smiling-bearded-african-man-using-600w-573112123.jpg");
+    background-position: center;
+  }
+  .latest-pjts-search-btn {
+    display: block;
+    width: 200px;
+    height: 35px;
+    background-color: #F2AF01;
+    margin: 20px auto;
+    border-radius: 10px;
+    text-align: center;
+    line-height: 35px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    &:hover {
+      background-color: rgba(242, 175, 1, 0.3);
+    }
+  }
+}
+footer {
+  width: 100%;
+  height: 200px;
+  background-color: #F2AF01;
+  color: #fff;
+  text-align: center;
+  font-size: 16px;
+}

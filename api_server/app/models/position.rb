@@ -18,6 +18,7 @@ class Position < ApplicationRecord
   # select position list
   scope :select_positions, -> do
     select(:id, :position_name, :position_name_search).
-      where(deleted_flg: 0, deleted_at: nil)
+      where(deleted_flg: 0, deleted_at: nil).
+      order(updated_at: :desc)
   end
 end

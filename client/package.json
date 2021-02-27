@@ -18,11 +18,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "webpack --mode development",
-    "build-development": "NODE_ENV=development webpack --mode development",
-    "build-staging": "NODE_ENV=staging webpack --mode production",
-    "build-production": "NODE_ENV=production webpack --mode production",
-    "watch": "webpack -w",
+    "build-development": "webpack --mode development",
+    "build-staging": "webpack --mode production",
+    "build-production": "webpack --mode production",
+    "watch": "webpack -w --mode development",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -49,6 +48,9 @@
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
     "@babel/preset-typescript": "^7.12.7",
+    "@fortawesome/fontawesome-svg-core": "^1.2.34",
+    "@fortawesome/free-solid-svg-icons": "^5.15.2",
+    "@fortawesome/react-fontawesome": "^0.1.14",
     "@types/react-helmet": "^6.1.0",
     "@types/react-router-dom": "^5.1.6",
     "axios": "^0.21.0",
@@ -64,6 +66,6 @@
     "ts-loader": "^8.0.12",
     "webpack": "^5.11.0",
     "webpack-cli": "^4.2.0",
-    "webpack-dev-server": "^3.11.1"
+    "webpack-dev-server": "^3.11.2"
   }
 }

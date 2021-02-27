@@ -18,6 +18,7 @@ class Location < ApplicationRecord
   # select location list
   scope :select_locations, -> do
     select(:id, :location_name).
-      where(deleted_flg: 0, deleted_at: nil)
+      where(deleted_flg: 0, deleted_at: nil).
+      order(updated_at: :desc)
   end
 end

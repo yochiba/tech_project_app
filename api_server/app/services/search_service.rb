@@ -48,7 +48,7 @@ class SearchService
       project_json
     end
 
-    def compose_checkbox_items
+    def compose_checkbox_items(keyword)
       tags = Tag.select_tags
       locations = Location.select_locations
       contracts = Contract.select_contracts
