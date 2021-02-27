@@ -18,6 +18,7 @@ class Industry < ApplicationRecord
   # select industry list
   scope :select_industries, -> do
     select(:id, :industry_name, :industry_name_search).
-      where(deleted_flg: 0, deleted_at: nil)
+      where(deleted_flg: 0, deleted_at: nil).
+      order(updated_at: :desc)
   end
 end

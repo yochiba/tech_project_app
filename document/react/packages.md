@@ -161,6 +161,14 @@ yarn add --dev axios
 yarn add --dev react-helmet @types/react-helmet
 ```
 
+## font-awesomeの導入
+***
+```
+yarn add --dev @fortawesome/fontawesome-svg-core
+yarn add --dev @fortawesome/free-solid-svg-icons
+yarn add --dev @fortawesome/react-fontawesome
+```
+
 
 ## ドキュメントルート
 ***

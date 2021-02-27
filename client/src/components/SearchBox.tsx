@@ -125,18 +125,31 @@ const SearchBox: React.FC = () => {
 
   const history = useHistory();
 
+  // const searchTabTitle: string[] = ['タグ', '勤務地', '契約形態', 'ポジション', '業界'];
+
   return(
-    <>
+    <section className='search-box'>
       <h2>案件を探す</h2>
+      {/* <div className='search-keyword'>
+        <label htmlFor='pjt-keyword-input'>
+          タグ検索
+        <input
+          type='text'
+          name='keyword'
+          id='pjt-keyword-input'
+          onChange={}
+        />
+        </label>
+      </div> */}
       <form className='search-form'>
         <div className='sort-option-checkbox-container'>
           <div className='sort-checkbox-box'>
             {
-              SORT_LIST.map((sortHash: SortHash, index: number) => {              
+              SORT_LIST.map((sortHash: SortHash, index: number) => {
                 let checked: boolean = searchParams.sort === sortHash.sort ? true : false;
                 return(
                   <>
-                    <label htmlFor='pjt-sort-input' key={`sortLabel${index}`}>
+                    <label className='pjt-sort-label' htmlFor='pjt-sort-input' key={`sortLabel${index}`}>
                       <input
                         className='pjt-sort-input'
                         type='radio'
@@ -163,11 +176,11 @@ const SearchBox: React.FC = () => {
           </div>
           <div className='order-checkbox-box'>
             {
-              ORDER_LIST.map((orderHash: OrderHash, index: number) => {              
+              ORDER_LIST.map((orderHash: OrderHash, index: number) => {  
                 let checked: boolean = searchParams.order === orderHash.order ? true : false;
                 return(
                   <>
-                    <label htmlFor='pjt-order-input' key={`orderLabel${index}`}>
+                    <label className='pjt-order-label' htmlFor='pjt-order-input' key={`orderLabel${index}`}>
                       <input
                         className='pjt-order-input'
                         type='radio'
@@ -194,155 +207,155 @@ const SearchBox: React.FC = () => {
           </div>
         </div>
         <div className='search-tab search-tag-tab'>
-          <h3>タグで探す</h3>
-          {
-            checkBoxItemList.tagList.map((tag: TagHash, index: number) => {
-              return(
-                <label htmlFor='pjt-tag-input' key={`tagLabelKey${index}`}>
-                  <input
-                    type='checkbox'
-                    value={tag.tag_name_search}
-                    name='tags'
-                    id='pjt-tag-input'
-                    onChange={(e) => {
-                      let tags: string = searchParams.tags;
-                      let tagList: string[] = tags === '' ? [] : tags.split(',');
-                      if (!tagList.includes(e.target.value)) {
-                        tagList.push(e.target.value);
-                        tags = tagList.join(',');
-                      }
-                      setSearchParams({...searchParams,tags: tags});
-                    }}
-                    key={`tagInputKey${index}`}
-                  />
-                  {tag.tag_name}
-                </label>
-              );
-            })
-          }
+          <h3 className='search-tab-title'>タグで探す</h3>
+          <div className='search-labels-box'>
+            {
+              checkBoxItemList.tagList.map((tag: TagHash, index: number) => {
+                return(
+                  <label className='search-label' htmlFor='pjt-tag-input' key={`tagLabelKey${index}`}>
+                    <input
+                      type='checkbox'
+                      value={tag.tag_name_search}
+                      name='tags'
+                      id='pjt-tag-input'
+                      onChange={(e) => {
+                        let tags: string = searchParams.tags;
+                        let tagList: string[] = tags === '' ? [] : tags.split(',');
+                        if (!tagList.includes(e.target.value)) {
+                          tagList.push(e.target.value);
+                          tags = tagList.join(',');
+                        }
+                        setSearchParams({...searchParams,tags: tags});
+                      }}
+                      key={`tagInputKey${index}`}
+                    />
+                    <h4 className='tag-name'>{tag.tag_name}</h4>
+                  </label>
+                );
+              })
+            }
+          </div>
         </div>
         <div className='search-tab search-location-tab'>
-          <h3>勤務地で探す</h3>
-          {
-            checkBoxItemList.locationList.map((location: LocationHash, index: number) => {
-              return(
-                <label htmlFor='pjt-location-input' key={`locationLabelKey${index}`}>
-                  <input
-                    type='checkbox'
-                    value={location.location_name}
-                    name='locations'
-                    id='pjt-location-input'
-                    onChange={(e) => {
-                      let locations: string = searchParams.locations;
-                      let locationList: string[] = locations === '' ? [] : locations.split(',');
-                      if (!locationList.includes(e.target.value)) {
-                        locationList.push(e.target.value);
-                        locations = locationList.join(',');
-                      }
-                      setSearchParams({...searchParams,locations: locations});
-                    }}
-                    key={`locationInputKey${index}`}
-                  />
-                  {location.location_name}
-                </label>
-              );
-            })
-          }
+          <h3 className='search-tab-title'>勤務地で探す</h3>
+          <div className='search-labels-box'>
+            {
+              checkBoxItemList.locationList.map((location: LocationHash, index: number) => {
+                return(
+                  <label className='search-label' htmlFor='pjt-location-input' key={`locationLabelKey${index}`}>
+                    <input
+                      type='checkbox'
+                      value={location.location_name}
+                      name='locations'
+                      id='pjt-location-input'
+                      onChange={(e) => {
+                        let locations: string = searchParams.locations;
+                        let locationList: string[] = locations === '' ? [] : locations.split(',');
+                        if (!locationList.includes(e.target.value)) {
+                          locationList.push(e.target.value);
+                          locations = locationList.join(',');
+                        }
+                        setSearchParams({...searchParams,locations: locations});
+                      }}
+                      key={`locationInputKey${index}`}
+                    />
+                    <h4 className='tag-name'>{location.location_name}</h4>
+                  </label>
+                );
+              })
+            }
+          </div>
         </div>
         <div className='search-tab search-contract-tab'>
-          <h3>契約形態で探す</h3>
-          {
-            checkBoxItemList.contractList.map((contract: ContractHash, index: number) => {
-              return(
-                <label htmlFor='pjt-contract-input' key={`contractLabelKey${index}`}>
-                  <input
-                    type='checkbox'
-                    value={contract.contract_name}
-                    name='contracts'
-                    id='pjt-contract-input'
-                    onChange={(e) => {
-                      let contracts: string = searchParams.contracts;
-                      let contractList: string[] = contracts === '' ? [] : contracts.split(',');
-                      if (!contractList.includes(e.target.value)) {
-                        contractList.push(e.target.value);
-                        contracts = contractList.join(',');
-                      }
-                      setSearchParams({...searchParams,contracts: contracts});
-                    }}
-                    key={`contractInputKey${index}`}
-                  />
-                  {contract.contract_name}
-                </label>
-              );
-            })
-          }
+          <h3 className='search-tab-title'>契約形態で探す</h3>
+          <div className='search-labels-box'>
+            {
+              checkBoxItemList.contractList.map((contract: ContractHash, index: number) => {
+                return(
+                  <label className='search-label' htmlFor='pjt-contract-input' key={`contractLabelKey${index}`}>
+                    <input
+                      type='checkbox'
+                      value={contract.contract_name}
+                      name='contracts'
+                      id='pjt-contract-input'
+                      onChange={(e) => {
+                        let contracts: string = searchParams.contracts;
+                        let contractList: string[] = contracts === '' ? [] : contracts.split(',');
+                        if (!contractList.includes(e.target.value)) {
+                          contractList.push(e.target.value);
+                          contracts = contractList.join(',');
+                        }
+                        setSearchParams({...searchParams,contracts: contracts});
+                      }}
+                      key={`contractInputKey${index}`}
+                    />
+                    <h4 className='tag-name'>{contract.contract_name}</h4>
+                  </label>
+                );
+              })
+            }
+          </div>
         </div>
         <div className='search-tab search-position-tab'>
-          <h3>ポジションで探す</h3>
-          {
-            checkBoxItemList.positionList.map((position: PositionHash, index: number) => {
-              return(
-                <label htmlFor='pjt-position-input' key={`positionLabelKey${index}`}>
-                  <input
-                    type='checkbox'
-                    value={position.position_name_search}
-                    name='positions'
-                    id='pjt-position-input'
-                    onChange={(e) => {
-                      let positions: string = searchParams.positions;
-                      let positionList: string[] = positions === '' ? [] : positions.split(',');
-                      if (!positionList.includes(e.target.value)) {
-                        positionList.push(e.target.value);
-                        positions = positionList.join(',');
-                      }
-                      setSearchParams({...searchParams,positions: positions});
-                    }}
-                    key={`positionInputKey${index}`}
-                  />
-                  {position.position_name}
-                </label>
-              );
-            })
-          }
+          <h3 className='search-tab-title'>ポジションで探す</h3>
+          <div className='search-labels-box'>
+            {
+              checkBoxItemList.positionList.map((position: PositionHash, index: number) => {
+                return(
+                  <label className='search-label' htmlFor='pjt-position-input' key={`positionLabelKey${index}`}>
+                    <input
+                      type='checkbox'
+                      value={position.position_name_search}
+                      name='positions'
+                      id='pjt-position-input'
+                      onChange={(e) => {
+                        let positions: string = searchParams.positions;
+                        let positionList: string[] = positions === '' ? [] : positions.split(',');
+                        if (!positionList.includes(e.target.value)) {
+                          positionList.push(e.target.value);
+                          positions = positionList.join(',');
+                        }
+                        setSearchParams({...searchParams,positions: positions});
+                      }}
+                      key={`positionInputKey${index}`}
+                    />
+                    <h4 className='tag-name'>{position.position_name}</h4>
+                  </label>
+                );
+              })
+            }
+          </div>
         </div>
         <div className='search-tab search-industry-tab'>
-          <h3>業界で探す</h3>
-          {
-            checkBoxItemList.industryList.map((industry: IndustryHash, index: number) => {
-              return(
-                <label htmlFor='pjt-industry-input' key={`industryLabelKey${index}`}>
-                  <input
-                    type='checkbox'
-                    value={industry.industry_name_search}
-                    name='industries'
-                    id='pjt-industry-input'
-                    onChange={(e) => {
-                      let industries: string = searchParams.industries;
-                      let industryList: string[] = industries === '' ? [] : industries.split(',');
-                      if (!industryList.includes(e.target.value)) {
-                        industryList.push(e.target.value);
-                        industries = industryList.join(',');
-                      }
-                      setSearchParams({...searchParams,industries: industries});
-                    }}
-                    key={`industryInputKey${index}`}
-                  />
-                  {industry.industry_name}
-                </label>
-              );
-            })
-          }
+          <h3 className='search-tab-title'>業界で探す</h3>
+          <div className='search-labels-box'>
+            { 
+              checkBoxItemList.industryList.map((industry: IndustryHash, index: number) => {
+                return(
+                  <label className='search-label' htmlFor='pjt-industry-input' key={`industryLabelKey${index}`}>
+                    <input
+                      type='checkbox'
+                      value={industry.industry_name_search}
+                      name='industries'
+                      id='pjt-industry-input'
+                      onChange={(e) => {
+                        let industries: string = searchParams.industries;
+                        let industryList: string[] = industries === '' ? [] : industries.split(',');
+                        if (!industryList.includes(e.target.value)) {
+                          industryList.push(e.target.value);
+                          industries = industryList.join(',');
+                        }
+                        setSearchParams({...searchParams,industries: industries});
+                      }}
+                      key={`industryInputKey${index}`}
+                    />
+                    <h4 className='tag-name'>{industry.industry_name}</h4>
+                  </label>
+                );
+              })
+            }
+          </div>
         </div>
-        {/* <div className='search-keyword'>
-          <label htmlFor='pjt-keyword-input'>
-            キーワード検索
-            <input
-              type='text'
-              name='keyword'
-              id='pjt-keyword-input'
-            />
-          </label>
-        </div> */}
         <Link
           to={
             handleLocationSearch(
@@ -356,6 +369,7 @@ const SearchBox: React.FC = () => {
               searchParams.order,
             )
           }
+          className='search-btn'
           onClick={() => history.push(
             handleLocationSearch(
               searchParams.tags,
@@ -372,7 +386,7 @@ const SearchBox: React.FC = () => {
           検索
         </Link>
       </form>
-    </>
+    </section>
   );
 }
 

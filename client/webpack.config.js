@@ -50,8 +50,9 @@ module.exports = {
   },
   // ES5(IE11等)向けの指定（webpack 5以上で必要）
   target: ["web", "es5"],
-  devServer: { 
-    historyApiFallback: true, 
-    contentBase: `${__dirname}/dist`
-  } 
+  devServer: {
+    contentBase: "./public",
+    open: true,
+    port: 3000,
+  }
 };

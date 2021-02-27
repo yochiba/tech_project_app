@@ -18,6 +18,7 @@ class Contract < ApplicationRecord
   # select contract list
   scope :select_contracts, -> do
     select(:id, :contract_name).
-      where(deleted_flg: 0, deleted_at: nil)
+      where(deleted_flg: 0, deleted_at: nil).
+      order(updated_at: :desc)
   end
 end

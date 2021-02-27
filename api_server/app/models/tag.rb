@@ -24,6 +24,7 @@ class Tag < ApplicationRecord
   # select tag list
   scope :select_tags, -> do
     select(:id, :tag_name, :tag_name_search, :tag_type_name, :tag_type_id).
-      where(deleted_flg: 0, deleted_at: nil)
+      where(deleted_flg: 0, deleted_at: nil).
+      order(updated_at: :desc)
   end
 end
