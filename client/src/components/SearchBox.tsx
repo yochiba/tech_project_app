@@ -2,6 +2,9 @@ import React, {useState, useEffect} from 'react';
 import Axios from 'axios';
 import * as Common from '../constants/common';
 import { Link, useHistory } from 'react-router-dom';
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 type CheckBoxItem = {
   status: number;
@@ -82,16 +85,16 @@ type SortHash = {
   sort: string;
 }
 
-const SORT_LIST: SortHash[] = [
-  {
-    title: Common.TITLE_UPDATED_AT,
-    sort: Common.SORT_UPDATED_AT,
-  },
-  {
-    title: Common.TITLE_PRICE,
-    sort: Common.SORT_PRICE,
-  },
-];
+// const SORT_LIST: SortHash[] = [
+//   {
+//     title: Common.TITLE_UPDATED_AT,
+//     sort: Common.SORT_UPDATED_AT,
+//   },
+//   {
+//     title: Common.TITLE_PRICE,
+//     sort: Common.SORT_PRICE,
+//   },
+// ];
 
 type OrderHash = {
   title: string;
@@ -125,87 +128,18 @@ const SearchBox: React.FC = () => {
 
   const history = useHistory();
 
-  // const searchTabTitle: string[] = ['タグ', '勤務地', '契約形態', 'ポジション', '業界'];
+  const slickSettings = {
+    dots: true,
+    infinite: true,
+    speed: 10,
+    slidesToShow: 1,
+    slidesToScroll: 1
+  };
 
-  return(
-    <section className='search-box'>
-      <h2>案件を探す</h2>
-      {/* <div className='search-keyword'>
-        <label htmlFor='pjt-keyword-input'>
-          タグ検索
-        <input
-          type='text'
-          name='keyword'
-          id='pjt-keyword-input'
-          onChange={}
-        />
-        </label>
-      </div> */}
-      <form className='search-form'>
-        <div className='sort-option-checkbox-container'>
-          <div className='sort-checkbox-box'>
-            {
-              SORT_LIST.map((sortHash: SortHash, index: number) => {
-                let checked: boolean = searchParams.sort === sortHash.sort ? true : false;
-                return(
-                  <>
-                    <label className='pjt-sort-label' htmlFor='pjt-sort-input' key={`sortLabel${index}`}>
-                      <input
-                        className='pjt-sort-input'
-                        type='radio'
-                        checked={checked}
-                        value={sortHash.sort}
-                        name='sort'
-                        id='pjt-sort-input'
-                        onChange={(e) => {
-                          setSearchParams(
-                            {
-                              ...searchParams,
-                              sort: e.target.value,
-                            }
-                          );
-                        }}
-                        key={`sortInput${index}`}
-                      />
-                      {sortHash.title}
-                    </label>
-                  </>
-                );
-              })
-            }
-          </div>
-          <div className='order-checkbox-box'>
-            {
-              ORDER_LIST.map((orderHash: OrderHash, index: number) => {  
-                let checked: boolean = searchParams.order === orderHash.order ? true : false;
-                return(
-                  <>
-                    <label className='pjt-order-label' htmlFor='pjt-order-input' key={`orderLabel${index}`}>
-                      <input
-                        className='pjt-order-input'
-                        type='radio'
-                        checked={checked}
-                        value={orderHash.order}
-                        name='order'
-                        id='pjt-order-input'
-                        onChange={(e) => {
-                          setSearchParams(
-                            {
-                              ...searchParams,
-                              order: e.target.value,
-                            }
-                          );
-                        }}
-                        key={`orderInput${index}`}
-                      />
-                      {orderHash.title}
-                    </label>
-                  </>
-                );
-              })
-            }
-          </div>
-        </div>
+  // タグ検索
+  const tagSearchTab = () => {
+    if (checkBoxItemList.tagList.length > 0) {
+      return(
         <div className='search-tab search-tag-tab'>
           <h3 className='search-tab-title'>タグで探す</h3>
           <div className='search-labels-box'>
@@ -236,6 +170,16 @@ const SearchBox: React.FC = () => {
             }
           </div>
         </div>
+      );
+    } else {
+      return null;
+    }
+  }
+
+  // 勤務地検索
+  const locationSearchTab = () => {
+    if (checkBoxItemList.locationList.length > 0) {
+      return(
         <div className='search-tab search-location-tab'>
           <h3 className='search-tab-title'>勤務地で探す</h3>
           <div className='search-labels-box'>
@@ -266,6 +210,16 @@ const SearchBox: React.FC = () => {
             }
           </div>
         </div>
+      );
+    } else {
+      return null;
+    }
+  }
+
+  // 契約形態検索
+  const contractSearchTab = () => {
+    if (checkBoxItemList.contractList.length > 0) {
+      return(
         <div className='search-tab search-contract-tab'>
           <h3 className='search-tab-title'>契約形態で探す</h3>
           <div className='search-labels-box'>
@@ -296,6 +250,16 @@ const SearchBox: React.FC = () => {
             }
           </div>
         </div>
+      );
+    } else {
+      return null;
+    }
+  }
+
+  // ポジション検索
+  const positionSearchTab = () => {
+    if (checkBoxItemList.positionList.length > 0) {
+      return(
         <div className='search-tab search-position-tab'>
           <h3 className='search-tab-title'>ポジションで探す</h3>
           <div className='search-labels-box'>
@@ -326,6 +290,16 @@ const SearchBox: React.FC = () => {
             }
           </div>
         </div>
+      );
+    } else {
+      return null;
+    }
+  }
+
+  // 業界検索
+  const industrySearchTab = () => {
+    if (checkBoxItemList.industryList.length > 0) {
+      return(
         <div className='search-tab search-industry-tab'>
           <h3 className='search-tab-title'>業界で探す</h3>
           <div className='search-labels-box'>
@@ -356,6 +330,39 @@ const SearchBox: React.FC = () => {
             }
           </div>
         </div>
+       );
+    } else {
+      return null;
+    }
+  }
+
+  return(
+    <section className='search-box'>
+      <h2>案件を探す</h2>
+      {/* <div className='search-keyword'>
+        <label htmlFor='pjt-keyword-input'>
+          タグ検索
+        <input
+          type='text'
+          name='keyword'
+          id='pjt-keyword-input'
+          onChange={}
+        />
+        </label>
+      </div> */}
+      <form className='search-form'>
+        <Slider {...slickSettings} className='search-tab-slider'>
+          {/* タグ検索 */}
+          {tagSearchTab()}
+          {/* 勤務地検索 */}
+          {locationSearchTab()}
+          {/* 契約形態検索 */}
+          {contractSearchTab()}
+          {/* ポジション検索 */}
+          {positionSearchTab()}
+          {/* 業界検索 */}
+          {industrySearchTab()}
+        </Slider>
         <Link
           to={
             handleLocationSearch(

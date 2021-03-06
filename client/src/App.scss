@@ -2,3 +2,11 @@
 @use './stylesheets/navigation';
 @use './stylesheets/home';
 @use './stylesheets/searchBox';
+@use './stylesheets/projects';
+@use './stylesheets/project';
+
+.App {
+  width: 100%;
+  height: auto;
+  position: relative;
+}

@@ -25,6 +25,9 @@ const App: React.FC = () => {
           <Route exact path='/project/:pjtId' component={Project} />
         </Switch>
       </Router>
+      <footer>
+        <small>© 2021 Techies Guild</small>
+      </footer>
     </div>
   );
 }

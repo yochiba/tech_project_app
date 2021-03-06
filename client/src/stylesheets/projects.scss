@@ -1,0 +1,115 @@
+@charset 'UTF-8';
+@use './module/responsive' as responsive;
+
+.projects {
+  width: 100%;
+  height: auto;
+  margin: 20px auto 40px;
+  .projects-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+  .pjts-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0;
+    .pjt-box {
+      width: 95%;
+      height: auto;
+      margin: 20px auto;
+      .pjt-title-link {
+        display: block;
+        background-color: #F2AF01;
+        padding: 10px 6px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        .pjt-title {
+          color: #f0f0f0;
+          font-size: 18px;
+        }
+      }
+      .pjt-summary {
+        width: 100% -2px;
+        height: auto;
+        border: solid 1px #F2AF01;
+        .pjt-summary-table {
+          width: 95%;
+          height: auto;
+          margin: 10px auto 3px;
+          tr {
+            margin: 10px auto;
+            font-size: 16px;
+            th {
+              width: 20%;
+              text-align: center;
+            }
+            td {
+              text-align: center;
+            }
+          }
+        }
+        .tags-container {
+          width: 95%;
+          height: auto;
+          margin: 0 auto;
+          padding: 5px 0 10px;
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+          flex-wrap: wrap;
+          .pjt-tag {
+            height: 20px;
+            margin: 10px;
+            padding: 5px;
+            background-color: #F2AF01;
+            border-radius: 5px;
+            color: #f0f0f0;
+            font-size: 16px;
+          }
+        }
+        .pjt-updated-at {
+          width: 98%;
+          height: auto;
+          margin: 10px auto 5px;
+          text-align: right;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+  .paging-btn-container {
+    width: 98%;
+    height: auto;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    .selected-paging-btn {
+      width: 28px;
+      height: 28px;
+      background-color: #F2AF01;
+      margin-right: 10px;
+      border: solid 1px #333;
+      border-radius: 5px;
+      text-align: center;
+      line-height: 28px;
+      color: #f0f0f0;
+      font-weight: bold;
+    }
+    .unselected-paging-btn {
+      display: block;
+      width: 30px;
+      height: 30px;
+      background-color: #F2AF01;
+      margin-right: 10px;
+      border-radius: 5px;
+      text-align: center;
+      line-height: 30px;
+      color: #f0f0f0;
+    }
+  }
+}
