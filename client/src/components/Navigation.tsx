@@ -17,7 +17,7 @@ const Navigation: React.FC = () => {
 
   const navigationMenu = () => {
     return(
-      <ul className='nav-menu-container'>
+      <ul className='nav-menu-container' onClick={() => {handleNavMenu(false)}}>
         <li key='li-home'>
           <Link to='/' className='nav-link' onClick={() => {handleNavMenu(false)}} key='navLinkHome'>
             Home
@@ -40,8 +40,8 @@ const Navigation: React.FC = () => {
         <Link to='/' className='main-logo' onClick={() => {handleNavMenu(true)}}>
           LOGO(仮)
         </Link>
-        <button className='hamburger' onClick={() => {handleNavMenu(false)}}>
-          <FontAwesomeIcon icon={faBars} />
+        <button className='hamburger-box' onClick={() => {handleNavMenu(false)}}>
+          <FontAwesomeIcon icon={faBars} className='hamburger-bars' />
         </button>
       </div>
       {navMenu}

@@ -119,36 +119,31 @@ const Project: React.FC = () => {
 
   window.scrollTo(0, 0);
   return(
-    <div className='project'>
-      <section className='pjt-box'>
-        <h1 className='pjt-title'>{projectData.project.title}</h1>
-        <div className='pjt-table-container'>
-          <table className='pjt-summary-table'>
-            {
-              Common.PROJECT_SUMMARY_TITLE.map((title: string) => {
-                return pjtSummary(title, projectData.project);
-              })
-            }
-          </table>
-          <table className='pjt-tags-table'>
-            {
-              Common.PROJECT_TAGS_TITLE.map((title: string) => {
-                return pjtTags(title, projectData.project);
-              })
-            }
-          </table>
-        </div>
-        {affiliateUrl(projectData.project.affiliate_url)}
-        <ul>
-          {
-            Common.PROJECT_DETAIL_TITLE.map((title: string, index: number) => {
-              return pjtDetail(title, projectData.project, index);
-            })
-          }
-        </ul>
-        {affiliateUrl(projectData.project.affiliate_url)}
-      </section>
-    </div>
+    <section className='project'>
+      <h1 className='pjt-title'>{projectData.project.title}</h1>
+      <h2 className='pjt-summary-title'>案件概要</h2>
+      <table className='pjt-summary-table'>
+        {
+          Common.PROJECT_SUMMARY_TITLE.map((title: string) => {
+            return pjtSummary(title, projectData.project);
+          })
+        }
+        {
+          Common.PROJECT_TAGS_TITLE.map((title: string) => {
+            return pjtTags(title, projectData.project);
+          })
+        }
+      </table>
+      {affiliateUrl(projectData.project.affiliate_url)}
+      <ul className='pjt-detail-container'>
+        {
+          Common.PROJECT_DETAIL_TITLE.map((title: string, index: number) => {
+            return pjtDetail(title, projectData.project, index);
+          })
+        }
+      </ul>
+      {affiliateUrl(projectData.project.affiliate_url)}
+    </section>
   );
 }
 
@@ -274,7 +269,9 @@ const pjtDetail = (title: string, project: ProjectHash, index: number) => {
     return (
       <li className='pjt-detail-li' key={`pjtLi${index}`}>
         <h3 className='pjt-detail-title'>{title}</h3>
-        <p className='pjt-detail-value'>{value}</p>
+        <div className='pjt-detail-value-box'>
+          <p className='pjt-detail-value'>{value}</p>
+        </div>
       </li>
     );
   } else {
@@ -285,11 +282,14 @@ const pjtDetail = (title: string, project: ProjectHash, index: number) => {
 // アフィリエイトリンク
 const affiliateUrl = (url: string) => {
   return (
-    <div className='affiliate-link'>
-      <a href={url} target='_blank' rel='noreferrer'>
-        {Common.AFFILIATE_LINK_TITLE}
-      </a>
-    </div>
+    <a 
+      href={url}
+      className='affiliate-link-btn'
+      target='_blank'
+      rel='noreferrer'
+    >
+      {Common.AFFILIATE_LINK_TITLE}
+    </a>
   );
 }
 

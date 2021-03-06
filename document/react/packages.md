@@ -169,6 +169,12 @@ yarn add --dev @fortawesome/free-solid-svg-icons
 yarn add --dev @fortawesome/react-fontawesome
 ```
 
+## react-slickの導入
+***
+```
+yarn add --dev react-slick @types/react-slick
+yarn add --dev slick-carousel
+```
 
 ## ドキュメントルート
 ***

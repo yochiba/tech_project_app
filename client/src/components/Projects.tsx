@@ -187,62 +187,13 @@ const Projects: React.FC = () => {
 
   window.scrollTo(0, 0);
   return (
-    <div className='projects'>
-      <section className='pjt-list'>
-        <h2 className='component-title'>案件一覧</h2>
-        <h4>現在のページ（テスト用）：{projectsData.currentPage}</h4>
-        <div className='sort-option-btn-container'>
-          <div className='sort-btn-box'>
-            {
-              SORT_LIST.map((sortHash: SortHash, index: number) => {
-                return(
-                  <>
-                    <Link
-                      to={
-                        handleLocationSearch(
-                          projectsData.searchParams.tags,
-                          projectsData.searchParams.locations,
-                          projectsData.searchParams.contracts,
-                          projectsData.searchParams.positions,
-                          projectsData.searchParams.industries,
-                          projectsData.searchParams.keyword,
-                          Common.FIRST_PAGE,
-                          sortHash.sort,
-                          projectsData.searchParams.order,
-                        )
-                      }
-                      onClick={(e) => {
-                        history.push(
-                          handleLocationSearch(
-                            projectsData.searchParams.tags,
-                            projectsData.searchParams.locations,
-                            projectsData.searchParams.contracts,
-                            projectsData.searchParams.positions,
-                            projectsData.searchParams.industries,
-                            projectsData.searchParams.keyword,
-                            Common.FIRST_PAGE,
-                            sortHash.sort,
-                            projectsData.searchParams.order,
-                          )
-                        )
-                        setSearchParams({
-                          ...searchParams,
-                          page: Common.FIRST_PAGE,
-                          sort: sortHash.sort,
-                        })
-                      }}
-                      key={`sortKey${index}`}
-                    >
-                      {sortHash.title}
-                    </Link>
-                  </>
-                );
-              })
-            }
-          </div>
-          <div className='order-btn-box'>
+    <section className='projects'>
+      <h2 className='projects-title'>案件一覧</h2>
+      <h4>現在のページ（テスト用）：{projectsData.currentPage}</h4>
+      <div className='sort-option-btn-container'>
+        <div className='sort-btn-box'>
           {
-            ORDER_LIST.map((orderHash: OrderHash, index: number) => {
+            SORT_LIST.map((sortHash: SortHash, index: number) => {
               return(
                 <>
                   <Link
@@ -255,98 +206,7 @@ const Projects: React.FC = () => {
                         projectsData.searchParams.industries,
                         projectsData.searchParams.keyword,
                         Common.FIRST_PAGE,
-                        projectsData.searchParams.sort,
-                        orderHash.order,
-                      )
-                    }
-                    onClick={(e) => {
-                      history.push(
-                        handleLocationSearch(
-                          projectsData.searchParams.tags,
-                        projectsData.searchParams.locations,
-                        projectsData.searchParams.contracts,
-                        projectsData.searchParams.positions,
-                        projectsData.searchParams.industries,
-                        projectsData.searchParams.keyword,
-                        Common.FIRST_PAGE,
-                        projectsData.searchParams.sort,
-                        orderHash.order,
-                        )
-                      )
-                      setSearchParams({
-                        ...searchParams,
-                        page: Common.FIRST_PAGE,
-                        order: orderHash.order,
-                      })
-                    }}
-                    key={`orderKey${index}`}
-                  >
-                    {orderHash.title}
-                  </Link>
-                </>
-              );
-            })
-          }
-          </div>
-        </div>
-        <ul>
-          {
-            projectsData.pjtList.map((pjt: ProjectHash, indexPjt: number) => {
-              const minPriceStr: string = pjt.min_price === 0 || null ? '' : String(pjt.min_price.toLocaleString());
-              const maxPriceStr: string = String(pjt.max_price.toLocaleString());
-              return (
-                <li className='pjt-box' key={`pjt${indexPjt}`}>
-                  <Link to={`/project/${pjt.id}`}
-                    className='pjt-link'
-                    key={`pjtLink${indexPjt}`}
-                  >
-                    <h2 className='pjt-title'>{pjt.title}</h2>
-                  </Link>
-                  <div className='pjt-summary'>
-                    <table>
-                      <tr>
-                        <th className='pjt-price'>
-                          単価：
-                        </th>
-                        <td>
-                          {minPriceStr}~{maxPriceStr}{pjt.price_unit}
-                        </td>
-                        <th className='pjt-location'>
-                          勤務地：
-                        </th>
-                        <td>
-                          {pjt.location_name}
-                        </td>
-                      </tr>
-                      {tagList(pjt)}
-                      <div className='pjt-updated-at'>
-                        更新日：{dateFormat(pjt.updated_at, 'YYYY年MM月DD日')}
-                      </div>
-                    </table>
-                  </div>
-                  <h4 className='pjt-company'>From {pjt.company}</h4>
-                </li>
-              );
-            })
-          }
-        </ul>
-        <div className='paging-btn-container'>
-          {
-            [...Array(projectsData.totalPages)].map((_, index: number) => {
-              let page: number = index + 1;
-              return(
-                <>
-                  <Link
-                    to={
-                      handleLocationSearch(
-                        projectsData.searchParams.tags,
-                        projectsData.searchParams.locations,
-                        projectsData.searchParams.contracts,
-                        projectsData.searchParams.positions,
-                        projectsData.searchParams.industries,
-                        projectsData.searchParams.keyword,
-                        page,
-                        projectsData.searchParams.sort,
+                        sortHash.sort,
                         projectsData.searchParams.order,
                       )
                     }
@@ -359,26 +219,172 @@ const Projects: React.FC = () => {
                           projectsData.searchParams.positions,
                           projectsData.searchParams.industries,
                           projectsData.searchParams.keyword,
-                          page,
-                          projectsData.searchParams.sort,
+                          Common.FIRST_PAGE,
+                          sortHash.sort,
                           projectsData.searchParams.order,
                         )
                       )
                       setSearchParams({
                         ...searchParams,
-                        page: page,
+                        page: Common.FIRST_PAGE,
+                        sort: sortHash.sort,
                       })
                     }}
+                    key={`sortKey${index}`}
                   >
-                    {page}
+                    {sortHash.title}
                   </Link>
                 </>
               );
             })
           }
         </div>
-      </section>
-    </div>
+        <div className='order-btn-box'>
+        {
+          ORDER_LIST.map((orderHash: OrderHash, index: number) => {
+            return(
+              <>
+                <Link
+                  to={
+                    handleLocationSearch(
+                      projectsData.searchParams.tags,
+                      projectsData.searchParams.locations,
+                      projectsData.searchParams.contracts,
+                      projectsData.searchParams.positions,
+                      projectsData.searchParams.industries,
+                      projectsData.searchParams.keyword,
+                      Common.FIRST_PAGE,
+                      projectsData.searchParams.sort,
+                      orderHash.order,
+                    )
+                  }
+                  onClick={(e) => {
+                    history.push(
+                      handleLocationSearch(
+                        projectsData.searchParams.tags,
+                        projectsData.searchParams.locations,
+                        projectsData.searchParams.contracts,
+                        projectsData.searchParams.positions,
+                        projectsData.searchParams.industries,
+                        projectsData.searchParams.keyword,
+                        Common.FIRST_PAGE,
+                        projectsData.searchParams.sort,
+                        orderHash.order,
+                        )
+                      )
+                    setSearchParams({
+                      ...searchParams,
+                      page: Common.FIRST_PAGE,
+                      order: orderHash.order,
+                    })
+                  }}
+                  key={`orderKey${index}`}
+                >
+                  {orderHash.title}
+                </Link>
+               </>
+            );
+          })
+        }
+        </div>
+      </div>
+      <ul className='pjts-list'>
+        {
+          projectsData.pjtList.map((pjt: ProjectHash, indexPjt: number) => {
+            const minPriceStr: string = pjt.min_price === 0 || null ? '' : String(pjt.min_price.toLocaleString());
+            const maxPriceStr: string = String(pjt.max_price.toLocaleString());
+            return (
+              <li className='pjt-box' key={`pjt${indexPjt}`}>
+                <Link to={`/project/${pjt.id}`}
+                  className='pjt-title-link'
+                  key={`pjtLink${indexPjt}`}
+                >
+                  <h2 className='pjt-title'>{pjt.title} from {pjt.company}</h2>
+                </Link>
+                <div className='pjt-summary'>
+                  <table className='pjt-summary-table'>
+                    <tr>
+                      <th className='pjt-price-th'>
+                        単価：
+                      </th>
+                      <td className='pjt-price-td'>
+                        {minPriceStr}~{maxPriceStr}{pjt.price_unit}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th className='pjt-location-th'>
+                        勤務地：
+                      </th>
+                      <td className='pjt-location-td'>
+                        {pjt.location_name}
+                      </td>
+                    </tr>
+                  </table>
+                  {tagList(pjt)}
+                  <div className='pjt-updated-at'>
+                    更新日：{dateFormat(pjt.updated_at, 'YYYY年MM月DD日')}
+                  </div>
+                </div>
+              </li>
+            );
+          })
+        }
+      </ul>
+      <div className='paging-btn-container'>
+        {
+          [...Array(projectsData.totalPages)].map((_, index: number) => {
+            let page: number = index + 1;
+            if (page !== projectsData.currentPage) {
+              return(
+                <Link
+                  to={
+                    handleLocationSearch(
+                      projectsData.searchParams.tags,
+                      projectsData.searchParams.locations,
+                      projectsData.searchParams.contracts,
+                      projectsData.searchParams.positions,
+                      projectsData.searchParams.industries,
+                      projectsData.searchParams.keyword,
+                      page,
+                      projectsData.searchParams.sort,
+                      projectsData.searchParams.order,
+                    )
+                  }
+                  className='unselected-paging-btn'
+                  onClick={(e) => {
+                    history.push(
+                      handleLocationSearch(
+                        projectsData.searchParams.tags,
+                        projectsData.searchParams.locations,
+                        projectsData.searchParams.contracts,
+                        projectsData.searchParams.positions,
+                        projectsData.searchParams.industries,
+                        projectsData.searchParams.keyword,
+                        page,
+                        projectsData.searchParams.sort,
+                        projectsData.searchParams.order,
+                      )
+                    )
+                    setSearchParams({
+                      ...searchParams,
+                      page: page,
+                    })
+                  }}
+                >
+                  {page}
+                </Link>
+              );
+            } else {
+              return(
+                <div className='selected-paging-btn'>
+                  {page}
+                </div>
+              );
+            }
+          })
+        }
+      </div>
+    </section>
   )
 }
 
@@ -427,25 +433,18 @@ const tagList = (pjt: ProjectHash) => {
 
   if (displayTagList.length !== 0) {
     return(
-      <tr>
-        <th>
-          タグ：
-        </th>
-        <td>
-          <ul>
-            {displayTagList.map((tag_name: string, indexTagName: number) => {
-              return(
-                <li
-                  className='pjt-tag-name'
-                  key={`pjtTagName${indexTagName}`}
-                >
-                  {tag_name}
-                </li>
-              );
-            })}
-          </ul>
-        </td>
-      </tr>
+      <ul className='tags-container'>
+        {displayTagList.map((tag_name: string, indexTagName: number) => {
+          return(
+            <li
+              className='pjt-tag'
+              key={`pjtTagName${indexTagName}`}
+            >
+              {tag_name}
+            </li>
+          );
+        })}
+      </ul>
     )
   } else {
     return null;
