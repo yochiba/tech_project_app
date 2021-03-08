@@ -193,11 +193,11 @@ const pjtSummary = (title: string, project: ProjectHash) => {
 
   if (value !== null && value !== '') {
     return (
-      <tr>
-        <th>
+      <tr className='pjt-summary-tr'>
+        <th className='pjt-summary-th'>
           {title}：
         </th>
-        <td>
+        <td className='pjt-summary-td'>
           {value}
         </td>
       </tr>
@@ -225,14 +225,14 @@ const pjtTags = (title: string, project: ProjectHash) => {
 
   if (valueList !== null) {
     return (
-      <tr>
-        <th>
+      <tr className='pjt-summary-tr pjt-tags-tr'>
+        <th className='pjt-tags-th'>
           {title}：
         </th>
-        <td>
+        <td className='pjt-tags-td'>
           {valueList.map((value: string) => {
             return (
-              <div className='tag'>
+              <div className='pjt-tag'>
                 {value}
               </div>
             );
@@ -267,7 +267,7 @@ const pjtDetail = (title: string, project: ProjectHash, index: number) => {
 
   if (value !== null && value !== '' ) {
     return (
-      <li className='pjt-detail-li' key={`pjtLi${index}`}>
+      <li className='pjt-detail-li' key={`pjtDetailList${index}`}>
         <h3 className='pjt-detail-title'>{title}</h3>
         <div className='pjt-detail-value-box'>
           <p className='pjt-detail-value'>{value}</p>

@@ -7,7 +7,7 @@
   h2 {
     margin: 30px 0 20px;
     text-align: center;
-    font-size: 22px;
+    font-size: 20px;
   }
   .search-form {
     .search-tab-slider {
@@ -24,7 +24,7 @@
           background-color: #F2AF01;
           text-align: center;
           line-height: 35px;
-          font-size: 20px;
+          font-size: 18px;
           border-top-left-radius: 10px;
           border-top-right-radius: 10px;
         }
@@ -42,11 +42,15 @@
           .search-label {
             margin: 10px;
             padding: 5px;
-            background-color: #F2AF01;
             border-radius: 5px;
+            background-color: #F2AF01;
+            .tag-input {
+            }
             .tag-name {
               display: inline-block;
-              font-size: 16px;
+              padding: 0 5px;
+              font-size: 14px;
+              font-weight: normal;
             }
           }
         }

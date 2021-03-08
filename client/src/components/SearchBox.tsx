@@ -80,10 +80,10 @@ const initSearchParams = {
   keyword: '',
 }
 
-type SortHash = {
-  title: string;
-  sort: string;
-}
+// type SortHash = {
+//   title: string;
+//   sort: string;
+// }
 
 // const SORT_LIST: SortHash[] = [
 //   {
@@ -146,11 +146,16 @@ const SearchBox: React.FC = () => {
             {
               checkBoxItemList.tagList.map((tag: TagHash, index: number) => {
                 return(
-                  <label className='search-label' htmlFor='pjt-tag-input' key={`tagLabelKey${index}`}>
+                  <label
+                    className='search-label'
+                    htmlFor='pjt-tag-input'
+                    key={`tagLabelKey${index}`}
+                  >
                     <input
                       type='checkbox'
                       value={tag.tag_name_search}
                       name='tags'
+                      className='tag-input'
                       id='pjt-tag-input'
                       onChange={(e) => {
                         let tags: string = searchParams.tags;
@@ -186,11 +191,16 @@ const SearchBox: React.FC = () => {
             {
               checkBoxItemList.locationList.map((location: LocationHash, index: number) => {
                 return(
-                  <label className='search-label' htmlFor='pjt-location-input' key={`locationLabelKey${index}`}>
+                  <label
+                    className='search-label'
+                    htmlFor='pjt-location-input'
+                    key={`locationLabelKey${index}`}
+                  >
                     <input
                       type='checkbox'
                       value={location.location_name}
                       name='locations'
+                      className='tag-input'
                       id='pjt-location-input'
                       onChange={(e) => {
                         let locations: string = searchParams.locations;
@@ -226,11 +236,16 @@ const SearchBox: React.FC = () => {
             {
               checkBoxItemList.contractList.map((contract: ContractHash, index: number) => {
                 return(
-                  <label className='search-label' htmlFor='pjt-contract-input' key={`contractLabelKey${index}`}>
+                  <label
+                    className='search-label'
+                    htmlFor='pjt-contract-input'
+                    key={`contractLabelKey${index}`}
+                  >
                     <input
                       type='checkbox'
                       value={contract.contract_name}
                       name='contracts'
+                      className='tag-input'
                       id='pjt-contract-input'
                       onChange={(e) => {
                         let contracts: string = searchParams.contracts;
@@ -266,11 +281,16 @@ const SearchBox: React.FC = () => {
             {
               checkBoxItemList.positionList.map((position: PositionHash, index: number) => {
                 return(
-                  <label className='search-label' htmlFor='pjt-position-input' key={`positionLabelKey${index}`}>
+                  <label
+                    className='search-label'
+                    htmlFor='pjt-position-input'
+                    key={`positionLabelKey${index}`}
+                  >
                     <input
                       type='checkbox'
                       value={position.position_name_search}
                       name='positions'
+                      className='tag-input'
                       id='pjt-position-input'
                       onChange={(e) => {
                         let positions: string = searchParams.positions;
@@ -306,11 +326,16 @@ const SearchBox: React.FC = () => {
             { 
               checkBoxItemList.industryList.map((industry: IndustryHash, index: number) => {
                 return(
-                  <label className='search-label' htmlFor='pjt-industry-input' key={`industryLabelKey${index}`}>
+                  <label
+                    className='search-label'
+                    htmlFor='pjt-industry-input'
+                    key={`industryLabelKey${index}`}
+                  >
                     <input
                       type='checkbox'
                       value={industry.industry_name_search}
                       name='industries'
+                      className='tag-input'
                       id='pjt-industry-input'
                       onChange={(e) => {
                         let industries: string = searchParams.industries;
