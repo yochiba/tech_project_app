@@ -9,7 +9,7 @@ nav {
   z-index: 1000;
   .nav-bar {
     width: 100%;
-    height: 55px;
+    height: 45px;
     background-color: #F2AF01;
     display: flex;
     flex-direction: row;
@@ -19,8 +19,8 @@ nav {
 
     }
     .hamburger-box {
-      width: 45px;
-      height: 40px;
+      width: 38px;
+      height: 35px;
       margin-right: 15px;
       border: 1px solid #333;
       border-radius: 5px;
@@ -28,7 +28,7 @@ nav {
       outline: none;
       .hamburger-bars {
         color: #333;
-        font-size: 30px;
+        font-size: 24px;
       }
     }
     .hamburger-box:active {
@@ -48,11 +48,11 @@ nav {
       a {
         display: block;
         width: 100%;
-        height: 55px;
+        height: 45px;
         background-color: rgba(242, 175, 1, 0.4);
         border-bottom: solid 1px #f0f0f0;
         text-align: center;
-        line-height: 50px;
+        line-height: 45px;
         font-size: 18px;
         color: #f0f0f0;
         &:hover {
