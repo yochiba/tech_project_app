@@ -3,6 +3,8 @@ FROM nginx:alpine
 ENV TZ=Asia/Tokyo
 ENV LANG ja_JP.UTF-8
 ENV LC_TIME C
+ENV API_SERVER_HOST=api_server
+ENV CLIENT_HOST=client
 ENV HOST_URL=localhost
 
 RUN apk add --no-cache alpine-sdk linux-headers libxml2-dev tzdata \
@@ -11,9 +13,9 @@ RUN apk add --no-cache alpine-sdk linux-headers libxml2-dev tzdata \
     sudo rm -f /etc/nginx/conf.d/default.conf && \
     sudo rm -f /etc/nginx/nginx.conf
 
-WORKDIR /etc/nginx/conf.d
-
 COPY ./nginx.conf /etc/nginx/
+
+WORKDIR /etc/nginx/conf.d
 
 EXPOSE 80 443
 

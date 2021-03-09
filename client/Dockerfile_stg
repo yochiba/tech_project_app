@@ -4,18 +4,19 @@ ENV NODE_VERSION=14.15.4
 ENV NODE_ENV=staging
 ENV TZ=Asia/Tokyo
 
-WORKDIR /var/www/html/app/tech_project_app/client
-
 RUN apk add --no-cache alpine-sdk linux-headers libxml2-dev tzdata \
     gcc libc-dev gmp-dev sudo bash curl vim git wget && \
     apk add --virtual build-dependencies --no-cache build-base curl-dev && \
     # create application
-    && cd /var && mkdir -p www/html/app \
-    && cd www/html/app/ \
-    && git clone --depth 1 https://b9ca610614485d8b568ef218195d3f0ba0b1fa64:x-oauth-basic@github.com/yochiba/tech_project_app.git \
-    && sudo rm -rf api_server document mysql nginx redis \
-    && sudo rm -f docker-compose.yml \
-    && cd tech_project_app/
+    cd /var && mkdir -p www/html/app && \
+    cd www/html/app/ && \
+    git clone --depth 1 https://b9ca610614485d8b568ef218195d3f0ba0b1fa64:x-oauth-basic@github.com/yochiba/tech_project_app.git && \
+    cd /var/www/html/app/tech_project_app/ && \
+    sudo rm -rf api_server document mysql nginx redis && \
+    sudo rm -f docker-compose.yml docker-compose-stg.yml && \
+    cd client
+
+WORKDIR /var/www/html/app/tech_project_app/client
 
 COPY ./.env.staging /var/www/html/app/tech_project_app/client
 
