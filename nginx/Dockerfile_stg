@@ -1,10 +1,12 @@
 FROM nginx:alpine
 
+WORKDIR /etc/nginx/conf.d
+
 ENV TZ=Asia/Tokyo
 ENV LANG ja_JP.UTF-8
 ENV LC_TIME C
-ENV API_SERVER_HOST=api_server_stg
-ENV CLIENT_HOST=client_stg
+ENV API_SERVER_HOST=http://api_server_stg:3001
+ENV CLIENT_HOST=http://client_stg:3000
 ENV HOST_URL=yocoder-staging.site
 
 RUN apk add --no-cache alpine-sdk linux-headers libxml2-dev tzdata \
@@ -15,8 +17,6 @@ RUN apk add --no-cache alpine-sdk linux-headers libxml2-dev tzdata \
 
 COPY ./nginx.conf /etc/nginx/
 COPY ./conf.d/techies_guild.conf /etc/nginx/conf.d/
-
-WORKDIR /etc/nginx/conf.d
 
 EXPOSE 80 443
 
