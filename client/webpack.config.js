@@ -42,6 +42,19 @@ module.exports = {
           },
         ],
       },
+      {
+        test: /\.css/, 
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              url: false,
+              importLoaders: 2,
+            },
+          },
+        ],
+      },
     ]
   },
   // import 文で .ts や .tsx ファイルを解決
