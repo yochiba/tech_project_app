@@ -7,3 +7,5 @@ redis/dump.rdb
 
 document/docker/ecr.md
 mysql/init_data/
+client/public/main.js
+client/public/node_modules_web-vitals_dist_web-vitals_es5_min_js.main.js
