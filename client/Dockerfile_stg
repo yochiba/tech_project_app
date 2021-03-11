@@ -55,9 +55,8 @@ COPY ./nginx/techies_guild_stg.conf /etc/nginx/conf.d/
 
 # Client
 COPY ./.env.staging /var/www/html/app/tech_project_app/client
-COPY ./entrypoint-prod.sh /usr/bin/
-RUN chmod +x /usr/bin/entrypoint-prod.sh
-ENTRYPOINT ["entrypoint-prod.sh"]
+
+RUN cd /var/www/html/app/tech_project_app/client && yarn install && yarn build-staging
 
 # WORKDIR /etc/nginx/conf.d
 WORKDIR /var/www/html/app/tech_project_app/client
