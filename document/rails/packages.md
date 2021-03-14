@@ -29,4 +29,5 @@ bundle exec sidekiq -d -C config/sidekiq.yml --logfile ./log/sidekiq.log
 # 環境別のcredentialsファイルを作成する
 ```
 EDITOR="vi" bin/rails credentials:edit --environment staging
+secret_key_base(128文字&半角小文字英数字のみ)を追加する
 ```
