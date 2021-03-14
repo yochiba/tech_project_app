@@ -1,20 +1,28 @@
+
+const webpack = require('webpack');
+
 module.exports = {
   // メインとなるJavaScriptファイル（エントリーポイント）
-  entry: "./src/index.tsx",
+  entry: './src/index.tsx',
   // ファイルの出力設定
   output: {
     //  出力ファイルのディレクトリ名
     path: `${__dirname}/public`,
     // 出力ファイル名
-    filename: "main.js",
+    filename: 'main.js',
   },
+  plugins: [
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
+  ],
   module: {
     rules: [
       {
         // 拡張子 .ts もしくは .tsx の場合
         test: /\.tsx?$/,
         // TypeScript をコンパイルする
-        use: "ts-loader",
+        use: 'ts-loader',
       },
       {
         test: /\.js$/,
@@ -59,12 +67,12 @@ module.exports = {
   },
   // import 文で .ts や .tsx ファイルを解決
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".json"]
+    extensions: ['.ts', '.tsx', '.js', '.json']
   },
   // ES5(IE11等)向けの指定（webpack 5以上で必要）
-  target: ["web", "es5"],
+  target: ['web', 'es5'],
   devServer: {
-    contentBase: "./public",
+    contentBase: './public',
     open: true,
     port: 3000,
   }

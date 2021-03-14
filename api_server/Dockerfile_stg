@@ -33,7 +33,6 @@ RUN apk add --no-cache alpine-sdk linux-headers libxml2-dev make tzdata \
 WORKDIR /var/www/html/app/tech_project_app/api_server
 
 COPY ./config/database.yml /var/www/html/app/tech_project_app/api_server/config/
-COPY ./config/credentials/staging.key /var/www/html/app/tech_project_app/api_server/config/credentials/
 
 COPY ./entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
