@@ -1,9 +1,10 @@
 FROM ruby:2.7.2-alpine
 
 ENV DOCKER_ENV=staging
-ENV CORS_ALLOWED_ORIGINS_HOST=http://yocoder-staging.site
+# ENV CORS_ALLOWED_ORIGINS_HOST=http://yocoder-staging.site
+ENV CORS_ALLOWED_ORIGINS_HOST=http://localhost
 ENV MYSQL_USERNAME=root
-ENV MYSQL_PASSWORD=ra_8EevEJRP!
+ENV MYSQL_PASSWORD=ra_8EevEJRP
 ENV MYSQL_HOST=mysql_stg
 ENV MYSQL_PORT=3306
 ENV REDIS_HOST=redis_stg
