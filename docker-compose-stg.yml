@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile_stg
     container_name: mysql_stg
     tty: true
+    restart: always
     ports: 
       - 3306:3306
     networks:
@@ -44,21 +45,8 @@ services:
     ports:
       - 80:80
       - 443:443
-    networks:
-      - techies-guild-stg
-  # nginx_stg:
-  #   build:
-  #     context: ./nginx
-  #     dockerfile: Dockerfile_stg
-  #   container_name: nginx_stg
-  #   tty: true
-  #   restart: unless-stopped
-  #   ports:
-  #     - 80:80
-  #     - 443:443
     depends_on:
       - api_server_stg
-      # - client_stg
     networks:
       - techies-guild-stg
 networks:
