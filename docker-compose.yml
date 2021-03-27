@@ -28,6 +28,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./api_server:/var/www/html/app/tech_project_app/api_server
+      - ./api_server/.bundle:/usr/local/bundle
     container_name: api_server
     stdin_open: true
     tty: true

@@ -1,7 +1,5 @@
 FROM ruby:2.7.2-alpine
 
-WORKDIR /var/www/html/app/tech_project_app/api_server
-
 ENV DOCKER_ENV=development
 ENV CORS_ALLOWED_ORIGINS_HOST=http://localhost
 ENV MYSQL_USERNAME=root
@@ -25,6 +23,8 @@ RUN apk add --no-cache alpine-sdk linux-headers libxml2-dev make tzdata \
     # apiアプリケーション作成
     cd /var && mkdir -p www/html/app/tech_project_app/api_server && \
     cd www/html/app/tech_project_app/api_server
+
+WORKDIR /var/www/html/app/tech_project_app/api_server
 
 # COPY ./api_server.conf /etc/supervisord.d/
 COPY ./entrypoint.sh /usr/bin/
