@@ -1,7 +1,7 @@
 FROM ruby:2.7.2-alpine
 
 ENV DOCKER_ENV=development
-ENV CORS_ALLOWED_ORIGINS_HOST=http://localhost
+ENV CORS_ALLOWED_ORIGINS_HOST=http://localhost:3000
 ENV MYSQL_USERNAME=root
 ENV MYSQL_PASSWORD=test
 ENV MYSQL_HOST=mysql

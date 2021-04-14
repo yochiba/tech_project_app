@@ -14,7 +14,7 @@ const App: React.FC = () => {
       <Helmet>
         <meta charSet='utf-8' />
         <title>{Common.WEBSITE_NAME}</title>
-        <link rel='canonical' href='' />
+        <link rel='canonical' href={Common.CANONICAL_URL} />
         <meta name='description' content='Description for techies guild' />
       </Helmet>
       <Router>
