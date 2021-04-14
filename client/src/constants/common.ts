@@ -1,5 +1,6 @@
 // API エンドポイント
 export const API_ENDPOINT: string = process.env.REACT_APP_API_ENDPOINT!;
+export const CANONICAL_URL: string = process.env.REACT_APP_CANONICAL_URL!;
 
 export const WEBSITE_NAME: string = 'Techies Guild';
 
@@ -14,6 +15,12 @@ export const SORT_UPDATED_AT: string = 'created_at';
 export const SORT_PRICE: string = 'max_price';
 
 export const FIRST_PAGE: number = 1;
+
+export const TAB_TITLE_TAG: string = 'タグ';
+export const TAB_TITLE_LOCATION: string = '勤務地';
+export const TAB_TITLE_CONTRACT: string = '契約形態';
+export const TAB_TITLE_POSITION: string = 'ポジション';
+export const TAB_TITLE_INDUSTRY: string = '業界';
 
 export const PROJECT_SUMMARY_TITLE: string[] = [
   '勤務地',
